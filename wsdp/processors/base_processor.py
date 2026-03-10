@@ -3,20 +3,21 @@ import re
 import numpy as np
 
 from typing import List
+from pathlib import Path
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor
 from wsdp.algorithms import phase_calibration, wavelet_denoise_csi
 from wsdp.structure import CSIData
 
 
-class BaseProcessor():
+class BaseProcessor:
     def process(self, data_list: List[CSIData], **kwargs):
         dataset = kwargs.get('dataset', '')
         all_data = []
         all_labels = []
         all_groups = []
         worker_func = partial(_process_single_csi, dataset=dataset)
-        with ProcessPoolExecutor(max_workers=32) as executor:
+        with ProcessPoolExecutor(max_workers=16) as executor:
             results = executor.map(worker_func, data_list)
             for csi, label, group in results:
                 if csi is not None:
@@ -28,8 +29,8 @@ class BaseProcessor():
 
 # function for parallel processing
 def _process_single_csi(csi_data, dataset):
-    res = parse_file_info_from_filename(csi_data.file_name, dataset)
-    label, group = selector(res, dataset)
+    res = _parse_file_info_from_filename(csi_data.file_name, dataset)
+    label, group = _selector(res, dataset)
     sorted_frames = sorted(csi_data.frames, key=lambda frame: frame.timestamp)
     frame_tensors = []
     for frame in sorted_frames:
@@ -49,7 +50,7 @@ def _process_single_csi(csi_data, dataset):
     return None, None, None
 
 
-def parse_file_info_from_filename(f_name, dataset):
+def _parse_file_info_from_filename(f_name, dataset):
     base = os.path.splitext(os.path.basename(f_name))[0]
 
     if dataset == 'widar':
@@ -96,11 +97,22 @@ def parse_file_info_from_filename(f_name, dataset):
         else:
             print(f"[Warning] Skipping file {f_name}: Invalid format for ElderAL Dataset.")
 
+    elif dataset == 'zte':
+        base = _process_file_path(f_name)[0][1]
+        m = re.search(r"user(\d+)_pos(\d+)_action(\d+)", base)
+        if m:
+            user_id = int(m.group(1))
+            position_id = int(m.group(2))
+            action_id = m.group(3)
+            return user_id, position_id, action_id, None, None, None
+        else:
+            print(f"[Warning] Skipping file {f_name}: Invalid format for ZTE Dataset.")
+
     else:
         print(f"[Error] Unknown task type: {dataset}")
 
 
-def selector(res, dataset):
+def _selector(res, dataset):
     label = None
     group = None
 
@@ -113,8 +125,18 @@ def selector(res, dataset):
     elif dataset == 'xrf55':
         label = int(res[1])
         group = int(res[0])
-    elif dataset == 'elderAL':
+    elif dataset == 'elderAL' or 'zte':
         label = int(res[2])
         group = int(res[1])
 
     return label, group
+
+
+def _process_file_path(f_name):
+    """
+    process_file_path for cross os
+    """
+    full_path = Path(f_name)
+    path_parts = full_path.parts
+    base = full_path.stem
+    return path_parts, base

@@ -26,5 +26,12 @@
     "wd": 1e-3,
     "num_epochs": 20,
     "padding_length": 80
+  },
+  "zte": {
+    "batch": 32,
+    "lr": 3e-4,
+    "wd": 1e-3,
+    "num_epochs": 20,
+    "padding_length": 100
   }
 }

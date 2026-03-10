@@ -1,12 +1,13 @@
 import numpy as np
 import pandas as pd
 
+from wsdp.readers.base import BaseReader
 from wsdp.structure import CSIData
 from wsdp.structure import BaseFrame
 
 
-class ZTEReader:
 
+class ZTEReader(BaseReader):
     def __init__(self):
         super().__init__()
 
