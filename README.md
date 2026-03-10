@@ -33,7 +33,7 @@ Please download needed datasets from [Our SDP Website](http://sdp8.org/) or via 
 ```bash
 wsdp download elderAL ./data
 ```
-`elderAL` can be changed to `widar`, `gait` or `xrf55`
+`elderAL` can be changed to `widar`, `gait`, `xrf55` or `zte`
 
 In the folder of your project, please organize **elderAL** datasets in the structure below for extracting labels:
 ```
@@ -49,6 +49,7 @@ In the folder of your project, please organize **elderAL** datasets in the struc
     ├── widar
     ├── gait
     ├── xrf55
+    ├── zte
 ```
 
 ## Step 3: Train and Evaluate
@@ -115,7 +116,24 @@ or:
 ```bash
 wsdp run ./data/elderAL ./output elderAL -m custom_model.py
 ```
-## 2.2 Codebase Map (Where to modify)
+
+## 2.2 Using your own dataset
+That's what the process will do when you run with param: `zte`. Just
+make sure that your folder is organized in this way:
+```
+├── data
+    ├── zte(or any name you like)
+    │   ├── user0_pos0_action0
+    │   │   ├── sample1
+    │   │   ├── ...
+    │   │
+    │   ├── user0_pos0_action1
+    │   ├── ...
+```
+and use `./data/zte` as the input_path
+
+
+## 2.3 Codebase Map (Where to modify)
 
 if you want to go further:
 - models/ → Define or compare architectures

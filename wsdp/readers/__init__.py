@@ -2,19 +2,21 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 from typing import List
 
+from wsdp.structure import CSIData
 from .bfee_reader import BfeeReader
 from .xrf_reader import XrfReader
 from .elder_reader import ElderReader
-from wsdp.structure import CSIData
+from .zte_reader import ZTEReader
 
-# import future reader here
+# ^^^ import future reader above ^^^
 
 
 _READER_REGISTRY = {
     'widar': BfeeReader,
     'gait': BfeeReader,
     'xrf55': XrfReader,
-    'elderAL': ElderReader
+    'elderAL': ElderReader,
+    "zte": ZTEReader,
 }
 
 
@@ -53,7 +55,7 @@ def load_data(file_path: str, dataset: str) -> List[CSIData]:
     reader = reader_class()
     csi_data_list = []
 
-    with ProcessPoolExecutor(max_workers=32) as executor:
+    with ProcessPoolExecutor(max_workers=16) as executor:
         futures = {executor.submit(_process_file, reader, file_path): file_path for file_path in files}
         for future in as_completed(futures):
             file_name, data, err = future.result()
