@@ -33,7 +33,8 @@ Please download needed datasets from [Our SDP Website](http://sdp8.org/) or via 
 ```bash
 wsdp download elderAL ./data
 ```
-`elderAL` can be changed to `widar`, `gait`, `xrf55` or `zte`
+`elderAL` can be changed to `widar`, `gait`, `xrf55` or `zte`.
+And if you encounter network issues, please use your email and password for logging in [SDP](https://sdp8.org/) to obtain download permission for the dataset.
 
 In the folder of your project, please organize **elderAL** datasets in the structure below for extracting labels:
 ```
