@@ -285,6 +285,88 @@ Want to go deeper? Here's where to modify:
 | `structure/` | Data Structures | Modify CSIFrame format |
 | `processors/` | Protocol Logic | Adjust canonical projection |
 
+### 🔌 Pluggable Algorithm Architecture
+
+WSDP features a **Registry Pattern** that makes algorithms pluggable:
+
+```python
+from wsdp.algorithms import denoise, calibrate, register_algorithm
+
+# Unified API — switch methods with one parameter
+denoised = denoise(csi, method='butterworth', order=5)
+calibrated = calibrate(csi, method='stc')
+
+# Register your own algorithm
+def my_denoise(csi, **kwargs):
+    return my_custom_filter(csi)
+
+register_algorithm('denoise', 'my_method', my_denoise)
+result = denoise(csi, method='my_method')  # Works like built-in!
+```
+
+**Configuration file support:**
+
+```yaml
+# algorithms_config.yaml
+denoise:
+  method: butterworth
+  params:
+    order: 5
+    cutoff: 0.3
+calibrate:
+  method: stc
+normalize:
+  method: z-score
+```
+
+```python
+from wsdp.algorithms import load_config, execute_pipeline
+config = load_config('algorithms_config.yaml')
+processed = execute_pipeline(csi, config)
+```
+
+**Pipeline presets:**
+
+```python
+from wsdp.algorithms import apply_preset, execute_pipeline
+
+# Choose a preset for your use case
+steps = apply_preset('high_quality')  # or 'fast', 'robust', etc.
+processed = execute_pipeline(csi, steps)
+```
+
+### 📊 Algorithm Library
+
+| Category | Algorithm | Key Function | Reference |
+|:--------:|:---------:|:------------:|:---------:|
+| **Denoising** | Wavelet | `wavelet_denoise_csi()` | Donoho & Johnstone, 1994 |
+| | Butterworth | `butterworth_denoise()` | Butterworth, 1930 |
+| | Savitzky-Golay | `savgol_denoise()` | Savitzky & Golay, 1964 |
+| **Phase Calibration** | Linear | `phase_calibration()` | Halperin et al., 2010 |
+| | Polynomial | `polynomial_calibration()` | Extension of linear |
+| | STC | `stc_calibration()` | Xie et al., IEEE TWC 2019 |
+| | Robust | `robust_phase_sanitization()` | Wang et al., ICPADS 2012 |
+| **Normalization** | Z-Score | `normalize_amplitude()` | Standard statistical |
+| | Min-Max | `normalize_amplitude()` | Standard statistical |
+| **Interpolation** | Linear/Cubic/Nearest | `interpolate_grid()` | de Boor, 1978 |
+| **Features** | Doppler | `doppler_spectrum()` | Ali et al., MobiCom 2015 |
+| | Entropy | `entropy_features()` | Shannon, 1948 |
+| | CSI Ratio | `csi_ratio()` | Halperin et al., 2011 |
+| | Tensor Decomposition | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
+| **Detection** | Activity | `detect_activity()` | Zhou et al., 2013 |
+| | Change Point | `change_point_detection()` | Adams & MacKay, 2007 |
+
+**Built-in Presets:**
+
+| Preset | Denoise | Calibrate | Use Case |
+|:------:|:-------:|:---------:|:--------:|
+| `high_quality` | Butterworth (order=5) | STC | Maximum accuracy |
+| `fast` | Savitzky-Golay | Linear | Speed-optimized |
+| `robust` | Wavelet | Robust | Noisy environments |
+| `gesture_recognition` | Butterworth (order=4) | STC | Gesture tasks |
+| `activity_detection` | Savitzky-Golay | Polynomial | HAR tasks |
+| `localization` | Wavelet | Robust | Localization tasks |
+
 ---
 
 ## 🧪 Understanding SDP (10-Min Deep Dive)
@@ -612,6 +694,88 @@ wsdp run ./data/my_dataset ./output my_dataset
 | `readers/` | 文件读取器 | 添加新格式解析器 |
 | `structure/` | 数据结构 | 修改 CSIFrame 格式 |
 | `processors/` | 协议逻辑 | 调整规范投影 |
+
+### 🔌 可插拔算法架构
+
+WSDP 采用**注册表模式**，让算法可以自由切换：
+
+```python
+from wsdp.algorithms import denoise, calibrate, register_algorithm
+
+# 统一 API — 一个参数切换方法
+denoised = denoise(csi, method='butterworth', order=5)
+calibrated = calibrate(csi, method='stc')
+
+# 注册你自己的算法
+def my_denoise(csi, **kwargs):
+    return my_custom_filter(csi)
+
+register_algorithm('denoise', 'my_method', my_denoise)
+result = denoise(csi, method='my_method')  # 像内置算法一样使用！
+```
+
+**配置文件支持：**
+
+```yaml
+# algorithms_config.yaml
+denoise:
+  method: butterworth
+  params:
+    order: 5
+    cutoff: 0.3
+calibrate:
+  method: stc
+normalize:
+  method: z-score
+```
+
+```python
+from wsdp.algorithms import load_config, execute_pipeline
+config = load_config('algorithms_config.yaml')
+processed = execute_pipeline(csi, config)
+```
+
+**Pipeline 预设：**
+
+```python
+from wsdp.algorithms import apply_preset, execute_pipeline
+
+# 选择适合的预设
+steps = apply_preset('high_quality')  # 或 'fast', 'robust' 等
+processed = execute_pipeline(csi, steps)
+```
+
+### 📊 算法库
+
+| 类别 | 算法 | 核心函数 | 参考文献 |
+|:----:|:----:|:--------:|:--------:|
+| **去噪** | 小波 | `wavelet_denoise_csi()` | Donoho & Johnstone, 1994 |
+| | 巴特沃斯 | `butterworth_denoise()` | Butterworth, 1930 |
+| | Savitzky-Golay | `savgol_denoise()` | Savitzky & Golay, 1964 |
+| **相位校准** | 线性 | `phase_calibration()` | Halperin et al., 2010 |
+| | 多项式 | `polynomial_calibration()` | 线性校准的扩展 |
+| | STC | `stc_calibration()` | Xie et al., IEEE TWC 2019 |
+| | 鲁棒 | `robust_phase_sanitization()` | Wang et al., ICPADS 2012 |
+| **归一化** | Z-Score | `normalize_amplitude()` | 标准统计方法 |
+| | Min-Max | `normalize_amplitude()` | 标准统计方法 |
+| **插值** | 线性/三次/最近邻 | `interpolate_grid()` | de Boor, 1978 |
+| **特征提取** | 多普勒 | `doppler_spectrum()` | Ali et al., MobiCom 2015 |
+| | 熵 | `entropy_features()` | Shannon, 1948 |
+| | CSI 比率 | `csi_ratio()` | Halperin et al., 2011 |
+| | 张量分解 | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
+| **检测** | 活动 | `detect_activity()` | Zhou et al., 2013 |
+| | 变点 | `change_point_detection()` | Adams & MacKay, 2007 |
+
+**内置预设：**
+
+| 预设 | 去噪 | 校准 | 适用场景 |
+|:----:|:----:|:----:|:--------:|
+| `high_quality` | Butterworth (order=5) | STC | 最高精度 |
+| `fast` | Savitzky-Golay | 线性 | 速度优化 |
+| `robust` | 小波 | 鲁棒 | 噪声环境 |
+| `gesture_recognition` | Butterworth (order=4) | STC | 手势任务 |
+| `activity_detection` | Savitzky-Golay | 多项式 | 人体活动识别 |
+| `localization` | 小波 | 鲁棒 | 定位任务 |
 
 ---
 

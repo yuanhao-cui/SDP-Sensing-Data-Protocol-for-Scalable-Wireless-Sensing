@@ -1,0 +1,32 @@
+# WSDP Algorithm Configuration
+# ============================
+# This file configures the CSI processing pipeline.
+# Each section specifies a processing step with method and parameters.
+#
+# Available categories: denoise, calibrate, normalize, interpolate
+# Available presets: high_quality, fast, robust, gesture_recognition,
+#                   activity_detection, localization
+#
+# Usage:
+#   from wsdp.algorithms import load_config, execute_pipeline
+#   config = load_config('algorithms_config.yaml')
+#   processed = execute_pipeline(csi, config)
+
+# --- Option 1: Specify individual steps ---
+
+denoise:
+  method: butterworth
+  params:
+    order: 5
+    cutoff: 0.3
+
+calibrate:
+  method: polynomial
+  params:
+    degree: 3
+
+normalize:
+  method: z-score
+
+# --- Option 2: Use a preset (uncomment to use) ---
+# preset: high_quality

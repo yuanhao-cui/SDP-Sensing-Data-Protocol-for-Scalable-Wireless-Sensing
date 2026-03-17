@@ -5,14 +5,31 @@ Provides denoising, phase calibration, amplitude normalization,
 interpolation, feature extraction, and activity detection for
 WiFi Channel State Information (CSI) data.
 
-Unified API:
+## Unified API
+
     denoise(csi, method='wavelet', **kwargs)
     calibrate(csi, method='linear', **kwargs)
     normalize(csi, method='z-score', **kwargs)
     interpolate(csi, target_K=30, method='cubic', **kwargs)
     extract_features(csi, features=['doppler'], **kwargs)
 
-Backward-compatible exports:
+## Pluggable Architecture
+
+    # List available algorithms
+    list_algorithms('denoise')
+
+    # Register custom algorithm
+    register_algorithm('denoise', 'my_method', my_func)
+
+    # Use config files
+    config = load_config('algorithms_config.yaml')
+
+    # Apply presets
+    steps = apply_preset('high_quality')
+    result = execute_pipeline(csi, steps)
+
+## Backward-compatible exports
+
     wavelet_denoise_csi(csi_tensor)
     phase_calibration(csi_data)
 """
@@ -33,6 +50,23 @@ from .visualization import (
     plot_phase_calibration,
 )
 
+# Registry imports
+from .registry import (
+    register_algorithm,
+    unregister_algorithm,
+    get_algorithm,
+    list_algorithms,
+    is_registered,
+    algorithm_info,
+    load_config,
+    save_config,
+    apply_preset,
+    register_preset,
+    list_presets,
+    execute_pipeline,
+    PRESETS,
+)
+
 
 # ============================================================================
 # Unified API
@@ -48,6 +82,7 @@ def denoise(csi, method='wavelet', **kwargs):
             - 'wavelet': Wavelet shrinkage (VisuShrink with db4)
             - 'butterworth': Butterworth low-pass filter
             - 'savgol': Savitzky-Golay polynomial smoothing
+            - Or any custom method registered via register_algorithm()
         **kwargs: Method-specific parameters
 
     Returns:
@@ -57,16 +92,13 @@ def denoise(csi, method='wavelet', **kwargs):
         >>> denoise(csi, method='wavelet')
         >>> denoise(csi, method='butterworth', order=4, cutoff=0.2)
         >>> denoise(csi, method='savgol', window_length=15, polyorder=4)
+
+        >>> # With custom method
+        >>> register_algorithm('denoise', 'my_method', my_func)
+        >>> denoise(csi, method='my_method', my_param=42)
     """
-    methods = {
-        'wavelet': wavelet_denoise_csi,
-        'butterworth': butterworth_denoise,
-        'savgol': savgol_denoise,
-    }
-    if method not in methods:
-        raise ValueError(f"Unknown denoising method '{method}'. "
-                         f"Supported: {list(methods.keys())}")
-    return methods[method](csi, **kwargs)
+    func = get_algorithm('denoise', method)
+    return func(csi, **kwargs)
 
 
 def calibrate(csi, method='linear', **kwargs):
@@ -78,8 +110,9 @@ def calibrate(csi, method='linear', **kwargs):
         method: Calibration method
             - 'linear': Standard linear phase calibration
             - 'polynomial': Polynomial phase calibration
-            - 'stc': Sanitize-then-Calibrate (IEEE TWC 2023)
+            - 'stc': Sanitize-then-Calibrate (IEEE TWC 2019)
             - 'robust': Robust phase sanitization (FIMD/MobiCom)
+            - Or any custom method registered via register_algorithm()
         **kwargs: Method-specific parameters
 
     Returns:
@@ -91,16 +124,8 @@ def calibrate(csi, method='linear', **kwargs):
         >>> calibrate(csi, method='stc')
         >>> calibrate(csi, method='robust')
     """
-    methods = {
-        'linear': phase_calibration,
-        'polynomial': polynomial_calibration,
-        'stc': stc_calibration,
-        'robust': robust_phase_sanitization,
-    }
-    if method not in methods:
-        raise ValueError(f"Unknown calibration method '{method}'. "
-                         f"Supported: {list(methods.keys())}")
-    return methods[method](csi, **kwargs)
+    func = get_algorithm('calibrate', method)
+    return func(csi, **kwargs)
 
 
 def normalize(csi, method='z-score', **kwargs):
@@ -112,6 +137,7 @@ def normalize(csi, method='z-score', **kwargs):
         method: Normalization method
             - 'z-score': Zero mean, unit variance per subcarrier
             - 'min-max': Scale to [0, 1] per subcarrier
+            - Or any custom method registered via register_algorithm()
         **kwargs: Method-specific parameters
 
     Returns:
@@ -121,14 +147,10 @@ def normalize(csi, method='z-score', **kwargs):
         >>> normalize(csi, method='z-score')
         >>> normalize(csi, method='min-max')
     """
-    methods = {
-        'z-score': normalize_amplitude,
-        'min-max': normalize_amplitude,
-    }
-    if method not in methods:
-        raise ValueError(f"Unknown normalization method '{method}'. "
-                         f"Supported: {list(methods.keys())}")
-    return methods[method](csi, method=method, **kwargs)
+    func = get_algorithm('normalize', method)
+    if method == 'min-max':
+        return func(csi, method='min-max', **kwargs)
+    return func(csi, method=method, **kwargs)
 
 
 def interpolate(csi, target_K=30, method='cubic', **kwargs):
@@ -151,11 +173,8 @@ def interpolate(csi, target_K=30, method='cubic', **kwargs):
         >>> interpolate(csi, target_K=64, method='cubic')
         >>> interpolate(csi, target_K=15, method='linear')
     """
-    valid_methods = ('linear', 'cubic', 'nearest')
-    if method not in valid_methods:
-        raise ValueError(f"Unknown interpolation method '{method}'. "
-                         f"Supported: {list(valid_methods)}")
-    return interpolate_grid(csi, target_K=target_K, method=method, **kwargs)
+    func = get_algorithm('interpolate', method)
+    return func(csi, target_K=target_K, method=method, **kwargs)
 
 
 def extract_features(csi, features=None, **kwargs):
@@ -240,4 +259,18 @@ __all__ = [
     "normalize",
     "interpolate",
     "extract_features",
+    # Registry / Pluggable Architecture
+    "register_algorithm",
+    "unregister_algorithm",
+    "get_algorithm",
+    "list_algorithms",
+    "is_registered",
+    "algorithm_info",
+    "load_config",
+    "save_config",
+    "apply_preset",
+    "register_preset",
+    "list_presets",
+    "execute_pipeline",
+    "PRESETS",
 ]

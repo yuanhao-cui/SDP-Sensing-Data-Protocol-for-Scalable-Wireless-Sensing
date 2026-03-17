@@ -1,33 +1,59 @@
 # API Reference - Algorithms
 
-See [Full API Reference](../API_REFERENCE.md) for complete documentation.
+WSDP provides a comprehensive algorithm library for CSI processing with a **pluggable architecture**.
 
-## Signal Processing
+## Quick Reference
 
-### `wavelet_denoise_csi()`
+| Category | Built-in Algorithms |
+|----------|-------------------|
+| **Denoising** | `wavelet`, `butterworth`, `savgol` |
+| **Calibration** | `linear`, `polynomial`, `stc`, `robust` |
+| **Normalization** | `z-score`, `min-max` |
+| **Interpolation** | `linear`, `cubic`, `nearest` |
+| **Features** | `doppler`, `entropy`, `ratio`, `decomposition` |
+| **Detection** | `activity`, `change_point` |
 
-Wavelet-based denoising for CSI data.
-
-```python
-from wsdp.algorithms import wavelet_denoise_csi
-
-denoised = wavelet_denoise_csi(csi_data, wavelet='db4', level=2)
-```
-
-### `phase_calibration()`
-
-Phase error correction.
+## Unified API
 
 ```python
-from wsdp.algorithms import phase_calibration
+from wsdp.algorithms import denoise, calibrate, normalize, interpolate, extract_features
 
-calibrated = phase_calibration(csi_data, method='linear')
+denoised = denoise(csi, method='butterworth', order=5)
+calibrated = calibrate(denoised, method='stc')
+normalized = normalize(calibrated, method='z-score')
+features = extract_features(normalized, features=['doppler', 'entropy'])
 ```
 
-## Visualization
+## Pluggable Architecture
+
+### Register Custom Algorithms
 
 ```python
-from wsdp.algorithms.visualization import plot_csi_heatmap
+from wsdp.algorithms import register_algorithm, denoise
 
-plot_csi_heatmap(csi_data, antenna_idx=0, save_path='heatmap.png')
+def my_denoise(csi, **kwargs):
+    return csi * 0.5
+
+register_algorithm('denoise', 'my_method', my_denoise)
+result = denoise(csi, method='my_method')
 ```
+
+### Use Presets
+
+```python
+from wsdp.algorithms import apply_preset, execute_pipeline
+
+steps = apply_preset('high_quality')
+processed = execute_pipeline(csi, steps)
+```
+
+### Load from Config File
+
+```python
+from wsdp.algorithms import load_config, execute_pipeline
+
+config = load_config('algorithms_config.yaml')
+processed = execute_pipeline(csi, config)
+```
+
+See the [Full API Reference](../API_REFERENCE.md) for complete documentation of all algorithms, parameters, and references.
