@@ -1,0 +1,57 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "wsdp"
+version = "0.2.0"
+description = "Wi-Fi Sensing Data Processing - A Python library for downloading, processing, analyzing and training on Wi-Fi CSI data"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+authors = [
+    {name = "SDP Team"},
+]
+keywords = ["wifi", "sensing", "csi", "deep-learning", "signal-processing"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Scientific/Engineering",
+]
+dependencies = [
+    "numpy>=1.21",
+    "pandas>=1.3",
+    "requests>=2.25",
+    "tqdm>=4.60",
+    "kagglehub>=0.1",
+    "torch>=1.10",
+    "scikit-learn>=1.0",
+    "PyWavelets>=1.3",
+    "matplotlib>=3.4",
+    "seaborn>=0.11",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-cov>=4.0",
+]
+
+[project.scripts]
+wsdp = "wsdp.cli:main_cli"
+
+[project.urls]
+Homepage = "https://github.com/sdp-team/wsdp"
+Documentation = "https://github.com/sdp-team/wsdp#readme"
+Repository = "https://github.com/sdp-team/wsdp"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
