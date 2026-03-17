@@ -226,6 +226,39 @@ output/
 
 ---
 
+## 🧠 Built-in Model Library (12 Models)
+
+WSDP provides a complete pluggable model library from baselines to SOTA:
+
+| Category | Model | Description |
+|:--------:|:-----:|:------------|
+| **Baseline** | MLPModel | Fully-connected baseline |
+| | CNN1DModel | 1D convolution (temporal) |
+| | CNN2DModel | 2D convolution (spectral) |
+| | LSTMModel | LSTM temporal modeling |
+| **Mainstream** | ResNet1D | 1D residual network |
+| | ResNet2D | 2D residual network |
+| | BiLSTMAttention | BiLSTM + attention |
+| | EfficientNetCSI | Efficient CNN (configurable) |
+| **SOTA** | VisionTransformerCSI | ViT for CSI patches |
+| | MambaCSI | State space model |
+| | GraphNeuralCSI | GNN on antenna topology |
+| | CSIModel | CNN + Transformer (original) |
+
+```python
+from wsdp.models import create_model, list_models
+
+# Create any model with a single call
+model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
+
+# List all available models
+print(list_models())  # {'mlpmodel': 'baseline', 'cnn1dmodel': 'baseline', ...}
+```
+
+See [Model Selection Guide](docs/models.md) for detailed recommendations.
+
+---
+
 ## 🔬 Research & Customization
 
 ### 🧠 Plug in Your Own Model

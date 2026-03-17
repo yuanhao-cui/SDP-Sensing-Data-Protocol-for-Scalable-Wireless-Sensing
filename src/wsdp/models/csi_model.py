@@ -1,8 +1,19 @@
+"""CSIModel: CNN + Transformer for CSI classification (original WSDP model)."""
+
+import torch
 import torch.nn as nn
+from .registry import register_model
 
 
 class CSIModel(nn.Module):
-    def __init__(self, num_classes=10, base_channels=32, latent_dim=128):
+    """Original CNN + Transformer model for CSI classification.
+
+    Spatial encoder: 2D CNN over (F, A) per time step.
+    Temporal processor: Transformer encoder over time dimension.
+    """
+
+    def __init__(self, num_classes: int = 10, input_shape: tuple = None,
+                 base_channels: int = 32, latent_dim: int = 128):
         super().__init__()
 
         # Spatial Encoder: cope with dimension F and A
@@ -39,8 +50,18 @@ class CSIModel(nn.Module):
         self.output_layer = nn.Linear(latent_dim, self.num_classes)
 
     def forward(self, x):
+        # Handle complex input by taking magnitude
+        if torch.is_complex(x):
+            x = torch.abs(x)
         B, T, F, A = x.shape
 
+        # Pad spatial dims if too small for 3x3 conv
+        pad_f = max(0, 3 - F)
+        pad_a = max(0, 3 - A)
+        if pad_f > 0 or pad_a > 0:
+            x = torch.nn.functional.pad(x, (0, pad_a, 0, pad_f))
+            F = F + pad_f
+            A = A + pad_a
 
         # shape: [B, T, F, A] -> [B*T, 1, F, A] '1' is the channel
         spatial_input = x.view(B*T, 1, F, A)
@@ -62,3 +83,7 @@ class CSIModel(nn.Module):
         features = self.flatten(pooled)
         
         return self.output_layer(features)
+
+
+# Register the original model
+register_model("sota", "CSIModel", CSIModel)

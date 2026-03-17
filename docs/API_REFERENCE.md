@@ -826,17 +826,158 @@ result = execute_pipeline(csi, steps)
 
 ## Models
 
-### CSIModel
-
-CNN + Transformer architecture for CSI classification.
+### Unified Model API
 
 ```python
-from wsdp.models import CSIModel
+from wsdp.models import create_model, list_models, get_model
 
-model = CSIModel(
-    num_classes: int,
-    input_shape: Tuple[int, int, int] = (200, 30, 3),
-)
+# Create any model
+model = create_model(name, num_classes, input_shape, **kwargs)
+
+# List models
+all_models = list_models()                          # All models
+baselines = list_models("baseline")                 # By category
+
+# Get model class
+model = get_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
+```
+
+**Parameters:**
+- `name`: Model name (case-insensitive)
+- `num_classes`: Number of output classes
+- `input_shape`: Tuple of (T, F, A) — time steps, frequency bins, antennas
+- `**kwargs`: Model-specific hyperparameters
+
+### Model Registry
+
+All models are stored in `MODEL_REGISTRY` and can be accessed by category:
+
+| Category | Models |
+|----------|--------|
+| `baseline` | MLPModel, CNN1DModel, CNN2DModel, LSTMModel |
+| `mainstream` | ResNet1D, ResNet2D, BiLSTMAttention, EfficientNetCSI |
+| `sota` | VisionTransformerCSI, MambaCSI, GraphNeuralCSI, CSIModel |
+
+### Baseline Models
+
+#### MLPModel
+Fully-connected baseline, flattens input through MLP.
+
+```python
+model = create_model("MLPModel", num_classes=10, input_shape=(20, 30, 3),
+                      hidden_dims=[512, 256], dropout=0.3)
+```
+
+#### CNN1DModel
+1D convolution extracting temporal features.
+
+```python
+model = create_model("CNN1DModel", num_classes=10, input_shape=(20, 30, 3),
+                      base_channels=64, num_layers=4)
+```
+
+#### CNN2DModel
+2D convolution processing spectral representations per time step.
+
+```python
+model = create_model("CNN2DModel", num_classes=10, input_shape=(20, 30, 3),
+                      base_channels=32, num_layers=3)
+```
+
+#### LSTMModel
+LSTM for temporal sequence modeling.
+
+```python
+model = create_model("LSTMModel", num_classes=10, input_shape=(20, 30, 3),
+                      hidden_size=128, num_layers=2, dropout=0.3)
+```
+
+### Mainstream Models
+
+#### ResNet1D
+1D residual network with 3 residual blocks.
+
+```python
+model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3),
+                      base_channels=64)
+```
+
+#### ResNet2D
+2D residual network for spatial feature extraction.
+
+```python
+model = create_model("ResNet2D", num_classes=10, input_shape=(20, 30, 3),
+                      base_channels=32)
+```
+
+#### BiLSTMAttention
+Bidirectional LSTM with multi-head self-attention.
+
+```python
+model = create_model("BiLSTMAttention", num_classes=10, input_shape=(20, 30, 3),
+                      hidden_size=128, num_layers=2, num_heads=4, dropout=0.3)
+```
+
+#### EfficientNetCSI
+Efficient CNN with configurable width and depth multipliers.
+
+```python
+model = create_model("EfficientNetCSI", num_classes=10, input_shape=(20, 30, 3),
+                      width_mult=1.0, depth_mult=1.0, base_channels=16)
+```
+
+### SOTA Models
+
+#### VisionTransformerCSI
+Vision Transformer treating F×A spatial patches across time steps.
+
+```python
+model = create_model("VisionTransformerCSI", num_classes=10, input_shape=(20, 30, 3),
+                      embed_dim=128, num_heads=4, num_layers=4,
+                      patch_size_f=4, patch_size_a=4, dropout=0.1)
+```
+
+#### MambaCSI
+State space model (Mamba) for efficient long-range temporal modeling.
+
+```python
+model = create_model("MambaCSI", num_classes=10, input_shape=(20, 30, 3),
+                      d_model=128, d_state=16, num_layers=4)
+```
+
+#### GraphNeuralCSI
+Graph neural network modeling antenna/subcarrier topology.
+
+```python
+model = create_model("GraphNeuralCSI", num_classes=10, input_shape=(20, 30, 3),
+                      hidden_dim=64, num_gcn_layers=3, num_heads=4)
+```
+
+#### CSIModel
+Original CNN + Transformer model (backward compatible).
+
+```python
+model = create_model("CSIModel", num_classes=10, input_shape=(20, 30, 3),
+                      base_channels=32, latent_dim=128)
+```
+
+### Custom Model Registration
+
+```python
+from wsdp.models import register_model
+import torch.nn as nn
+
+class MyModel(nn.Module):
+    def __init__(self, num_classes, input_shape, **kwargs):
+        super().__init__()
+        # Your architecture
+        
+    def forward(self, x):
+        # x: (B, T, F, A) — complex or real
+        # return: (B, num_classes)
+        ...
+
+register_model("custom", "MyModel", MyModel)
 ```
 
 ---
