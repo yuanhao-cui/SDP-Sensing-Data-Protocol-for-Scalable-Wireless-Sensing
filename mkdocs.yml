@@ -21,6 +21,7 @@ nav:
     - Readers: api/readers.md
     - Algorithms: api/algorithms.md
     - Models: api/models.md
+  - Model Guide: models.md
   - Datasets:
     - Overview: datasets/overview.md
     - Widar: datasets/widar.md

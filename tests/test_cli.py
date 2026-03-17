@@ -7,7 +7,8 @@ from wsdp.cli import main_cli, __version__
 
 class TestVersion:
     def test_version_string(self):
-        assert __version__ == "0.2.0"
+        from wsdp import __version__ as pkg_version
+        assert __version__ == pkg_version
 
     def test_version_flag(self):
         with patch('sys.argv', ['wsdp', '--version']):

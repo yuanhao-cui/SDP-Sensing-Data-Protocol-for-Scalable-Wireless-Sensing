@@ -5,8 +5,7 @@ from typing import Optional
 from .core import pipeline
 from .download import download
 from .readers import list_datasets, get_all_reader_metadata
-
-__version__ = "0.2.0"
+from . import __version__
 
 
 def _run_pipeline(args: argparse.Namespace) -> None:
