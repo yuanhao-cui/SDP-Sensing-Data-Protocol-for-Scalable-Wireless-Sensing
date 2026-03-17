@@ -72,6 +72,22 @@ from .registry import (
 # Unified API
 # ============================================================================
 
+import inspect
+
+def _filter_kwargs(func, kwargs):
+    """Filter kwargs to only include those accepted by func."""
+    try:
+        sig = inspect.signature(func)
+        valid_params = set(sig.parameters.keys())
+        # If **kwargs is present, pass all
+        for p in sig.parameters.values():
+            if p.kind == inspect.Parameter.VAR_KEYWORD:
+                return kwargs
+        return {k: v for k, v in kwargs.items() if k in valid_params}
+    except (ValueError, TypeError):
+        return kwargs
+
+
 def denoise(csi, method='wavelet', **kwargs):
     """
     Unified denoising interface.
@@ -98,7 +114,8 @@ def denoise(csi, method='wavelet', **kwargs):
         >>> denoise(csi, method='my_method', my_param=42)
     """
     func = get_algorithm('denoise', method)
-    return func(csi, **kwargs)
+    filtered = _filter_kwargs(func, kwargs)
+    return func(csi, **filtered)
 
 
 def calibrate(csi, method='linear', **kwargs):
@@ -125,7 +142,8 @@ def calibrate(csi, method='linear', **kwargs):
         >>> calibrate(csi, method='robust')
     """
     func = get_algorithm('calibrate', method)
-    return func(csi, **kwargs)
+    filtered = _filter_kwargs(func, kwargs)
+    return func(csi, **filtered)
 
 
 def normalize(csi, method='z-score', **kwargs):
@@ -148,9 +166,8 @@ def normalize(csi, method='z-score', **kwargs):
         >>> normalize(csi, method='min-max')
     """
     func = get_algorithm('normalize', method)
-    if method == 'min-max':
-        return func(csi, method='min-max', **kwargs)
-    return func(csi, method=method, **kwargs)
+    filtered = _filter_kwargs(func, kwargs)
+    return func(csi, method=method, **filtered)
 
 
 def interpolate(csi, target_K=30, method='cubic', **kwargs):
@@ -174,7 +191,8 @@ def interpolate(csi, target_K=30, method='cubic', **kwargs):
         >>> interpolate(csi, target_K=15, method='linear')
     """
     func = get_algorithm('interpolate', method)
-    return func(csi, target_K=target_K, method=method, **kwargs)
+    filtered = _filter_kwargs(func, kwargs)
+    return func(csi, target_K=target_K, method=method, **filtered)
 
 
 def extract_features(csi, features=None, **kwargs):

@@ -23,6 +23,30 @@ A Python library for downloading, processing, analyzing and training on Wi-Fi CS
 - **Inference API**: Simple `predict()` interface for deployment
 - **CLI interface**: Full command-line support for batch operations
 
+## 🧪 Signal Processing Algorithm Library
+
+WSDP provides a comprehensive, pluggable signal preprocessing library with **16+ algorithms**:
+
+| Category | Algorithms | Description |
+|----------|-----------|-------------|
+| **Denoising** | Wavelet, Butterworth, Savitzky-Golay | Remove noise while preserving features |
+| **Phase Calibration** | Linear, Polynomial, STC, Robust | Correct hardware phase errors |
+| **Amplitude** | Z-Score, Min-Max, IQR Outlier Removal | Normalize and clean amplitude |
+| **Interpolation** | Linear, Cubic, Nearest | Resample to canonical grids |
+| **Features** | Doppler Spectrum, Entropy, CSI Ratio, Tensor | Extract motion/activity features |
+| **Detection** | Variance-based, Change Point | Detect activity and transitions |
+
+**Unified API**:
+```python
+from wsdp.algorithms import denoise, calibrate, normalize, extract_features
+
+denoised = denoise(csi, method='butterworth', order=5, cutoff=0.3)
+calibrated = calibrate(csi, method='stc')
+features = extract_features(csi, features=['doppler', 'entropy'])
+```
+
+See [Algorithm Guide](getting-started/algorithm-guide.md) for details.
+
 ## 📦 Installation
 
 ```bash
@@ -92,11 +116,13 @@ This project is licensed under the MIT License.
 ## 📖 Citation
 
 ```bibtex
-@software{wsdp2026,
-  author = {Cui, Yuanhao and WSDP Team},
-  title = {WSDP: Wi-Fi Sensing Data Processing},
-  url = {https://github.com/sdp-team/wsdp},
-  version = {0.2.0},
-  year = {2026},
+@misc{zhang2026sdpunifiedprotocolbenchmarking,
+  title={SDP: A Unified Protocol and Benchmarking Framework for Reproducible Wireless Sensing}, 
+  author={Di Zhang and Jiawei Huang and Yuanhao Cui and Xiaowen Cao and Tony Xiao Han and Xiaojun Jing and Christos Masouros},
+  year={2026},
+  eprint={2601.08463},
+  archivePrefix={arXiv},
+  primaryClass={eess.SP},
+  url={https://arxiv.org/abs/2601.08463}
 }
 ```

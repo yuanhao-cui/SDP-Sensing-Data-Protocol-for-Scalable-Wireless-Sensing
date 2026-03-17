@@ -465,6 +465,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-processing-algorithm-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Signal Processing Algorithm Library
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -663,6 +674,34 @@
     
   
     Quick Start
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="getting-started/algorithm-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithm Guide
   
 
     
@@ -1385,6 +1424,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#signal-processing-algorithm-library" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        🧪 Signal Processing Algorithm Library
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1519,43 +1569,94 @@
 <li><strong>Inference API</strong>: Simple <code>predict()</code> interface for deployment</li>
 <li><strong>CLI interface</strong>: Full command-line support for batch operations</li>
 </ul>
+<h2 id="signal-processing-algorithm-library">🧪 Signal Processing Algorithm Library</h2>
+<p>WSDP provides a comprehensive, pluggable signal preprocessing library with <strong>16+ algorithms</strong>:</p>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Algorithms</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Denoising</strong></td>
+<td>Wavelet, Butterworth, Savitzky-Golay</td>
+<td>Remove noise while preserving features</td>
+</tr>
+<tr>
+<td><strong>Phase Calibration</strong></td>
+<td>Linear, Polynomial, STC, Robust</td>
+<td>Correct hardware phase errors</td>
+</tr>
+<tr>
+<td><strong>Amplitude</strong></td>
+<td>Z-Score, Min-Max, IQR Outlier Removal</td>
+<td>Normalize and clean amplitude</td>
+</tr>
+<tr>
+<td><strong>Interpolation</strong></td>
+<td>Linear, Cubic, Nearest</td>
+<td>Resample to canonical grids</td>
+</tr>
+<tr>
+<td><strong>Features</strong></td>
+<td>Doppler Spectrum, Entropy, CSI Ratio, Tensor</td>
+<td>Extract motion/activity features</td>
+</tr>
+<tr>
+<td><strong>Detection</strong></td>
+<td>Variance-based, Change Point</td>
+<td>Detect activity and transitions</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Unified API</strong>:
+<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">denoise</span><span class="p">,</span> <span class="n">calibrate</span><span class="p">,</span> <span class="n">normalize</span><span class="p">,</span> <span class="n">extract_features</span>
+<a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a>
+<a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;butterworth&#39;</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+<a id="__codelineno-0-4" name="__codelineno-0-4" href="#__codelineno-0-4"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">calibrate</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;stc&#39;</span><span class="p">)</span>
+<a id="__codelineno-0-5" name="__codelineno-0-5" href="#__codelineno-0-5"></a><span class="n">features</span> <span class="o">=</span> <span class="n">extract_features</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;doppler&#39;</span><span class="p">,</span> <span class="s1">&#39;entropy&#39;</span><span class="p">])</span>
+</code></pre></div></p>
+<p>See <a href="getting-started/algorithm-guide/">Algorithm Guide</a> for details.</p>
 <h2 id="installation">📦 Installation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a>pip<span class="w"> </span>install<span class="w"> </span>wsdp
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>pip<span class="w"> </span>install<span class="w"> </span>wsdp
 </code></pre></div>
 <p>Or install from source:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sdp-team/wsdp.git
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a><span class="nb">cd</span><span class="w"> </span>wsdp
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/sdp-team/wsdp.git
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a><span class="nb">cd</span><span class="w"> </span>wsdp
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
 </code></pre></div>
 <h2 id="quick-start">⚡ Quick Start</h2>
 <blockquote>
 <p>⚠️ <strong>Prerequisite</strong>: Create a free account at <a href="https://sdp8.org">SDP8.org</a> — required for dataset downloads.</p>
 </blockquote>
 <h3 id="python-api">Python API</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">download</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="c1"># Download dataset (SDP8.org account required)</span>
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a><span class="n">download</span><span class="p">(</span><span class="s1">&#39;widar&#39;</span><span class="p">,</span> <span class="s1">&#39;/data/widar&#39;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s1">&#39;you@example.com&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;yourpassword&#39;</span><span class="p">)</span>
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>
-<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a><span class="c1"># Run pipeline</span>
-<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="n">pipeline</span><span class="p">(</span>
-<a id="__codelineno-2-8" name="__codelineno-2-8" href="#__codelineno-2-8"></a>    <span class="n">input_path</span><span class="o">=</span><span class="s1">&#39;/data/widar&#39;</span><span class="p">,</span>
-<a id="__codelineno-2-9" name="__codelineno-2-9" href="#__codelineno-2-9"></a>    <span class="n">output_folder</span><span class="o">=</span><span class="s1">&#39;/output&#39;</span><span class="p">,</span>
-<a id="__codelineno-2-10" name="__codelineno-2-10" href="#__codelineno-2-10"></a>    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;widar&#39;</span><span class="p">,</span>
-<a id="__codelineno-2-11" name="__codelineno-2-11" href="#__codelineno-2-11"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span><span class="p">,</span> <span class="n">download</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="c1"># Download dataset (SDP8.org account required)</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="n">download</span><span class="p">(</span><span class="s1">&#39;widar&#39;</span><span class="p">,</span> <span class="s1">&#39;/data/widar&#39;</span><span class="p">,</span> <span class="n">email</span><span class="o">=</span><span class="s1">&#39;you@example.com&#39;</span><span class="p">,</span> <span class="n">password</span><span class="o">=</span><span class="s1">&#39;yourpassword&#39;</span><span class="p">)</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="c1"># Run pipeline</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="n">pipeline</span><span class="p">(</span>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>    <span class="n">input_path</span><span class="o">=</span><span class="s1">&#39;/data/widar&#39;</span><span class="p">,</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>    <span class="n">output_folder</span><span class="o">=</span><span class="s1">&#39;/output&#39;</span><span class="p">,</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;widar&#39;</span><span class="p">,</span>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="p">)</span>
 </code></pre></div>
 <h3 id="cli">CLI</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="c1"># Download with SDP8.org credentials</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data<span class="w"> </span>--email<span class="w"> </span>you@example.com<span class="w"> </span>--password<span class="w"> </span>yourpassword
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="c1"># Or with JWT token (from SDP8.org dashboard)</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data<span class="w"> </span>--token<span class="w"> </span>YOUR_JWT_TOKEN
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="c1"># Run training</span>
-<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a>wsdp<span class="w"> </span>run<span class="w"> </span>/data<span class="w"> </span>/output<span class="w"> </span>widar<span class="w"> </span>--lr<span class="w"> </span><span class="m">0</span>.001<span class="w"> </span>--epochs<span class="w"> </span><span class="m">50</span>
-<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a>
-<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a><span class="c1"># List datasets</span>
-<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a>wsdp<span class="w"> </span>list<span class="w"> </span>--verbose
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="c1"># Download with SDP8.org credentials</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data<span class="w"> </span>--email<span class="w"> </span>you@example.com<span class="w"> </span>--password<span class="w"> </span>yourpassword
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a>
+<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Or with JWT token (from SDP8.org dashboard)</span>
+<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data<span class="w"> </span>--token<span class="w"> </span>YOUR_JWT_TOKEN
+<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>
+<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="c1"># Run training</span>
+<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a>wsdp<span class="w"> </span>run<span class="w"> </span>/data<span class="w"> </span>/output<span class="w"> </span>widar<span class="w"> </span>--lr<span class="w"> </span><span class="m">0</span>.001<span class="w"> </span>--epochs<span class="w"> </span><span class="m">50</span>
+<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a>
+<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="c1"># List datasets</span>
+<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a>wsdp<span class="w"> </span>list<span class="w"> </span>--verbose
 </code></pre></div>
 <h2 id="documentation-sections">📚 Documentation Sections</h2>
 <ul>
@@ -1570,13 +1671,15 @@
 <h2 id="license">📄 License</h2>
 <p>This project is licensed under the MIT License.</p>
 <h2 id="citation">📖 Citation</h2>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="nc">@software</span><span class="p">{</span><span class="nl">wsdp2026</span><span class="p">,</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="w">  </span><span class="na">author</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{Cui, Yuanhao and WSDP Team}</span><span class="p">,</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="w">  </span><span class="na">title</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{WSDP: Wi-Fi Sensing Data Processing}</span><span class="p">,</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="w">  </span><span class="na">url</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{https://github.com/sdp-team/wsdp}</span><span class="p">,</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="w">  </span><span class="na">version</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{0.2.0}</span><span class="p">,</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="w">  </span><span class="na">year</span><span class="w"> </span><span class="p">=</span><span class="w"> </span><span class="s">{2026}</span><span class="p">,</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="p">}</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="nc">@misc</span><span class="p">{</span><span class="nl">zhang2026sdpunifiedprotocolbenchmarking</span><span class="p">,</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a><span class="w">  </span><span class="na">title</span><span class="p">=</span><span class="s">{SDP: A Unified Protocol and Benchmarking Framework for Reproducible Wireless Sensing}</span><span class="p">,</span><span class="w"> </span>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="w">  </span><span class="na">author</span><span class="p">=</span><span class="s">{Di Zhang and Jiawei Huang and Yuanhao Cui and Xiaowen Cao and Tony Xiao Han and Xiaojun Jing and Christos Masouros}</span><span class="p">,</span>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="w">  </span><span class="na">year</span><span class="p">=</span><span class="s">{2026}</span><span class="p">,</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a><span class="w">  </span><span class="na">eprint</span><span class="p">=</span><span class="s">{2601.08463}</span><span class="p">,</span>
+<a id="__codelineno-5-6" name="__codelineno-5-6" href="#__codelineno-5-6"></a><span class="w">  </span><span class="na">archivePrefix</span><span class="p">=</span><span class="s">{arXiv}</span><span class="p">,</span>
+<a id="__codelineno-5-7" name="__codelineno-5-7" href="#__codelineno-5-7"></a><span class="w">  </span><span class="na">primaryClass</span><span class="p">=</span><span class="s">{eess.SP}</span><span class="p">,</span>
+<a id="__codelineno-5-8" name="__codelineno-5-8" href="#__codelineno-5-8"></a><span class="w">  </span><span class="na">url</span><span class="p">=</span><span class="s">{https://arxiv.org/abs/2601.08463}</span>
+<a id="__codelineno-5-9" name="__codelineno-5-9" href="#__codelineno-5-9"></a><span class="p">}</span>
 </code></pre></div>
 
 

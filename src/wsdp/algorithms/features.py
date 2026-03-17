@@ -42,25 +42,39 @@ def doppler_spectrum(csi, n_fft=64, hop_length=32):
     if amplitude.ndim == 2:
         # (T, F)
         T, F = amplitude.shape
-        n_freq = n_fft // 2 + 1
-        # Compute STFT along time axis for each subcarrier
-        _, _, Zxx = stft(amplitude[:, 0], nperseg=n_fft, noverlap=n_fft - hop_length)
-        n_time = Zxx.shape[1]
+        # Compute first to get actual output shape
+        _, _, Zxx_first = stft(amplitude[:, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+        n_freq, n_time = Zxx_first.shape
         spectrum = np.zeros((n_freq, n_time, F))
-        for f in range(F):
-            _, _, Zxx = stft(amplitude[:, f], nperseg=n_fft, noverlap=n_fft - hop_length)
-            spectrum[:, :, f] = np.abs(Zxx)
+        spectrum[:, :, 0] = np.abs(Zxx_first)
+        for f in range(1, F):
+            _, _, Zxx = stft(amplitude[:, f], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+            if Zxx.shape == (n_freq, n_time):
+                spectrum[:, :, f] = np.abs(Zxx)
+            else:
+                # Pad or truncate to match expected shape
+                z = np.abs(Zxx)
+                if z.shape[0] < n_freq:
+                    z = np.pad(z, ((0, n_freq - z.shape[0]), (0, 0)))
+                if z.shape[1] < n_time:
+                    z = np.pad(z, ((0, 0), (0, n_time - z.shape[1])))
+                spectrum[:, :, f] = z[:n_freq, :n_time]
     elif amplitude.ndim == 3:
         # (T, F, A)
         T, F, A = amplitude.shape
-        n_freq = n_fft // 2 + 1
-        _, _, Zxx = stft(amplitude[:, 0, 0], nperseg=n_fft, noverlap=n_fft - hop_length)
-        n_time = Zxx.shape[1]
+        _, _, Zxx_first = stft(amplitude[:, 0, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+        n_freq, n_time = Zxx_first.shape
         spectrum = np.zeros((n_freq, n_time, F, A))
         for f in range(F):
             for a in range(A):
-                _, _, Zxx = stft(amplitude[:, f, a], nperseg=n_fft, noverlap=n_fft - hop_length)
-                spectrum[:, :, f, a] = np.abs(Zxx)
+                _, _, Zxx = stft(amplitude[:, f, a], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+                z = np.abs(Zxx)
+                # Ensure correct shape
+                if z.shape[0] < n_freq:
+                    z = np.pad(z, ((0, n_freq - z.shape[0]), (0, 0)))
+                if z.shape[1] < n_time:
+                    z = np.pad(z, ((0, 0), (0, n_time - z.shape[1])))
+                spectrum[:, :, f, a] = z[:n_freq, :n_time]
     else:
         raise ValueError(f"Expected 2D or 3D array, got shape {csi.shape}")
 
