@@ -3,8 +3,8 @@ site_description: Wi-Fi Sensing Data Processing Library
 site_author: WSDP Team
 site_url: https://sdp-team.github.io/wsdp
 
-repo_name: sdp-team/wsdp
-repo_url: https://github.com/sdp-team/wsdp
+repo_name: yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing
+repo_url: https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing
 
 nav:
   - Home: index.md

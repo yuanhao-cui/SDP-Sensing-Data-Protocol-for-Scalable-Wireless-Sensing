@@ -2,14 +2,16 @@
 
 <div align="center">
 
-[![SDP Website](https://img.shields.io/badge/SDP_Website-Click_here-356596)](https://sdp8.org/)
+[![SDP Website](https://img.shields.io/badge/🌐_Official_Platform-SDP8.org-356596)](https://sdp8.org/)
 [![PyPI](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/yuanhao-cui/Sensing-Data-Protocol/refs/heads/main/pyproject.toml&query=%24.project.name&logo=pypi&label=pip)](https://pypi.org/project/wsdp/)
 [![License](https://img.shields.io/github/license/yuanhao-cui/Sensing-Data-Protocol?color=green)](https://github.com/yuanhao-cui/Sensing-Data-Protocol/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-EE4C2C.svg)](https://pytorch.org)
 [![Tests](https://img.shields.io/badge/tests-pytest-blueviolet)](https://docs.pytest.org)
-[![Docs](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://sdp-team.github.io/wsdp)
+[![Docs](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
 [![Colab](https://img.shields.io/badge/Colab-Tutorial-yellow.svg)](https://colab.research.google.com/github/sdp-team/wsdp/blob/main/examples/wsdp_tutorial.ipynb)
+
+**Published and maintained by [SDP8.org](https://sdp8.org) — the official platform for reproducible wireless sensing.**
 
 </div>
 
@@ -115,20 +117,22 @@ wsdp --version
 
 **Option A: From CLI (Recommended for testing)**
 
+All datasets hosted on **[SDP8.org](https://sdp8.org)**:
+
 ```bash
 # elderAL = smallest dataset, fastest for testing
 wsdp download elderAL ./data
 
-# Or download larger datasets:
+# Or download larger datasets from SDP8.org:
 # wsdp download widar ./data
 # wsdp download gait ./data
 # wsdp download xrf55 ./data
 # wsdp download zte ./data
 ```
 
-**Option B: From [SDP Website](https://sdp8.org/)**
+**Option B: From [SDP8.org](https://sdp8.org) Web Interface**
 
-Download manually if you encounter network issues.
+Browse and download at [sdp8.org](https://sdp8.org).
 
 **Required Dataset Structure:**
 ```
@@ -435,20 +439,22 @@ wsdp --version
 
 **方式 A：命令行下载（测试推荐）**
 
+所有数据集由 **[SDP8.org](https://sdp8.org)** 官方托管：
+
 ```bash
 # elderAL = 最小数据集，测试最快
 wsdp download elderAL ./data
 
-# 或下载更大的数据集：
+# 或从 SDP8.org 下载更大的数据集：
 # wsdp download widar ./data
 # wsdp download gait ./data
 # wsdp download xrf55 ./data
 # wsdp download zte ./data
 ```
 
-**方式 B：从 [SDP 官网](https://sdp8.org/) 下载**
+**方式 B：从 [SDP8.org](https://sdp8.org) 网页下载**
 
-如遇到网络问题，可手动下载。
+访问 [sdp8.org](https://sdp8.org) 浏览和下载数据集。
 
 **必需的数据集结构：**
 ```

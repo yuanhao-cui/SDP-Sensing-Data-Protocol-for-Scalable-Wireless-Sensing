@@ -46,9 +46,10 @@ dev = [
 wsdp = "wsdp.cli:main_cli"
 
 [project.urls]
-Homepage = "https://github.com/sdp-team/wsdp"
-Documentation = "https://github.com/sdp-team/wsdp#readme"
-Repository = "https://github.com/sdp-team/wsdp"
+Homepage = "https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing"
+Documentation = "https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/"
+Repository = "https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing"
+Issues = "https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/issues"
 
 [tool.setuptools.packages.find]
 where = ["src"]

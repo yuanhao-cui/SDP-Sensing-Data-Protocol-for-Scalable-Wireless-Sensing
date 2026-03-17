@@ -2,11 +2,16 @@
 
 **Wi-Fi Sensing Data Processing**
 
+> 🌐 **Official Platform**: [SDP8.org](https://sdp8.org) | 📦 **PyPI**: [wsdp](https://pypi.org/project/wsdp/) | 💻 **GitHub**: [Source Code](https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing)
+
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-EE4C2C.svg)](https://pytorch.org)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](../LICENSE)
+[![SDP8](https://img.shields.io/badge/Platform-SDP8.org-356596)](https://sdp8.org)
 
 A Python library for downloading, processing, analyzing and training on Wi-Fi CSI (Channel State Information) data.
+
+**Published and maintained by [SDP8.org](https://sdp8.org)** - the official platform for reproducible wireless sensing research.
 
 ## 🚀 Features
 
@@ -65,15 +70,15 @@ wsdp list --verbose
 
 ## 📚 Documentation Sections
 
-- **Getting Started**: Installation and basic usage
-- **User Guide**: Detailed guides for CLI and Python API
-- **API Reference**: Complete API documentation
-- **Datasets**: Information about supported datasets
-- **Development**: Contributing guidelines and changelog
+- [Getting Started](getting-started/installation.md): Installation and basic usage
+- [User Guide](user-guide/cli.md): Detailed guides for CLI and Python API
+- [API Reference](api/core.md): Complete API documentation
+- [Datasets](datasets/overview.md): Information about supported datasets
+- [Development](development/contributing.md): Contributing guidelines and changelog
 
 ## 🤝 Contributing
 
-We welcome contributions! See our [Contributing Guide](../development/contributing.md) for details.
+We welcome contributions! See our [Contributing Guide](development/contributing.md) for details.
 
 ## 📄 License
 
