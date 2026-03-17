@@ -623,6 +623,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#create-sdp8org-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create SDP8.org Account
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#docker-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1518,6 +1529,17 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#create-sdp8org-account" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Create SDP8.org Account
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#docker-installation" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1646,29 +1668,38 @@
 <a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a><span class="c1"># Run tests</span>
 <a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>pytest<span class="w"> </span>tests/<span class="w"> </span>-v
 </code></pre></div>
+<h2 id="create-sdp8org-account">Create SDP8.org Account</h2>
+<p>Before downloading datasets, create a free account at <strong><a href="https://sdp8.org">SDP8.org</a></strong>.</p>
+<p>Your SDP8.org credentials are used for <code>wsdp download</code> authentication:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="c1"># Option 1: Email/password</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>wsdp<span class="w"> </span>download<span class="w"> </span>elderAL<span class="w"> </span>./data<span class="w"> </span>--email<span class="w"> </span>you@example.com<span class="w"> </span>--password<span class="w"> </span>yourpassword
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a>
+<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="c1"># Option 2: JWT token (from SDP8.org dashboard)</span>
+<a id="__codelineno-5-5" name="__codelineno-5-5" href="#__codelineno-5-5"></a>wsdp<span class="w"> </span>download<span class="w"> </span>elderAL<span class="w"> </span>./data<span class="w"> </span>--token<span class="w"> </span>YOUR_JWT_TOKEN
+</code></pre></div>
 <h2 id="docker-installation">Docker Installation</h2>
 <h3 id="build-docker-image">Build Docker Image</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>wsdp<span class="w"> </span>.
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a>docker<span class="w"> </span>build<span class="w"> </span>-t<span class="w"> </span>wsdp<span class="w"> </span>.
 </code></pre></div>
 <h3 id="run-with-docker">Run with Docker</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="c1"># Run pipeline</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/data:/data<span class="w"> </span>-v<span class="w"> </span>/output:/output<span class="w"> </span>wsdp<span class="w"> </span>run<span class="w"> </span>/data<span class="w"> </span>/output<span class="w"> </span>widar
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a><span class="c1"># Download dataset</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/data:/data<span class="w"> </span>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># Run pipeline</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/data:/data<span class="w"> </span>-v<span class="w"> </span>/output:/output<span class="w"> </span>wsdp<span class="w"> </span>run<span class="w"> </span>/data<span class="w"> </span>/output<span class="w"> </span>widar
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a>
+<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a><span class="c1"># Download dataset</span>
+<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>docker<span class="w"> </span>run<span class="w"> </span>-v<span class="w"> </span>/data:/data<span class="w"> </span>wsdp<span class="w"> </span>download<span class="w"> </span>widar<span class="w"> </span>/data
 </code></pre></div>
 <h2 id="troubleshooting">Troubleshooting</h2>
 <h3 id="import-error">Import Error</h3>
 <p>If you encounter <code>ModuleNotFoundError</code>, ensure you're in the correct environment:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="c1"># If using virtual environment</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a><span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="c1"># or</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">  </span><span class="c1"># Windows</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># If using virtual environment</span>
+<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a><span class="nb">source</span><span class="w"> </span>venv/bin/activate<span class="w">  </span><span class="c1"># Linux/Mac</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="c1"># or</span>
+<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>venv<span class="se">\S</span>cripts<span class="se">\a</span>ctivate<span class="w">  </span><span class="c1"># Windows</span>
 </code></pre></div>
 <h3 id="cuda-issues">CUDA Issues</h3>
 <p>For GPU support, ensure you have the correct PyTorch version:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="c1"># Check CUDA availability</span>
-<a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import torch; print(torch.cuda.is_available())&quot;</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="c1"># Check CUDA availability</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>python<span class="w"> </span>-c<span class="w"> </span><span class="s2">&quot;import torch; print(torch.cuda.is_available())&quot;</span>
 </code></pre></div>
 <p>If CUDA is not available, WSDP will fall back to CPU mode automatically.</p>
 
