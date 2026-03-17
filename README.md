@@ -1,259 +1,393 @@
-# WSDP - Wi-Fi Sensing Data Processing
+# SDP: Sensing Data Protocol for Scalable Wireless Sensing
 
 <div align="center">
 
+[![SDP Website](https://img.shields.io/badge/SDP_Website-Click_here-356596)](https://sdp8.org/)
+[![PyPI](https://img.shields.io/badge/dynamic/toml?url=https://raw.githubusercontent.com/yuanhao-cui/Sensing-Data-Protocol/refs/heads/main/pyproject.toml&query=%24.project.name&logo=pypi&label=pip)](https://pypi.org/project/wsdp/)
+[![License](https://img.shields.io/github/license/yuanhao-cui/Sensing-Data-Protocol?color=green)](https://github.com/yuanhao-cui/Sensing-Data-Protocol/blob/main/LICENSE)
 [![Python](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://python.org)
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-EE4C2C.svg)](https://pytorch.org)
-[![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 [![Tests](https://img.shields.io/badge/tests-pytest-blueviolet)](https://docs.pytest.org)
-[![PyPI](https://img.shields.io/badge/PyPI-Coming%20Soon-orange.svg)](https://pypi.org)
 [![Docs](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://sdp-team.github.io/wsdp)
 [![Colab](https://img.shields.io/badge/Colab-Tutorial-yellow.svg)](https://colab.research.google.com/github/sdp-team/wsdp/blob/main/examples/wsdp_tutorial.ipynb)
 
-**A Python library for downloading, processing, analyzing and training on Wi-Fi CSI (Channel State Information) data.**
-
-[English](#english) | [中文](#中文)
+**[English](#english) | [中文](#中文)**
 
 </div>
 
 ---
 
-<a id="english"></a>
-
-## 🚀 Features
-
-- **Multi-dataset support**: Widar, Gait, XRF55, ElderAL, ZTE datasets
-- **Intelligent preprocessing**: Wavelet denoising, phase calibration, signal resizing
-- **Deep learning pipeline**: End-to-end training with CNN + Transformer architecture
-- **Authentication**: JWT Token, email/password, or non-interactive mode
-- **Visualization**: Heatmaps, denoising comparison, phase calibration plots
-- **Inference API**: Simple `predict()` interface for deployment
-- **CLI interface**: Full command-line support for batch operations
-
-## 🤔 Why WSDP?
-
-| Feature | WSDP | Raw CSI | Other Tools |
-|---------|------|---------|-------------|
-| **Standardized Format** | ✅ Unified CSIFrame | ❌ Hardware-specific | ⚠️ Partial |
-| **Multi-Dataset** | ✅ 5 datasets built-in | ❌ Manual parsing | ⚠️ 2-3 datasets |
-| **Preprocessing** | ✅ Wavelet + Phase Calib | ❌ DIY | ⚠️ Basic only |
-| **Deep Learning** | ✅ CNN+Transformer | ❌ From scratch | ⚠️ Limited |
-| **Reproducibility** | ✅ Deterministic seeds | ❌ Random | ⚠️ Varies |
-| **CLI Interface** | ✅ Full CLI support | ❌ None | ⚠️ Partial |
-
-**WSDP** bridges the gap between raw CSI data and machine learning, providing a complete pipeline from data download to model deployment. No more writing boilerplate code for each new dataset!
-
-## 📦 Installation
-
-```bash
-# From source
-pip install -e .
-
-# With development dependencies
-pip install -e ".[dev]"
-```
-
-## ⚡ Quick Start
-
-### Python API
-
-```python
-from wsdp import pipeline, download, predict
-
-# Download a dataset (with JWT token)
-download('widar', '/data/widar', token='your-jwt-token')
-
-# Run the full pipeline
-pipeline(
-    input_path='/data/widar',
-    output_folder='/output',
-    dataset='widar',
-    learning_rate=1e-3,  # optional override
-)
-
-# Inference
-import numpy as np
-csi = np.random.randn(5, 200, 30, 3) + 1j * np.random.randn(5, 200, 30, 3)
-predictions = predict(csi, 'best_checkpoint.pth', num_classes=6)
-```
-
-### Algorithms
-
-```python
-from wsdp.algorithms import wavelet_denoise_csi, phase_calibration
-from wsdp.algorithms.visualization import plot_csi_heatmap
-
-# Phase calibration
-calibrated = phase_calibration(csi_data)
-
-# Wavelet denoising
-denoised = wavelet_denoise_csi(csi_data)
-
-# Visualization
-plot_csi_heatmap(csi_data, antenna_idx=0, save_path='heatmap.png')
-```
-
-### CLI
-
-```bash
-# Download with JWT token (non-interactive)
-wsdp download widar /data --token YOUR_JWT_TOKEN
-
-# Download with email/password
-wsdp download elderAL /data --email user@example.com --password secret
-
-# Run pipeline with default hyperparameters
-wsdp run /data /output widar
-
-# Run pipeline with custom hyperparameters
-wsdp run /data /output widar --lr 0.001 --epochs 50 --batch-size 64
-
-# Run with config file
-wsdp run /data /output widar --config config.yaml
-
-# List available datasets
-wsdp list
-wsdp list --verbose  # with metadata
-
-# Version
-wsdp --version
-```
-
-## 📊 Supported Datasets
-
-| Dataset | Format | Subcarriers | Complex | Description |
-|---------|--------|-------------|---------|-------------|
-| Widar | .dat (bfee) | 30 | ✅ | Gesture recognition with Intel IWL5300 |
-| Gait | .dat (bfee) | 30 | ✅ | Gait recognition |
-| XRF55 | .npy | 30 | ✅ | Human activity recognition |
-| ElderAL | .csv | varies | ❌ | Elderly activity & location |
-| ZTE | .csv | 512 | ✅ | CSI with I/Q components |
-
-## 🔧 Architecture
-
-```
-wsdp/
-├── algorithms/          # Signal processing algorithms
-│   ├── denoising.py     # Wavelet-based denoising
-│   ├── phase_calibration.py  # Phase error correction
-│   └── visualization.py # Plotting utilities
-├── readers/             # Dataset-specific file readers
-├── processors/          # Data preprocessing pipeline
-├── models/              # Neural network models
-├── datasets/            # PyTorch Dataset wrappers
-├── structure/           # CSIData, CSIFrame data structures
-├── inference.py         # Prediction interface
-├── core.py              # Training pipeline
-├── download.py          # Dataset downloading
-└── cli.py               # Command-line interface
-```
-
-## 🧪 Development
-
-```bash
-# Run tests
-pytest tests/ -v
-
-# Run with coverage
-pytest tests/ --cov=wsdp --cov-report=html
-```
-
-## 📄 License
-
-MIT License
-
----
-
-<a id="中文"></a>
-
-# WSDP - Wi-Fi 感知数据处理库
-
-**用于下载、处理、分析和训练 Wi-Fi CSI（信道状态信息）数据的 Python 库。**
-
-## ✨ 功能特性
-
-- **多数据集支持**：Widar、Gait、XRF55、ElderAL、ZTE
-- **智能预处理**：小波去噪、相位校准、信号重采样
-- **深度学习流程**：端到端 CNN + Transformer 训练
-- **认证方式**：JWT Token、邮箱密码、非交互模式
-- **可视化工具**：热力图、去噪对比、相位校准图
-- **推理接口**：简洁的 `predict()` API
-- **命令行工具**：支持批量操作
-
-## ⚡ 快速上手
-
-```python
-from wsdp import pipeline, download
-
-# 下载数据集（JWT 认证）
-download('widar', '/data/widar', token='your-jwt-token')
-
-# 运行完整流程
-pipeline(
-    input_path='/data/widar',
-    output_folder='/output',
-    dataset='widar',
-)
-```
-
-```bash
-# CLI 使用
-wsdp download widar /data --token YOUR_JWT_TOKEN
-wsdp run /data /output widar
-wsdp list --verbose
-```
-
-## 📝 超参数配置
-
-支持通过函数参数或 YAML 文件覆盖默认超参数：
-
-```python
-pipeline(
-    input_path='/data',
-    output_folder='/output',
-    dataset='widar',
-    learning_rate=1e-3,
-    num_epochs=50,
-    batch_size=64,
-    config_file='config.yaml',  # 可选
-)
-```
-
-```yaml
-# config.yaml
-widar:
-  batch: 64
-  lr: 0.001
-  num_epochs: 50
-```
-
-## 📚 Documentation
-
-- [API Reference](docs/API_REFERENCE.md) - Complete API documentation
-- [Contributing Guide](CONTRIBUTING.md) - How to contribute
-- [Changelog](CHANGELOG.md) - Version history
-
 ## 📖 Citation
 
-If you use WSDP in your research, please cite:
+If you use SDP in your research, please cite:
 
 ```bibtex
 @software{wsdp2026,
   author = {Cui, Yuanhao and WSDP Team},
-  title = {WSDP: Wi-Fi Sensing Data Processing},
-  url = {https://github.com/sdp-team/wsdp},
+  title = {SDP: Sensing Data Protocol for Scalable Wireless Sensing},
+  url = {https://github.com/yuanhao-cui/Sensing-Data-Protocol-for-Scalable-Wireless-Sensing},
   version = {0.2.0},
   year = {2026},
 }
 ```
 
+---
+
+<a id="english"></a>
+# 🇬🇧 English
+
+## 🎯 What is SDP?
+
+SDP is a **protocol-level abstraction** and unified benchmark for **reproducible wireless sensing**.
+
+> ⚠️ **SDP is not a new neural network**, but a standardized protocol that unifies CSI representations for fair comparison.
+
+### Key Principles
+
+Instead of improving accuracy through hidden preprocessing tricks, SDP ensures that:
+
+- ✅ Every dataset follows the same sanitization rules
+- ✅ Every model receives the same canonical tensor  
+- ✅ Every experiment is reproducible
+
+SDP acts as a **protocol-level middleware** between raw CSI and learning models.
+
+### Performance Highlights
+
+<div align="center">
+
+| Metric | Result |
+|:------:|:------:|
+| **Accuracy** | State-of-the-art on 5 datasets |
+| **Reproducibility** | 5-seed evaluation standard |
+| **Stability** | Low variance across runs |
+
+![Accuracy](./img/accuracy.png)
+*Figure 1: Accuracy comparison across datasets*
+
+![Reproducibility](./img/reproducibility_and_stability.png)
+*Figure 2: Reproducibility and stability analysis*
+
+![Ablation](./img/ablation_rank.png)
+*Figure 3: Ablation study results*
+
+</div>
+
+---
+
+## 🚀 Quick Start (3 Steps)
+
+### Step 1: Install
+
+```bash
+pip install wsdp
+```
+
+### Step 2: Download Dataset
+
+Download from [SDP Website](https://sdp8.org/) or use CLI:
+
+```bash
+# Recommended: elderAL (smallest, fastest for testing)
+wsdp download elderAL ./data
+
+# Or other datasets: widar, gait, xrf55, zte
+wsdp download widar ./data
+```
+
+**Dataset Organization:**
+```
+data/
+├── elderAL/
+│   ├── action0_static_new/
+│   │   ├── user0_position1_activity0/
+│   │   └── ...
+│   └── action1_walk_new/
+├── widar/
+├── gait/
+├── xrf55/
+└── zte/
+```
+
+### Step 3: Train & Evaluate
+
+**Python API:**
+```python
+from wsdp import pipeline
+
+pipeline("./data/elderAL", "./output", "elderAL")
+```
+
+**CLI:**
+```bash
+wsdp run ./data/elderAL ./output elderAL
+```
+
+**With Custom Hyperparameters:**
+```bash
+wsdp run ./data/elderAL ./output elderAL --lr 0.001 --epochs 50 --batch-size 64
+```
+
+**Output Files:**
+- `best_model.pth` - Trained model checkpoint
+- `confusion_matrix.png` - Evaluation visualization
+- `output.log` - Training logs
+
+---
+
+## 🔬 Research & Modification
+
+### Plug in Your Own Model
+
+Create `custom_model.py`:
+```python
+import torch
+import torch.nn as nn
+
+class YourCustomModel(nn.Module):
+    def __init__(self, num_classes=6):
+        super().__init__()
+        # Your architecture here
+        
+    def forward(self, x):
+        # x shape: (Batch, Timestamp, Frequency, Antenna)
+        # Your forward pass
+        return output
+
+# Required: expose model class
+model = YourCustomModel
+```
+
+Run with custom model:
+```bash
+wsdp run ./data/elderAL ./output elderAL -m custom_model.py
+```
+
+### Use Your Own Dataset
+
+Organize your data:
+```
+data/
+└── my_dataset/
+    ├── user0_pos0_action0/
+    │   ├── sample1.csv
+    │   └── ...
+    └── user0_pos0_action1/
+        └── ...
+```
+
+Then run:
+```bash
+wsdp run ./data/my_dataset ./output my_dataset
+```
+
+---
+
+## 📚 Documentation
+
+- [Full Documentation](https://sdp-team.github.io/wsdp)
+- [API Reference](docs/API_REFERENCE.md)
+- [Contributing Guide](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
+
+---
+
+## 🤝 Contributing
+
+We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+
+---
+
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT License - see [LICENSE](LICENSE) file.
 
-## 🙏 Acknowledgments
+---
 
-- Thanks to all contributors who have helped shape WSDP
-- Inspired by the wireless sensing research community
-- Built with PyTorch, NumPy, and other open-source tools
+<a id="中文"></a>
+# 🇨🇳 中文
 
+## 🎯 SDP 是什么？
+
+SDP 是一个**协议级抽象**框架，用于**可复现的无线感知研究**。
+
+> ⚠️ **SDP 不是一个新的神经网络**，而是一个标准化协议，统一 CSI 表示以实现公平比较。
+
+### 核心原则
+
+SDP 不通过隐藏预处理技巧来提高准确率，而是确保：
+
+- ✅ 每个数据集遵循相同的清洗规则
+- ✅ 每个模型接收相同的规范张量
+- ✅ 每个实验都是可复现的
+
+SDP 作为原始 CSI 和学习模型之间的**协议级中间件**。
+
+### 性能亮点
+
+<div align="center">
+
+| 指标 | 结果 |
+|:----:|:----:|
+| **准确率** | 5 个数据集上达到 SOTA |
+| **可复现性** | 5 种子评估标准 |
+| **稳定性** | 多次运行方差低 |
+
+![准确率](./img/accuracy.png)
+*图 1：跨数据集准确率对比*
+
+![可复现性](./img/reproducibility_and_stability.png)
+*图 2：可复现性与稳定性分析*
+
+![消融实验](./img/ablation_rank.png)
+*图 3：消融实验结果*
+
+</div>
+
+---
+
+## 🚀 快速开始（3 步）
+
+### 第 1 步：安装
+
+```bash
+pip install wsdp
+```
+
+### 第 2 步：下载数据集
+
+从 [SDP 官网](https://sdp8.org/) 下载或使用 CLI：
+
+```bash
+# 推荐：elderAL（最小，测试最快）
+wsdp download elderAL ./data
+
+# 或其他数据集：widar、gait、xrf55、zte
+wsdp download widar ./data
+```
+
+**数据集组织：**
+```
+data/
+├── elderAL/
+│   ├── action0_static_new/
+│   │   ├── user0_position1_activity0/
+│   │   └── ...
+│   └── action1_walk_new/
+├── widar/
+├── gait/
+├── xrf55/
+└── zte/
+```
+
+### 第 3 步：训练与评估
+
+**Python API：**
+```python
+from wsdp import pipeline
+
+pipeline("./data/elderAL", "./output", "elderAL")
+```
+
+**命令行：**
+```bash
+wsdp run ./data/elderAL ./output elderAL
+```
+
+**自定义超参数：**
+```bash
+wsdp run ./data/elderAL ./output elderAL --lr 0.001 --epochs 50 --batch-size 64
+```
+
+**输出文件：**
+- `best_model.pth` - 训练好的模型检查点
+- `confusion_matrix.png` - 评估可视化
+- `output.log` - 训练日志
+
+---
+
+## 🔬 研究与修改
+
+### 接入你自己的模型
+
+创建 `custom_model.py`：
+```python
+import torch
+import torch.nn as nn
+
+class YourCustomModel(nn.Module):
+    def __init__(self, num_classes=6):
+        super().__init__()
+        # 你的架构代码
+        
+    def forward(self, x):
+        # x 形状: (Batch, Timestamp, Frequency, Antenna)
+        # 你的前向传播
+        return output
+
+# 必需：暴露模型类
+model = YourCustomModel
+```
+
+使用自定义模型运行：
+```bash
+wsdp run ./data/elderAL ./output elderAL -m custom_model.py
+```
+
+### 使用你自己的数据集
+
+组织你的数据：
+```
+data/
+└── my_dataset/
+    ├── user0_pos0_action0/
+    │   ├── sample1.csv
+    │   └── ...
+    └── user0_pos0_action1/
+        └── ...
+```
+
+然后运行：
+```bash
+wsdp run ./data/my_dataset ./output my_dataset
+```
+
+---
+
+## 📚 文档
+
+- [完整文档](https://sdp-team.github.io/wsdp)
+- [API 参考](docs/API_REFERENCE.md)
+- [贡献指南](CONTRIBUTING.md)
+- [更新日志](CHANGELOG.md)
+
+---
+
+## 🤝 贡献
+
+欢迎贡献！请查看 [CONTRIBUTING.md](CONTRIBUTING.md) 了解指南。
+
+---
+
+## 📄 许可证
+
+MIT 许可证 - 详见 [LICENSE](LICENSE) 文件。
+
+---
+
+## 🗺️ Roadmap
+
+- [x] 5 个数据集支持 (Widar, Gait, XRF55, ElderAL, ZTE)
+- [x] 标准化预处理流程
+- [x] CLI 工具
+- [ ] 更多数据集（持续添加中）
+- [ ] 在线演示平台
+- [ ] PyPI 发布
+
+---
+
+<div align="center">
+
+**Made with ❤️ by the WSDP Team**
+
+</div>
