@@ -47,6 +47,46 @@ features = extract_features(csi, features=['doppler', 'entropy'])
 
 See [Algorithm Guide](getting-started/algorithm-guide.md) for details.
 
+## 🧠 Model Zoo (12 Models)
+
+WSDP provides a complete pluggable model library from baselines to SOTA:
+
+| Category | Model | Description |
+|:--------:|:-----:|:------------|
+| **Baseline** | MLPModel | Fully-connected baseline |
+| | CNN1DModel | 1D convolution (temporal) |
+| | CNN2DModel | 2D convolution (spectral) |
+| | LSTMModel | LSTM temporal modeling |
+| **Mainstream** | ResNet1D | 1D residual network |
+| | ResNet2D | 2D residual network |
+| | BiLSTMAttention | BiLSTM + attention |
+| | EfficientNetCSI | Efficient CNN |
+| **SOTA** | VisionTransformerCSI | ViT for CSI |
+| | MambaCSI | State space model |
+| | GraphNeuralCSI | GNN on antenna topology |
+| | CSIModel | CNN + Transformer |
+
+```python
+from wsdp.models import create_model, list_models
+
+# Create any model with a single call
+model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
+
+# List all available models
+print(list_models())
+```
+
+### Comparison with Other Libraries
+
+| Feature | SenseFi (2023) | CSIKit | **WSDP** |
+|:-------:|:--------------:|:------:|:--------:|
+| **Models** | 11 | ❌ | **12** |
+| **Preprocessing** | ❌ | Basic | **16+ algorithms** |
+| **Pluggable** | ❌ | ❌ | ✅ **Registry** |
+| **Protocol Abstraction** | ❌ | ❌ | ✅ **Unique** |
+
+See [Model Guide](models.md) for selection recommendations.
+
 ## 📦 Installation
 
 ```bash

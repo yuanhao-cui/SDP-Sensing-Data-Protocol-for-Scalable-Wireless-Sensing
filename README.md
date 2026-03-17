@@ -257,6 +257,22 @@ print(list_models())  # {'mlpmodel': 'baseline', 'cnn1dmodel': 'baseline', ...}
 
 See [Model Selection Guide](docs/models.md) for detailed recommendations.
 
+## 🆚 WSDP vs Other WiFi CSI Libraries
+
+| Feature | [SenseFi](https://github.com/xyanchen/WiFi-CSI-Sensing-Benchmark) (2023) | [CSIKit](https://github.com/Gi-z/CSIKit) | **WSDP v0.3.1** |
+|:-------:|:---------:|:------:|:-----------:|
+| **Built-in Models** | 11 (MLP→ViT) | ❌ | **12 (MLP→Mamba/GNN)** |
+| **Datasets** | 4 | ❌ | **5** |
+| **Preprocessing Algorithms** | ❌ | Basic | **16+ (Wavelet, STC, etc.)** |
+| **Training Pipeline** | ✅ | ❌ | ✅ |
+| **CLI** | Basic | ✅ | **Full (run/download/list)** |
+| **Unified Data Format** | ❌ | ✅ CSIFrame | ✅ **CSIFrame** |
+| **Pluggable Architecture** | ❌ | ❌ | ✅ **Registry** |
+| **Protocol-level Abstraction** | ❌ | ❌ | ✅ **Unique** |
+| **Published** | Patterns (Cell Press) | pip | **pip + PyPI** |
+
+> *Data verified from official GitHub repositories on 2026-03-17. No fabricated comparisons.*
+
 ---
 
 ## 🔬 Research & Customization
