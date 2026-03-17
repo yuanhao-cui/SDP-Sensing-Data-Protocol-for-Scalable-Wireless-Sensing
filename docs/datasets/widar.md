@@ -19,7 +19,7 @@
 ## Usage
 
 ```bash
-wsdp download widar ./data
+wsdp download widar ./data --email you@example.com --password yourpassword
 wsdp run ./data/widar ./output widar
 ```
 

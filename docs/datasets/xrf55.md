@@ -19,7 +19,7 @@
 ## Usage
 
 ```bash
-wsdp download xrf55 ./data
+wsdp download xrf55 ./data --email you@example.com --password yourpassword
 wsdp run ./data/xrf55 ./output xrf55
 ```
 

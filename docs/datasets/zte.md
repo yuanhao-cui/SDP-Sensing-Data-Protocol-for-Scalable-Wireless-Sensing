@@ -17,7 +17,7 @@
 ## Usage
 
 ```bash
-wsdp download zte ./data
+wsdp download zte ./data --email you@example.com --password yourpassword
 wsdp run ./data/zte ./output zte
 ```
 

@@ -47,6 +47,20 @@ wsdp --version
 pytest tests/ -v
 ```
 
+## Create SDP8.org Account
+
+Before downloading datasets, create a free account at **[SDP8.org](https://sdp8.org)**.
+
+Your SDP8.org credentials are used for `wsdp download` authentication:
+
+```bash
+# Option 1: Email/password
+wsdp download elderAL ./data --email you@example.com --password yourpassword
+
+# Option 2: JWT token (from SDP8.org dashboard)
+wsdp download elderAL ./data --token YOUR_JWT_TOKEN
+```
+
 ## Docker Installation
 
 ### Build Docker Image

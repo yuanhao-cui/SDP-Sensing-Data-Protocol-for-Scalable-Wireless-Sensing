@@ -19,7 +19,7 @@
 ## Usage
 
 ```bash
-wsdp download gait ./data
+wsdp download gait ./data --email you@example.com --password yourpassword
 wsdp run ./data/gait ./output gait
 ```
 

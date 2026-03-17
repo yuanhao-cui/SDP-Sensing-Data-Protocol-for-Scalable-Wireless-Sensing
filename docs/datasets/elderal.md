@@ -20,7 +20,7 @@
 
 ```bash
 # Recommended for quick start (smallest dataset)
-wsdp download elderAL ./data
+wsdp download elderAL ./data --email you@example.com --password yourpassword
 wsdp run ./data/elderAL ./output elderAL
 ```
 

@@ -39,13 +39,15 @@ pip install -e .
 
 ## ⚡ Quick Start
 
+> ⚠️ **Prerequisite**: Create a free account at [SDP8.org](https://sdp8.org) — required for dataset downloads.
+
 ### Python API
 
 ```python
 from wsdp import pipeline, download
 
-# Download dataset
-download('widar', '/data/widar', token='your-jwt-token')
+# Download dataset (SDP8.org account required)
+download('widar', '/data/widar', email='you@example.com', password='yourpassword')
 
 # Run pipeline
 pipeline(
@@ -58,7 +60,10 @@ pipeline(
 ### CLI
 
 ```bash
-# Download
+# Download with SDP8.org credentials
+wsdp download widar /data --email you@example.com --password yourpassword
+
+# Or with JWT token (from SDP8.org dashboard)
 wsdp download widar /data --token YOUR_JWT_TOKEN
 
 # Run training

@@ -115,24 +115,30 @@ wsdp --version
 
 ### Step 2: Download Dataset (2 minutes)
 
+> 🔑 **Required**: Create a free account at **[SDP8.org](https://sdp8.org)** — your account credentials are needed for dataset downloads.
+
 **Option A: From CLI (Recommended for testing)**
 
 All datasets hosted on **[SDP8.org](https://sdp8.org)**:
 
 ```bash
 # elderAL = smallest dataset, fastest for testing
-wsdp download elderAL ./data
+# Use your SDP8.org email/password:
+wsdp download elderAL ./data --email you@example.com --password yourpassword
 
-# Or download larger datasets from SDP8.org:
-# wsdp download widar ./data
-# wsdp download gait ./data
-# wsdp download xrf55 ./data
-# wsdp download zte ./data
+# Or use a JWT token (from SDP8.org dashboard):
+wsdp download elderAL ./data --token YOUR_JWT_TOKEN
+
+# Download larger datasets:
+# wsdp download widar ./data --email you@example.com --password yourpassword
+# wsdp download gait ./data --email you@example.com --password yourpassword
+# wsdp download xrf55 ./data --email you@example.com --password yourpassword
+# wsdp download zte ./data --email you@example.com --password yourpassword
 ```
 
 **Option B: From [SDP8.org](https://sdp8.org) Web Interface**
 
-Browse and download at [sdp8.org](https://sdp8.org).
+Log in at [sdp8.org](https://sdp8.org) and download datasets manually.
 
 **Required Dataset Structure:**
 ```
@@ -437,24 +443,30 @@ wsdp --version
 
 ### 第 2 步：下载数据集（2 分钟）
 
+> 🔑 **前提条件**：在 **[SDP8.org](https://sdp8.org)** 注册免费账号 — 下载数据集需要使用账号凭证。
+
 **方式 A：命令行下载（测试推荐）**
 
 所有数据集由 **[SDP8.org](https://sdp8.org)** 官方托管：
 
 ```bash
 # elderAL = 最小数据集，测试最快
-wsdp download elderAL ./data
+# 使用 SDP8.org 的邮箱/密码：
+wsdp download elderAL ./data --email you@example.com --password yourpassword
 
-# 或从 SDP8.org 下载更大的数据集：
-# wsdp download widar ./data
-# wsdp download gait ./data
-# wsdp download xrf55 ./data
-# wsdp download zte ./data
+# 或使用 JWT Token（从 SDP8.org 控制台获取）：
+wsdp download elderAL ./data --token YOUR_JWT_TOKEN
+
+# 下载其他数据集：
+# wsdp download widar ./data --email you@example.com --password yourpassword
+# wsdp download gait ./data --email you@example.com --password yourpassword
+# wsdp download xrf55 ./data --email you@example.com --password yourpassword
+# wsdp download zte ./data --email you@example.com --password yourpassword
 ```
 
 **方式 B：从 [SDP8.org](https://sdp8.org) 网页下载**
 
-访问 [sdp8.org](https://sdp8.org) 浏览和下载数据集。
+登录 [sdp8.org](https://sdp8.org) 后手动下载数据集。
 
 **必需的数据集结构：**
 ```

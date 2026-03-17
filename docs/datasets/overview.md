@@ -14,13 +14,18 @@ WSDP supports 5 built-in datasets for wireless sensing research, all hosted and 
 
 ## Download
 
+> 🔑 **Authentication**: All datasets require a free **[SDP8.org](https://sdp8.org)** account.
+
 ```bash
-# From CLI
-wsdp download elderAL ./data
+# With email/password
+wsdp download elderAL ./data --email you@example.com --password yourpassword
+
+# With JWT token
+wsdp download elderAL ./data --token YOUR_JWT_TOKEN
 
 # From Python
 from wsdp import download
-download('widar', './data', token='your-jwt-token')
+download('widar', './data', email='you@example.com', password='yourpassword')
 ```
 
 ## Dataset Structure
