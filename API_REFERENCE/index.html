@@ -520,6 +520,34 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../getting-started/algorithm-guide/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Algorithm Guide
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -1304,34 +1332,6 @@
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="Readers">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#base-reader" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Base Reader
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#available-readers" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Available Readers
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
 </li>
       
         <li class="md-nav__item">
@@ -1347,13 +1347,52 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#wavelet-denoising" class="md-nav__link">
+  <a href="#denoising" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Wavelet Denoising
+        Denoising
       
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Denoising">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#wavelet_denoise_csi" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        wavelet_denoise_csi()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#butterworth_denoise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        butterworth_denoise()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#savgol_denoise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        savgol_denoise()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -1366,6 +1405,223 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Phase Calibration">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#phase_calibration-linear" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        phase_calibration() (Linear)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#polynomial_calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        polynomial_calibration()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#stc_calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        stc_calibration()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#robust_phase_sanitization" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        robust_phase_sanitization()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#amplitude-processing" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Amplitude Processing
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Amplitude Processing">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#normalize_amplitude" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        normalize_amplitude()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#remove_outliers" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        remove_outliers()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpolation" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interpolation
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Interpolation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#interpolate_grid" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interpolate_grid()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#feature-extraction" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Feature Extraction
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Feature Extraction">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#doppler_spectrum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        doppler_spectrum()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#entropy_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        entropy_features()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#csi_ratio" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        csi_ratio()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tensor_decomposition" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        tensor_decomposition()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#activity-detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Activity Detection
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Activity Detection">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#detect_activity" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        detect_activity()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#change_point_detection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        change_point_detection()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
           <li class="md-nav__item">
@@ -1373,6 +1629,372 @@
     <span class="md-ellipsis">
       
         Visualization
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Visualization">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#plot_csi_heatmap" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_csi_heatmap()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot_denoising_comparison" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_denoising_comparison()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#plot_phase_calibration" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        plot_phase_calibration()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#unified-api" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unified API
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Unified API">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#denoise" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        denoise()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#calibrate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        calibrate()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#normalize" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        normalize()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#interpolate" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        interpolate()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#extract_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        extract_features()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#pluggable-architecture" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pluggable Architecture
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pluggable Architecture">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#algorithm-registry" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Algorithm Registry
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Algorithm Registry">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#register_algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_algorithm()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#get_algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        get_algorithm()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_algorithms()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#is_registered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        is_registered()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#algorithm_info" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        algorithm_info()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unregister_algorithm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        unregister_algorithm()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Configuration Files
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Configuration Files">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#yaml-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        YAML Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#json-format" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        JSON Format
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#preset-reference" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Preset Reference
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#load_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        load_config()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#save_config" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        save_config()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#pipeline-presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Pipeline Presets
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Pipeline Presets">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#built-in-presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Built-in Presets
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#apply_preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        apply_preset()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#execute_pipeline" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        execute_pipeline()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#register_preset" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        register_preset()
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#list_presets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        list_presets()
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#custom-algorithms" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Custom Algorithms
       
     </span>
   </a>
@@ -1453,18 +2075,6 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#commands" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Commands
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Commands">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
   <a href="#wsdp-run" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -1501,45 +2111,12 @@
     </nav>
   
 </li>
-        
-      </ul>
-    </nav>
-  
-</li>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
+  <a href="#algorithm-library-overview" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#yaml-config-file" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        YAML Config File
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#type-hints" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Type Hints
+        Algorithm Library Overview
       
     </span>
   </a>
@@ -1574,6 +2151,19 @@
 <li><a href="#data-structures">Data Structures</a></li>
 <li><a href="#readers">Readers</a></li>
 <li><a href="#algorithms">Algorithms</a></li>
+<li><a href="#denoising">Denoising</a></li>
+<li><a href="#phase-calibration">Phase Calibration</a></li>
+<li><a href="#amplitude-processing">Amplitude Processing</a></li>
+<li><a href="#interpolation">Interpolation</a></li>
+<li><a href="#feature-extraction">Feature Extraction</a></li>
+<li><a href="#activity-detection">Activity Detection</a></li>
+<li><a href="#visualization">Visualization</a></li>
+<li><a href="#unified-api">Unified API</a></li>
+<li><a href="#pluggable-architecture">Pluggable Architecture</a></li>
+<li><a href="#algorithm-registry">Algorithm Registry</a></li>
+<li><a href="#configuration-files">Configuration Files</a></li>
+<li><a href="#pipeline-presets">Pipeline Presets</a></li>
+<li><a href="#custom-algorithms">Custom Algorithms</a></li>
 <li><a href="#models">Models</a></li>
 <li><a href="#inference">Inference</a></li>
 <li><a href="#cli">CLI</a></li>
@@ -1656,54 +2246,26 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Example:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">pipeline</span>
-<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
-<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">pipeline</span><span class="p">(</span>
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>    <span class="n">input_path</span><span class="o">=</span><span class="s1">&#39;/data/widar&#39;</span><span class="p">,</span>
-<a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>    <span class="n">output_folder</span><span class="o">=</span><span class="s1">&#39;/output&#39;</span><span class="p">,</span>
-<a id="__codelineno-1-6" name="__codelineno-1-6" href="#__codelineno-1-6"></a>    <span class="n">dataset</span><span class="o">=</span><span class="s1">&#39;widar&#39;</span><span class="p">,</span>
-<a id="__codelineno-1-7" name="__codelineno-1-7" href="#__codelineno-1-7"></a>    <span class="n">learning_rate</span><span class="o">=</span><span class="mf">1e-3</span><span class="p">,</span>
-<a id="__codelineno-1-8" name="__codelineno-1-8" href="#__codelineno-1-8"></a>    <span class="n">num_epochs</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>
-<a id="__codelineno-1-9" name="__codelineno-1-9" href="#__codelineno-1-9"></a><span class="p">)</span>
-</code></pre></div>
 <hr />
 <h2 id="data-structures">Data Structures</h2>
 <h3 id="csidata"><code>CSIData</code></h3>
 <p>Container for raw CSI data from a file.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIData</span>
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
-<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">data</span> <span class="o">=</span> <span class="n">CSIData</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;/path/to/file.dat&quot;</span><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIData</span>
+<a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>
+<a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a><span class="n">data</span> <span class="o">=</span> <span class="n">CSIData</span><span class="p">(</span><span class="n">file_path</span><span class="o">=</span><span class="s2">&quot;/path/to/file.dat&quot;</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Attributes:</strong>
-- <code>file_path</code>: str - Path to source file
-- <code>raw_data</code>: np.ndarray - Raw CSI data
-- <code>metadata</code>: dict - File metadata</p>
 <h3 id="csiframe"><code>CSIFrame</code></h3>
 <p>Standardized frame structure for processed CSI.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIFrame</span>
-<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
-<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">frame</span> <span class="o">=</span> <span class="n">CSIFrame</span><span class="p">(</span>
-<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a>    <span class="n">csi_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># Shape: (T, F, A) - Time, Frequency, Antenna</span>
-<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a>    <span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
-<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a>    <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
-<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.structure</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIFrame</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a><span class="n">frame</span> <span class="o">=</span> <span class="n">CSIFrame</span><span class="p">(</span>
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>    <span class="n">csi_matrix</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>  <span class="c1"># Shape: (T, F, A)</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>    <span class="n">timestamp</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>    <span class="n">metadata</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a><span class="p">)</span>
 </code></pre></div>
-<p><strong>Attributes:</strong>
-- <code>csi_matrix</code>: np.ndarray - Complex CSI matrix (T, F, A)
-- <code>timestamp</code>: float - Frame timestamp
-- <code>metadata</code>: dict - Frame metadata</p>
 <hr />
 <h2 id="readers">Readers</h2>
-<h3 id="base-reader">Base Reader</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.readers</span><span class="w"> </span><span class="kn">import</span> <span class="n">BaseReader</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="k">class</span><span class="w"> </span><span class="nc">MyReader</span><span class="p">(</span><span class="n">BaseReader</span><span class="p">):</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>    <span class="k">def</span><span class="w"> </span><span class="nf">read_file</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">file_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">CSIData</span><span class="p">:</span>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a>        <span class="c1"># Implementation</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a>        <span class="k">pass</span>
-</code></pre></div>
-<h3 id="available-readers">Available Readers</h3>
 <table>
 <thead>
 <tr>
@@ -1740,146 +2302,780 @@
 </tr>
 </tbody>
 </table>
-<p><strong>Usage:</strong></p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.readers</span><span class="w"> </span><span class="kn">import</span> <span class="n">WidarReader</span>
-<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
-<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">reader</span> <span class="o">=</span> <span class="n">WidarReader</span><span class="p">()</span>
-<a id="__codelineno-5-4" name="__codelineno-5-4" href="#__codelineno-5-4"></a><span class="n">data</span> <span class="o">=</span> <span class="n">reader</span><span class="o">.</span><span class="n">read_file</span><span class="p">(</span><span class="s2">&quot;/path/to/widar.dat&quot;</span><span class="p">)</span>
-</code></pre></div>
 <hr />
 <h2 id="algorithms">Algorithms</h2>
-<h3 id="wavelet-denoising">Wavelet Denoising</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">wavelet_denoise_csi</span>
-<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
-<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">wavelet_denoise_csi</span><span class="p">(</span>
-<a id="__codelineno-6-4" name="__codelineno-6-4" href="#__codelineno-6-4"></a>    <span class="n">csi_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-6-5" name="__codelineno-6-5" href="#__codelineno-6-5"></a>    <span class="n">wavelet</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;db4&#39;</span><span class="p">,</span>
-<a id="__codelineno-6-6" name="__codelineno-6-6" href="#__codelineno-6-6"></a>    <span class="n">level</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
-<a id="__codelineno-6-7" name="__codelineno-6-7" href="#__codelineno-6-7"></a><span class="p">)</span>
+<h3 id="denoising">Denoising</h3>
+<h4 id="wavelet_denoise_csi"><code>wavelet_denoise_csi()</code></h4>
+<p>Wavelet-based denoising using VisuShrink thresholding.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">wavelet_denoise_csi</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">wavelet_denoise_csi</span><span class="p">(</span><span class="n">csi_tensor</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters:</strong>
-- <code>csi_data</code>: np.ndarray - Input CSI data
-- <code>wavelet</code>: str - Wavelet type (default: 'db4')
-- <code>level</code>: int - Decomposition level (default: 2)</p>
-<p><strong>Returns:</strong> np.ndarray - Denoised CSI data</p>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi_tensor</code> | np.ndarray | required | CSI array of shape (T, F, A), complex |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Denoised CSI with same shape and dtype.</p>
+<p><strong>Reference:</strong> Donoho DL, Johnstone IM. "Ideal spatial adaptation by wavelet shrinkage." <em>Biometrika</em>, 1994.</p>
+<hr />
+<h4 id="butterworth_denoise"><code>butterworth_denoise()</code></h4>
+<p>Butterworth low-pass filter for CSI denoising.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">butterworth_denoise</span>
+<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a>
+<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">butterworth_denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">cutoff</span><span class="o">=</span><span class="mf">0.3</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F), complex or real |
+| <code>order</code> | int | 5 | Filter order |
+| <code>cutoff</code> | float | 0.3 | Normalized cutoff frequency in (0, 1] |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Denoised CSI with same shape and dtype.</p>
+<p><strong>Reference:</strong> Butterworth S. "On the theory of filter amplifiers." <em>Wireless Engineer</em>, vol. 7, 1930.</p>
+<hr />
+<h4 id="savgol_denoise"><code>savgol_denoise()</code></h4>
+<p>Savitzky-Golay polynomial smoothing filter.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-5-1" name="__codelineno-5-1" href="#__codelineno-5-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">savgol_denoise</span>
+<a id="__codelineno-5-2" name="__codelineno-5-2" href="#__codelineno-5-2"></a>
+<a id="__codelineno-5-3" name="__codelineno-5-3" href="#__codelineno-5-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">savgol_denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">window_length</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span> <span class="n">polyorder</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F), complex or real |
+| <code>window_length</code> | int | 11 | Window length (must be odd, &gt;= 3) |
+| <code>polyorder</code> | int | 3 | Polynomial order (must be &lt; window_length) |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Smoothed CSI with same shape and dtype.</p>
+<p><strong>Reference:</strong> Savitzky A, Golay MJE. "Smoothing and differentiation of data by simplified least squares procedures." <em>Analytical Chemistry</em>, 1964.</p>
+<hr />
 <h3 id="phase-calibration">Phase Calibration</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">phase_calibration</span>
-<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
-<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">phase_calibration</span><span class="p">(</span>
-<a id="__codelineno-7-4" name="__codelineno-7-4" href="#__codelineno-7-4"></a>    <span class="n">csi_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-7-5" name="__codelineno-7-5" href="#__codelineno-7-5"></a>    <span class="n">method</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;linear&#39;</span><span class="p">,</span>
-<a id="__codelineno-7-6" name="__codelineno-7-6" href="#__codelineno-7-6"></a><span class="p">)</span>
+<h4 id="phase_calibration-linear"><code>phase_calibration()</code> (Linear)</h4>
+<p>Standard linear phase calibration using polynomial fitting.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-6-1" name="__codelineno-6-1" href="#__codelineno-6-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">phase_calibration</span>
+<a id="__codelineno-6-2" name="__codelineno-6-2" href="#__codelineno-6-2"></a>
+<a id="__codelineno-6-3" name="__codelineno-6-3" href="#__codelineno-6-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">phase_calibration</span><span class="p">(</span><span class="n">csi_data</span><span class="p">)</span>
 </code></pre></div>
 <p><strong>Parameters:</strong>
-- <code>csi_data</code>: np.ndarray - Input CSI data
-- <code>method</code>: str - Calibration method ('linear' or 'quadratic')</p>
-<p><strong>Returns:</strong> np.ndarray - Phase-calibrated CSI data</p>
-<h3 id="visualization">Visualization</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_csi_heatmap</span>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi_data</code> | np.ndarray | required | 3D CSI array (T, F, A), complex |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Phase-calibrated CSI with same shape.</p>
+<p><strong>Reference:</strong> Halperin D, Hu W, Sheth A, Wetherall D. "Predictable 802.11 packet delivery from wireless channel measurements." <em>ACM SIGCOMM</em>, 2010.</p>
+<hr />
+<h4 id="polynomial_calibration"><code>polynomial_calibration()</code></h4>
+<p>Polynomial phase calibration across subcarriers.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-7-1" name="__codelineno-7-1" href="#__codelineno-7-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">polynomial_calibration</span>
+<a id="__codelineno-7-2" name="__codelineno-7-2" href="#__codelineno-7-2"></a>
+<a id="__codelineno-7-3" name="__codelineno-7-3" href="#__codelineno-7-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">polynomial_calibration</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">degree</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A), complex |
+| <code>degree</code> | int | 3 | Polynomial degree (1=linear, 2=quadratic, 3=cubic) |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Phase-calibrated CSI with same shape.</p>
+<p><strong>Reference:</strong> Generalization of linear calibration from Halperin et al., <em>ACM SIGCOMM</em>, 2010.</p>
+<hr />
+<h4 id="stc_calibration"><code>stc_calibration()</code></h4>
+<p>Sanitize-then-Calibrate (STC) phase error removal.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-8-1" name="__codelineno-8-1" href="#__codelineno-8-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">stc_calibration</span>
 <a id="__codelineno-8-2" name="__codelineno-8-2" href="#__codelineno-8-2"></a>
-<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">plot_csi_heatmap</span><span class="p">(</span>
-<a id="__codelineno-8-4" name="__codelineno-8-4" href="#__codelineno-8-4"></a>    <span class="n">csi_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-8-5" name="__codelineno-8-5" href="#__codelineno-8-5"></a>    <span class="n">antenna_idx</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
-<a id="__codelineno-8-6" name="__codelineno-8-6" href="#__codelineno-8-6"></a>    <span class="n">save_path</span><span class="p">:</span> <span class="n">Optional</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-<a id="__codelineno-8-7" name="__codelineno-8-7" href="#__codelineno-8-7"></a><span class="p">)</span>
+<a id="__codelineno-8-3" name="__codelineno-8-3" href="#__codelineno-8-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">stc_calibration</span><span class="p">(</span><span class="n">csi</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A), complex |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Phase-calibrated CSI with same shape.</p>
+<p><strong>Reference:</strong> Xie Y, Li Z, Li M. "Precise Power Delay Profiling with Commodity WiFi." <em>IEEE Transactions on Wireless Communications (TWC)</em>, 2019.</p>
+<hr />
+<h4 id="robust_phase_sanitization"><code>robust_phase_sanitization()</code></h4>
+<p>Robust phase sanitization using median-based approach.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">robust_phase_sanitization</span>
+<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
+<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">robust_phase_sanitization</span><span class="p">(</span><span class="n">csi</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A), complex |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Phase-sanitized CSI with same shape.</p>
+<p><strong>Reference:</strong> Wang G, Zou Y, Zhou Z, Wu K, Ni LM. "FIMD: Fine-grained Device-free Motion Detection." <em>IEEE ICPADS</em>, 2012.</p>
+<hr />
+<h3 id="amplitude-processing">Amplitude Processing</h3>
+<h4 id="normalize_amplitude"><code>normalize_amplitude()</code></h4>
+<p>Normalize CSI amplitude along the time axis.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize_amplitude</span>
+<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a>
+<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a><span class="n">normalized</span> <span class="o">=</span> <span class="n">normalize_amplitude</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;z-score&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
+| <code>method</code> | str | 'z-score' | 'z-score' or 'min-max' |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Normalized CSI with same shape.</p>
+<p><strong>Reference:</strong> Ma Y, et al. "PhaseFi: Phase Fingerprinting for Indoor Localization with a Deep Learning Approach." <em>IEEE GLOBECOM</em>, 2015.</p>
+<hr />
+<h4 id="remove_outliers"><code>remove_outliers()</code></h4>
+<p>Remove or clip outlier amplitudes in CSI data.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">remove_outliers</span>
+<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
+<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a><span class="n">cleaned</span> <span class="o">=</span> <span class="n">remove_outliers</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;iqr&#39;</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
+| <code>method</code> | str | 'iqr' | 'iqr' (IQR-based) or 'z-score' (std-dev based) |
+| <code>factor</code> | float | 1.5 | Detection threshold multiplier |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — CSI with outliers clipped, same shape.</p>
+<hr />
+<h3 id="interpolation">Interpolation</h3>
+<h4 id="interpolate_grid"><code>interpolate_grid()</code></h4>
+<p>Interpolate CSI data to a target number of subcarriers.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate_grid</span>
+<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
+<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a><span class="n">interpolated</span> <span class="o">=</span> <span class="n">interpolate_grid</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">target_K</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) |
+| <code>target_K</code> | int | 30 | Target number of subcarriers |
+| <code>method</code> | str | 'cubic' | 'linear', 'cubic', or 'nearest' |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Interpolated CSI with shape (T, target_K, A).</p>
+<p><strong>Reference:</strong> Bianchi V, et al. "Indoor Localization by Interpolation of Radio Maps." <em>Sensors</em>, 2020.</p>
+<hr />
+<h3 id="feature-extraction">Feature Extraction</h3>
+<h4 id="doppler_spectrum"><code>doppler_spectrum()</code></h4>
+<p>Compute Doppler spectrum from CSI time series using STFT.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">doppler_spectrum</span>
+<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
+<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a><span class="n">spectrum</span> <span class="o">=</span> <span class="n">doppler_spectrum</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">hop_length</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F), complex |
+| <code>n_fft</code> | int | 64 | FFT size for STFT |
+| <code>hop_length</code> | int | 32 | Hop size between STFT windows |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Doppler spectrogram of shape (n_freq, n_time, F[, A]).</p>
+<p><strong>Reference:</strong> Ali K, et al. "Keystroke Recognition Using WiFi Signals." <em>ACM MobiCom</em>, 2015.</p>
+<hr />
+<h4 id="entropy_features"><code>entropy_features()</code></h4>
+<p>Compute information entropy features from CSI amplitude distribution.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">entropy_features</span>
+<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a>
+<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="n">entropy</span> <span class="o">=</span> <span class="n">entropy_features</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
+| <code>bins</code> | int | 50 | Number of histogram bins for entropy estimation |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Entropy values of shape (F,) or (F, A).</p>
+<p><strong>Reference:</strong> Shannon CE. "A Mathematical Theory of Communication." <em>Bell System Technical Journal</em>, 1948.</p>
+<hr />
+<h4 id="csi_ratio"><code>csi_ratio()</code></h4>
+<p>Compute CSI ratio between antenna pairs.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">csi_ratio</span>
+<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a>
+<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a><span class="n">ratio</span> <span class="o">=</span> <span class="n">csi_ratio</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">antenna_pairs</span><span class="o">=</span><span class="p">[(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)])</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A), A &gt;= 2 |
+| <code>antenna_pairs</code> | list | None | List of (ant1, ant2) tuples. Default: consecutive pairs |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — CSI ratios with shape (T, F, n_pairs).</p>
+<p><strong>Reference:</strong> Halperin D, et al. "Tool release: Gathering 802.11n traces with channel state information." <em>ACM SIGCOMM CCR</em>, 2011.</p>
+<hr />
+<h4 id="tensor_decomposition"><code>tensor_decomposition()</code></h4>
+<p>Decompose CSI tensor using CP or Tucker decomposition.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-16-1" name="__codelineno-16-1" href="#__codelineno-16-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">tensor_decomposition</span>
+<a id="__codelineno-16-2" name="__codelineno-16-2" href="#__codelineno-16-2"></a>
+<a id="__codelineno-16-3" name="__codelineno-16-3" href="#__codelineno-16-3"></a><span class="n">decomposed</span> <span class="o">=</span> <span class="n">tensor_decomposition</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">rank</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cp&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) |
+| <code>rank</code> | int | 10 | Rank of decomposition |
+| <code>method</code> | str | 'cp' | 'cp' (Canonical Polyadic) or 'tucker' |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Reconstructed low-rank CSI tensor, same shape.</p>
+<p><strong>Reference:</strong> Kolda TG, Bader BW. "Tensor Decompositions and Applications." <em>SIAM Review</em>, 2009.</p>
+<hr />
+<h3 id="activity-detection">Activity Detection</h3>
+<h4 id="detect_activity"><code>detect_activity()</code></h4>
+<p>Detect activity using sliding window variance analysis.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-17-1" name="__codelineno-17-1" href="#__codelineno-17-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">detect_activity</span>
+<a id="__codelineno-17-2" name="__codelineno-17-2" href="#__codelineno-17-2"></a>
+<a id="__codelineno-17-3" name="__codelineno-17-3" href="#__codelineno-17-3"></a><span class="n">activity</span> <span class="o">=</span> <span class="n">detect_activity</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="mi">32</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
+| <code>window</code> | int | 32 | Sliding window size in samples |
+| <code>threshold</code> | float | 0.1 | Detection threshold for normalized variance |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Boolean array of shape (T,) indicating activity.</p>
+<p><strong>Reference:</strong> Zhou Z, et al. "Device-Free Passive Localization for Human Activity Recognition." <em>IEEE Communications Magazine</em>, 2013.</p>
+<hr />
+<h4 id="change_point_detection"><code>change_point_detection()</code></h4>
+<p>Detect change points in CSI time series.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-18-1" name="__codelineno-18-1" href="#__codelineno-18-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">change_point_detection</span>
+<a id="__codelineno-18-2" name="__codelineno-18-2" href="#__codelineno-18-2"></a>
+<a id="__codelineno-18-3" name="__codelineno-18-3" href="#__codelineno-18-3"></a><span class="n">change_points</span> <span class="o">=</span> <span class="n">change_point_detection</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;bayesian&#39;</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Default | Description |
+|-----------|------|---------|-------------|
+| <code>csi</code> | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
+| <code>method</code> | str | 'bayesian' | 'bayesian', 'cusum', or 'variance' |</p>
+<p><strong>Returns:</strong> <code>np.ndarray</code> — Array of time indices where change points detected.</p>
+<p><strong>Reference:</strong> Adams RP, MacKay DJC. "Bayesian Online Changepoint Detection." <em>arXiv:0710.3742</em>, 2007.</p>
+<hr />
+<h3 id="visualization">Visualization</h3>
+<h4 id="plot_csi_heatmap"><code>plot_csi_heatmap()</code></h4>
+<p>Plot CSI amplitude as a time-frequency heatmap.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-19-1" name="__codelineno-19-1" href="#__codelineno-19-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_csi_heatmap</span>
+<a id="__codelineno-19-2" name="__codelineno-19-2" href="#__codelineno-19-2"></a>
+<a id="__codelineno-19-3" name="__codelineno-19-3" href="#__codelineno-19-3"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_csi_heatmap</span><span class="p">(</span><span class="n">csi_data</span><span class="p">,</span> <span class="n">antenna_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">save_path</span><span class="o">=</span><span class="s1">&#39;heatmap.png&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="plot_denoising_comparison"><code>plot_denoising_comparison()</code></h4>
+<p>Plot before/after denoising comparison.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-20-1" name="__codelineno-20-1" href="#__codelineno-20-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_denoising_comparison</span>
+<a id="__codelineno-20-2" name="__codelineno-20-2" href="#__codelineno-20-2"></a>
+<a id="__codelineno-20-3" name="__codelineno-20-3" href="#__codelineno-20-3"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_denoising_comparison</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">denoised</span><span class="p">,</span> <span class="n">antenna_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="plot_phase_calibration"><code>plot_phase_calibration()</code></h4>
+<p>Plot phase before and after calibration.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-21-1" name="__codelineno-21-1" href="#__codelineno-21-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">plot_phase_calibration</span>
+<a id="__codelineno-21-2" name="__codelineno-21-2" href="#__codelineno-21-2"></a>
+<a id="__codelineno-21-3" name="__codelineno-21-3" href="#__codelineno-21-3"></a><span class="n">fig</span> <span class="o">=</span> <span class="n">plot_phase_calibration</span><span class="p">(</span><span class="n">original</span><span class="p">,</span> <span class="n">calibrated</span><span class="p">,</span> <span class="n">antenna_idx</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h2 id="unified-api">Unified API</h2>
+<p>The unified API provides a consistent interface for all algorithm categories.</p>
+<h3 id="denoise"><code>denoise()</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-22-1" name="__codelineno-22-1" href="#__codelineno-22-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">denoise</span>
+<a id="__codelineno-22-2" name="__codelineno-22-2" href="#__codelineno-22-2"></a>
+<a id="__codelineno-22-3" name="__codelineno-22-3" href="#__codelineno-22-3"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;wavelet&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Source Function</th>
+<th>Key Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'wavelet'</code></td>
+<td><code>wavelet_denoise_csi()</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>'butterworth'</code></td>
+<td><code>butterworth_denoise()</code></td>
+<td><code>order</code>, <code>cutoff</code></td>
+</tr>
+<tr>
+<td><code>'savgol'</code></td>
+<td><code>savgol_denoise()</code></td>
+<td><code>window_length</code>, <code>polyorder</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="calibrate"><code>calibrate()</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-23-1" name="__codelineno-23-1" href="#__codelineno-23-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">calibrate</span>
+<a id="__codelineno-23-2" name="__codelineno-23-2" href="#__codelineno-23-2"></a>
+<a id="__codelineno-23-3" name="__codelineno-23-3" href="#__codelineno-23-3"></a><span class="n">calibrated</span> <span class="o">=</span> <span class="n">calibrate</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;linear&#39;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Source Function</th>
+<th>Key Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'linear'</code></td>
+<td><code>phase_calibration()</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>'polynomial'</code></td>
+<td><code>polynomial_calibration()</code></td>
+<td><code>degree</code></td>
+</tr>
+<tr>
+<td><code>'stc'</code></td>
+<td><code>stc_calibration()</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>'robust'</code></td>
+<td><code>robust_phase_sanitization()</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="normalize"><code>normalize()</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-24-1" name="__codelineno-24-1" href="#__codelineno-24-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">normalize</span>
+<a id="__codelineno-24-2" name="__codelineno-24-2" href="#__codelineno-24-2"></a>
+<a id="__codelineno-24-3" name="__codelineno-24-3" href="#__codelineno-24-3"></a><span class="n">normalized</span> <span class="o">=</span> <span class="n">normalize</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;z-score&#39;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Source Function</th>
+<th>Key Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'z-score'</code></td>
+<td><code>normalize_amplitude()</code></td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>'min-max'</code></td>
+<td><code>normalize_amplitude()</code></td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<h3 id="interpolate"><code>interpolate()</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-25-1" name="__codelineno-25-1" href="#__codelineno-25-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">interpolate</span>
+<a id="__codelineno-25-2" name="__codelineno-25-2" href="#__codelineno-25-2"></a>
+<a id="__codelineno-25-3" name="__codelineno-25-3" href="#__codelineno-25-3"></a><span class="n">result</span> <span class="o">=</span> <span class="n">interpolate</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">target_K</span><span class="o">=</span><span class="mi">30</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;cubic&#39;</span><span class="p">)</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Source Function</th>
+<th>Key Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'linear'</code></td>
+<td><code>interpolate_grid()</code></td>
+<td><code>target_K</code></td>
+</tr>
+<tr>
+<td><code>'cubic'</code></td>
+<td><code>interpolate_grid()</code></td>
+<td><code>target_K</code></td>
+</tr>
+<tr>
+<td><code>'nearest'</code></td>
+<td><code>interpolate_grid()</code></td>
+<td><code>target_K</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="extract_features"><code>extract_features()</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-26-1" name="__codelineno-26-1" href="#__codelineno-26-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">extract_features</span>
+<a id="__codelineno-26-2" name="__codelineno-26-2" href="#__codelineno-26-2"></a>
+<a id="__codelineno-26-3" name="__codelineno-26-3" href="#__codelineno-26-3"></a><span class="n">features</span> <span class="o">=</span> <span class="n">extract_features</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">features</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;doppler&#39;</span><span class="p">,</span> <span class="s1">&#39;entropy&#39;</span><span class="p">])</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Source Function</th>
+<th>Key Parameters</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>'doppler'</code></td>
+<td><code>doppler_spectrum()</code></td>
+<td><code>n_fft</code>, <code>hop_length</code></td>
+</tr>
+<tr>
+<td><code>'entropy'</code></td>
+<td><code>entropy_features()</code></td>
+<td><code>bins</code></td>
+</tr>
+<tr>
+<td><code>'ratio'</code></td>
+<td><code>csi_ratio()</code></td>
+<td><code>antenna_pairs</code></td>
+</tr>
+<tr>
+<td><code>'decomposition'</code></td>
+<td><code>tensor_decomposition()</code></td>
+<td><code>rank</code>, <code>method</code></td>
+</tr>
+</tbody>
+</table>
+<hr />
+<h2 id="pluggable-architecture">Pluggable Architecture</h2>
+<p>WSDP provides a pluggable algorithm architecture built on the <strong>Registry Pattern</strong>, allowing users to switch algorithms, add custom implementations, configure via files, and use preset pipelines.</p>
+<h3 id="algorithm-registry">Algorithm Registry</h3>
+<h4 id="register_algorithm"><code>register_algorithm()</code></h4>
+<p>Register a custom algorithm.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-27-1" name="__codelineno-27-1" href="#__codelineno-27-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_algorithm</span>
+<a id="__codelineno-27-2" name="__codelineno-27-2" href="#__codelineno-27-2"></a>
+<a id="__codelineno-27-3" name="__codelineno-27-3" href="#__codelineno-27-3"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-27-4" name="__codelineno-27-4" href="#__codelineno-27-4"></a>    <span class="k">return</span> <span class="n">csi</span> <span class="o">*</span> <span class="n">strength</span>
+<a id="__codelineno-27-5" name="__codelineno-27-5" href="#__codelineno-27-5"></a>
+<a id="__codelineno-27-6" name="__codelineno-27-6" href="#__codelineno-27-6"></a><span class="n">register_algorithm</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;my_method&#39;</span><span class="p">,</span> <span class="n">my_denoise</span><span class="p">)</span>
+</code></pre></div>
+<p><strong>Parameters:</strong>
+| Parameter | Type | Description |
+|-----------|------|-------------|
+| <code>category</code> | str | Category: <code>'denoise'</code>, <code>'calibrate'</code>, <code>'normalize'</code>, <code>'interpolate'</code>, <code>'extract_features'</code>, <code>'detect'</code>, <code>'outliers'</code> |
+| <code>name</code> | str | Algorithm name (used as <code>method=</code> parameter) |
+| <code>func</code> | Callable | Algorithm implementation |</p>
+<h4 id="get_algorithm"><code>get_algorithm()</code></h4>
+<p>Get an algorithm function by category and name.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-28-1" name="__codelineno-28-1" href="#__codelineno-28-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_algorithm</span>
+<a id="__codelineno-28-2" name="__codelineno-28-2" href="#__codelineno-28-2"></a>
+<a id="__codelineno-28-3" name="__codelineno-28-3" href="#__codelineno-28-3"></a><span class="n">func</span> <span class="o">=</span> <span class="n">get_algorithm</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;butterworth&#39;</span><span class="p">)</span>
+<a id="__codelineno-28-4" name="__codelineno-28-4" href="#__codelineno-28-4"></a><span class="n">result</span> <span class="o">=</span> <span class="n">func</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="list_algorithms"><code>list_algorithms()</code></h4>
+<p>List available algorithms.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-29-1" name="__codelineno-29-1" href="#__codelineno-29-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">list_algorithms</span>
+<a id="__codelineno-29-2" name="__codelineno-29-2" href="#__codelineno-29-2"></a>
+<a id="__codelineno-29-3" name="__codelineno-29-3" href="#__codelineno-29-3"></a><span class="c1"># All categories</span>
+<a id="__codelineno-29-4" name="__codelineno-29-4" href="#__codelineno-29-4"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">list_algorithms</span><span class="p">()</span>
+<a id="__codelineno-29-5" name="__codelineno-29-5" href="#__codelineno-29-5"></a><span class="p">{</span><span class="s1">&#39;denoise&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;wavelet&#39;</span><span class="p">,</span> <span class="s1">&#39;butterworth&#39;</span><span class="p">,</span> <span class="s1">&#39;savgol&#39;</span><span class="p">],</span> <span class="s1">&#39;calibrate&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">]}</span>
+<a id="__codelineno-29-6" name="__codelineno-29-6" href="#__codelineno-29-6"></a>
+<a id="__codelineno-29-7" name="__codelineno-29-7" href="#__codelineno-29-7"></a><span class="c1"># Specific category</span>
+<a id="__codelineno-29-8" name="__codelineno-29-8" href="#__codelineno-29-8"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">list_algorithms</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">)</span>
+<a id="__codelineno-29-9" name="__codelineno-29-9" href="#__codelineno-29-9"></a><span class="p">{</span><span class="s1">&#39;wavelet&#39;</span><span class="p">:</span> <span class="s1">&#39;wsdp.algorithms.denoising:wavelet_denoise_csi&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</code></pre></div>
+<h4 id="is_registered"><code>is_registered()</code></h4>
+<p>Check if an algorithm is registered.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-30-1" name="__codelineno-30-1" href="#__codelineno-30-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">is_registered</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;wavelet&#39;</span><span class="p">)</span>
+<a id="__codelineno-30-2" name="__codelineno-30-2" href="#__codelineno-30-2"></a><span class="kc">True</span>
+</code></pre></div>
+<h4 id="algorithm_info"><code>algorithm_info()</code></h4>
+<p>Get detailed information about an algorithm.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-31-1" name="__codelineno-31-1" href="#__codelineno-31-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">algorithm_info</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;butterworth&#39;</span><span class="p">)</span>
+<a id="__codelineno-31-2" name="__codelineno-31-2" href="#__codelineno-31-2"></a><span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="s1">&#39;butterworth&#39;</span><span class="p">,</span> <span class="s1">&#39;category&#39;</span><span class="p">:</span> <span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;module&#39;</span><span class="p">:</span> <span class="s1">&#39;...&#39;</span><span class="p">,</span> <span class="o">...</span><span class="p">}</span>
+</code></pre></div>
+<h4 id="unregister_algorithm"><code>unregister_algorithm()</code></h4>
+<p>Remove a custom algorithm (built-in algorithms cannot be unregistered).</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-32-1" name="__codelineno-32-1" href="#__codelineno-32-1"></a><span class="n">unregister_algorithm</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;my_method&#39;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="configuration-files">Configuration Files</h3>
+<p>WSDP supports YAML and JSON configuration files for algorithm selection.</p>
+<h4 id="yaml-format">YAML Format</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-33-1" name="__codelineno-33-1" href="#__codelineno-33-1"></a><span class="c1"># algorithms_config.yaml</span>
+<a id="__codelineno-33-2" name="__codelineno-33-2" href="#__codelineno-33-2"></a><span class="nt">denoise</span><span class="p">:</span>
+<a id="__codelineno-33-3" name="__codelineno-33-3" href="#__codelineno-33-3"></a><span class="w">  </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">butterworth</span>
+<a id="__codelineno-33-4" name="__codelineno-33-4" href="#__codelineno-33-4"></a><span class="w">  </span><span class="nt">params</span><span class="p">:</span>
+<a id="__codelineno-33-5" name="__codelineno-33-5" href="#__codelineno-33-5"></a><span class="w">    </span><span class="nt">order</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">5</span>
+<a id="__codelineno-33-6" name="__codelineno-33-6" href="#__codelineno-33-6"></a><span class="w">    </span><span class="nt">cutoff</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.3</span>
+<a id="__codelineno-33-7" name="__codelineno-33-7" href="#__codelineno-33-7"></a>
+<a id="__codelineno-33-8" name="__codelineno-33-8" href="#__codelineno-33-8"></a><span class="nt">calibrate</span><span class="p">:</span>
+<a id="__codelineno-33-9" name="__codelineno-33-9" href="#__codelineno-33-9"></a><span class="w">  </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">polynomial</span>
+<a id="__codelineno-33-10" name="__codelineno-33-10" href="#__codelineno-33-10"></a><span class="w">  </span><span class="nt">params</span><span class="p">:</span>
+<a id="__codelineno-33-11" name="__codelineno-33-11" href="#__codelineno-33-11"></a><span class="w">    </span><span class="nt">degree</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">3</span>
+<a id="__codelineno-33-12" name="__codelineno-33-12" href="#__codelineno-33-12"></a>
+<a id="__codelineno-33-13" name="__codelineno-33-13" href="#__codelineno-33-13"></a><span class="nt">normalize</span><span class="p">:</span>
+<a id="__codelineno-33-14" name="__codelineno-33-14" href="#__codelineno-33-14"></a><span class="w">  </span><span class="nt">method</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">z-score</span>
+</code></pre></div>
+<h4 id="json-format">JSON Format</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-34-1" name="__codelineno-34-1" href="#__codelineno-34-1"></a><span class="p">{</span>
+<a id="__codelineno-34-2" name="__codelineno-34-2" href="#__codelineno-34-2"></a><span class="w">  </span><span class="nt">&quot;denoise&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-34-3" name="__codelineno-34-3" href="#__codelineno-34-3"></a><span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;butterworth&quot;</span><span class="p">,</span>
+<a id="__codelineno-34-4" name="__codelineno-34-4" href="#__codelineno-34-4"></a><span class="w">    </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;order&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">5</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;cutoff&quot;</span><span class="p">:</span><span class="w"> </span><span class="mf">0.3</span><span class="p">}</span>
+<a id="__codelineno-34-5" name="__codelineno-34-5" href="#__codelineno-34-5"></a><span class="w">  </span><span class="p">},</span>
+<a id="__codelineno-34-6" name="__codelineno-34-6" href="#__codelineno-34-6"></a><span class="w">  </span><span class="nt">&quot;calibrate&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<a id="__codelineno-34-7" name="__codelineno-34-7" href="#__codelineno-34-7"></a><span class="w">    </span><span class="nt">&quot;method&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;polynomial&quot;</span><span class="p">,</span>
+<a id="__codelineno-34-8" name="__codelineno-34-8" href="#__codelineno-34-8"></a><span class="w">    </span><span class="nt">&quot;params&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="nt">&quot;degree&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">3</span><span class="p">}</span>
+<a id="__codelineno-34-9" name="__codelineno-34-9" href="#__codelineno-34-9"></a><span class="w">  </span><span class="p">}</span>
+<a id="__codelineno-34-10" name="__codelineno-34-10" href="#__codelineno-34-10"></a><span class="p">}</span>
+</code></pre></div>
+<h4 id="preset-reference">Preset Reference</h4>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-35-1" name="__codelineno-35-1" href="#__codelineno-35-1"></a><span class="nt">preset</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">high_quality</span>
+</code></pre></div>
+<h4 id="load_config"><code>load_config()</code></h4>
+<p>Load algorithm configuration from a file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-36-1" name="__codelineno-36-1" href="#__codelineno-36-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">load_config</span>
+<a id="__codelineno-36-2" name="__codelineno-36-2" href="#__codelineno-36-2"></a>
+<a id="__codelineno-36-3" name="__codelineno-36-3" href="#__codelineno-36-3"></a><span class="n">config</span> <span class="o">=</span> <span class="n">load_config</span><span class="p">(</span><span class="s1">&#39;algorithms_config.yaml&#39;</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="save_config"><code>save_config()</code></h4>
+<p>Save algorithm configuration to a file.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-37-1" name="__codelineno-37-1" href="#__codelineno-37-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">save_config</span><span class="p">,</span> <span class="n">apply_preset</span>
+<a id="__codelineno-37-2" name="__codelineno-37-2" href="#__codelineno-37-2"></a>
+<a id="__codelineno-37-3" name="__codelineno-37-3" href="#__codelineno-37-3"></a><span class="n">steps</span> <span class="o">=</span> <span class="n">apply_preset</span><span class="p">(</span><span class="s1">&#39;high_quality&#39;</span><span class="p">)</span>
+<a id="__codelineno-37-4" name="__codelineno-37-4" href="#__codelineno-37-4"></a><span class="n">save_config</span><span class="p">(</span><span class="n">steps</span><span class="p">,</span> <span class="s1">&#39;my_config.yaml&#39;</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;yaml&#39;</span><span class="p">)</span>
+</code></pre></div>
+<hr />
+<h3 id="pipeline-presets">Pipeline Presets</h3>
+<h4 id="built-in-presets">Built-in Presets</h4>
+<table>
+<thead>
+<tr>
+<th>Preset</th>
+<th>Denoise</th>
+<th>Calibrate</th>
+<th>Normalize</th>
+<th>Use Case</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>high_quality</code></td>
+<td>butterworth (order=5)</td>
+<td>stc</td>
+<td>z-score</td>
+<td>Maximum accuracy</td>
+</tr>
+<tr>
+<td><code>fast</code></td>
+<td>savgol (w=7)</td>
+<td>linear</td>
+<td>min-max</td>
+<td>Speed-optimized</td>
+</tr>
+<tr>
+<td><code>robust</code></td>
+<td>wavelet</td>
+<td>robust</td>
+<td>z-score</td>
+<td>Noisy environments</td>
+</tr>
+<tr>
+<td><code>gesture_recognition</code></td>
+<td>butterworth (order=4)</td>
+<td>stc</td>
+<td>z-score</td>
+<td>Gesture tasks</td>
+</tr>
+<tr>
+<td><code>activity_detection</code></td>
+<td>savgol (w=11)</td>
+<td>polynomial (deg=2)</td>
+<td>z-score</td>
+<td>HAR tasks</td>
+</tr>
+<tr>
+<td><code>localization</code></td>
+<td>wavelet</td>
+<td>robust</td>
+<td>z-score</td>
+<td>Localization tasks</td>
+</tr>
+</tbody>
+</table>
+<h4 id="apply_preset"><code>apply_preset()</code></h4>
+<p>Get a preset pipeline configuration.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-38-1" name="__codelineno-38-1" href="#__codelineno-38-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_preset</span>
+<a id="__codelineno-38-2" name="__codelineno-38-2" href="#__codelineno-38-2"></a>
+<a id="__codelineno-38-3" name="__codelineno-38-3" href="#__codelineno-38-3"></a><span class="n">steps</span> <span class="o">=</span> <span class="n">apply_preset</span><span class="p">(</span><span class="s1">&#39;high_quality&#39;</span><span class="p">)</span>
+<a id="__codelineno-38-4" name="__codelineno-38-4" href="#__codelineno-38-4"></a><span class="c1"># {&#39;denoise&#39;: {&#39;method&#39;: &#39;butterworth&#39;, &#39;order&#39;: 5, ...}, ...}</span>
+</code></pre></div>
+<h4 id="execute_pipeline"><code>execute_pipeline()</code></h4>
+<p>Execute a processing pipeline on CSI data.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-39-1" name="__codelineno-39-1" href="#__codelineno-39-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">apply_preset</span><span class="p">,</span> <span class="n">execute_pipeline</span>
+<a id="__codelineno-39-2" name="__codelineno-39-2" href="#__codelineno-39-2"></a>
+<a id="__codelineno-39-3" name="__codelineno-39-3" href="#__codelineno-39-3"></a><span class="n">steps</span> <span class="o">=</span> <span class="n">apply_preset</span><span class="p">(</span><span class="s1">&#39;high_quality&#39;</span><span class="p">)</span>
+<a id="__codelineno-39-4" name="__codelineno-39-4" href="#__codelineno-39-4"></a><span class="n">processed</span> <span class="o">=</span> <span class="n">execute_pipeline</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
+</code></pre></div>
+<h4 id="register_preset"><code>register_preset()</code></h4>
+<p>Register a custom preset.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-40-1" name="__codelineno-40-1" href="#__codelineno-40-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_preset</span>
+<a id="__codelineno-40-2" name="__codelineno-40-2" href="#__codelineno-40-2"></a>
+<a id="__codelineno-40-3" name="__codelineno-40-3" href="#__codelineno-40-3"></a><span class="n">register_preset</span><span class="p">(</span><span class="s1">&#39;my_preset&#39;</span><span class="p">,</span> <span class="p">{</span>
+<a id="__codelineno-40-4" name="__codelineno-40-4" href="#__codelineno-40-4"></a>    <span class="s1">&#39;denoise&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;butterworth&#39;</span><span class="p">,</span> <span class="s1">&#39;order&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">},</span>
+<a id="__codelineno-40-5" name="__codelineno-40-5" href="#__codelineno-40-5"></a>    <span class="s1">&#39;calibrate&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;linear&#39;</span><span class="p">},</span>
+<a id="__codelineno-40-6" name="__codelineno-40-6" href="#__codelineno-40-6"></a><span class="p">})</span>
+</code></pre></div>
+<h4 id="list_presets"><code>list_presets()</code></h4>
+<p>List all available presets.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-41-1" name="__codelineno-41-1" href="#__codelineno-41-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">list_presets</span><span class="p">()</span>
+<a id="__codelineno-41-2" name="__codelineno-41-2" href="#__codelineno-41-2"></a><span class="p">{</span><span class="s1">&#39;high_quality&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;calibrate&#39;</span><span class="p">,</span> <span class="s1">&#39;normalize&#39;</span><span class="p">],</span> <span class="s1">&#39;fast&#39;</span><span class="p">:</span> <span class="p">[</span><span class="o">...</span><span class="p">],</span> <span class="o">...</span><span class="p">}</span>
+</code></pre></div>
+<hr />
+<h3 id="custom-algorithms">Custom Algorithms</h3>
+<p>Users can register their own algorithm implementations:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-42-1" name="__codelineno-42-1" href="#__codelineno-42-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">register_algorithm</span><span class="p">,</span> <span class="n">denoise</span><span class="p">,</span> <span class="n">calibrate</span>
+<a id="__codelineno-42-2" name="__codelineno-42-2" href="#__codelineno-42-2"></a>
+<a id="__codelineno-42-3" name="__codelineno-42-3" href="#__codelineno-42-3"></a><span class="c1"># 1. Define your algorithm</span>
+<a id="__codelineno-42-4" name="__codelineno-42-4" href="#__codelineno-42-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">my_denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<a id="__codelineno-42-5" name="__codelineno-42-5" href="#__codelineno-42-5"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Custom denoising: simple smoothing.&quot;&quot;&quot;</span>
+<a id="__codelineno-42-6" name="__codelineno-42-6" href="#__codelineno-42-6"></a>    <span class="kn">from</span><span class="w"> </span><span class="nn">scipy.ndimage</span><span class="w"> </span><span class="kn">import</span> <span class="n">uniform_filter1d</span>
+<a id="__codelineno-42-7" name="__codelineno-42-7" href="#__codelineno-42-7"></a>    <span class="n">result</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">csi</span><span class="p">)</span>
+<a id="__codelineno-42-8" name="__codelineno-42-8" href="#__codelineno-42-8"></a>    <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">csi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+<a id="__codelineno-42-9" name="__codelineno-42-9" href="#__codelineno-42-9"></a>        <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">csi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">2</span><span class="p">]):</span>
+<a id="__codelineno-42-10" name="__codelineno-42-10" href="#__codelineno-42-10"></a>            <span class="n">real_part</span> <span class="o">=</span> <span class="n">uniform_filter1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">real</span><span class="p">(</span><span class="n">csi</span><span class="p">[:,</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">]),</span> <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">strength</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+<a id="__codelineno-42-11" name="__codelineno-42-11" href="#__codelineno-42-11"></a>            <span class="n">imag_part</span> <span class="o">=</span> <span class="n">uniform_filter1d</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">imag</span><span class="p">(</span><span class="n">csi</span><span class="p">[:,</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">]),</span> <span class="n">size</span><span class="o">=</span><span class="nb">int</span><span class="p">(</span><span class="n">strength</span> <span class="o">*</span> <span class="mi">5</span><span class="p">))</span>
+<a id="__codelineno-42-12" name="__codelineno-42-12" href="#__codelineno-42-12"></a>            <span class="n">result</span><span class="p">[:,</span> <span class="n">f</span><span class="p">,</span> <span class="n">a</span><span class="p">]</span> <span class="o">=</span> <span class="n">real_part</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">imag_part</span>
+<a id="__codelineno-42-13" name="__codelineno-42-13" href="#__codelineno-42-13"></a>    <span class="k">return</span> <span class="n">result</span>
+<a id="__codelineno-42-14" name="__codelineno-42-14" href="#__codelineno-42-14"></a>
+<a id="__codelineno-42-15" name="__codelineno-42-15" href="#__codelineno-42-15"></a><span class="c1"># 2. Register it</span>
+<a id="__codelineno-42-16" name="__codelineno-42-16" href="#__codelineno-42-16"></a><span class="n">register_algorithm</span><span class="p">(</span><span class="s1">&#39;denoise&#39;</span><span class="p">,</span> <span class="s1">&#39;my_smooth&#39;</span><span class="p">,</span> <span class="n">my_denoise</span><span class="p">)</span>
+<a id="__codelineno-42-17" name="__codelineno-42-17" href="#__codelineno-42-17"></a>
+<a id="__codelineno-42-18" name="__codelineno-42-18" href="#__codelineno-42-18"></a><span class="c1"># 3. Use it via unified API</span>
+<a id="__codelineno-42-19" name="__codelineno-42-19" href="#__codelineno-42-19"></a><span class="n">denoised</span> <span class="o">=</span> <span class="n">denoise</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;my_smooth&#39;</span><span class="p">,</span> <span class="n">strength</span><span class="o">=</span><span class="mf">2.0</span><span class="p">)</span>
+<a id="__codelineno-42-20" name="__codelineno-42-20" href="#__codelineno-42-20"></a>
+<a id="__codelineno-42-21" name="__codelineno-42-21" href="#__codelineno-42-21"></a><span class="c1"># 4. Or use it in a pipeline</span>
+<a id="__codelineno-42-22" name="__codelineno-42-22" href="#__codelineno-42-22"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.algorithms</span><span class="w"> </span><span class="kn">import</span> <span class="n">execute_pipeline</span>
+<a id="__codelineno-42-23" name="__codelineno-42-23" href="#__codelineno-42-23"></a><span class="n">steps</span> <span class="o">=</span> <span class="p">{</span>
+<a id="__codelineno-42-24" name="__codelineno-42-24" href="#__codelineno-42-24"></a>    <span class="s1">&#39;denoise&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;my_smooth&#39;</span><span class="p">,</span> <span class="s1">&#39;strength&#39;</span><span class="p">:</span> <span class="mf">1.5</span><span class="p">},</span>
+<a id="__codelineno-42-25" name="__codelineno-42-25" href="#__codelineno-42-25"></a>    <span class="s1">&#39;calibrate&#39;</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;method&#39;</span><span class="p">:</span> <span class="s1">&#39;stc&#39;</span><span class="p">},</span>
+<a id="__codelineno-42-26" name="__codelineno-42-26" href="#__codelineno-42-26"></a><span class="p">}</span>
+<a id="__codelineno-42-27" name="__codelineno-42-27" href="#__codelineno-42-27"></a><span class="n">result</span> <span class="o">=</span> <span class="n">execute_pipeline</span><span class="p">(</span><span class="n">csi</span><span class="p">,</span> <span class="n">steps</span><span class="p">)</span>
 </code></pre></div>
 <hr />
 <h2 id="models">Models</h2>
 <h3 id="csimodel">CSIModel</h3>
 <p>CNN + Transformer architecture for CSI classification.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-9-1" name="__codelineno-9-1" href="#__codelineno-9-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIModel</span>
-<a id="__codelineno-9-2" name="__codelineno-9-2" href="#__codelineno-9-2"></a>
-<a id="__codelineno-9-3" name="__codelineno-9-3" href="#__codelineno-9-3"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CSIModel</span><span class="p">(</span>
-<a id="__codelineno-9-4" name="__codelineno-9-4" href="#__codelineno-9-4"></a>    <span class="n">num_classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
-<a id="__codelineno-9-5" name="__codelineno-9-5" href="#__codelineno-9-5"></a>    <span class="n">input_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-<a id="__codelineno-9-6" name="__codelineno-9-6" href="#__codelineno-9-6"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-43-1" name="__codelineno-43-1" href="#__codelineno-43-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">CSIModel</span>
+<a id="__codelineno-43-2" name="__codelineno-43-2" href="#__codelineno-43-2"></a>
+<a id="__codelineno-43-3" name="__codelineno-43-3" href="#__codelineno-43-3"></a><span class="n">model</span> <span class="o">=</span> <span class="n">CSIModel</span><span class="p">(</span>
+<a id="__codelineno-43-4" name="__codelineno-43-4" href="#__codelineno-43-4"></a>    <span class="n">num_classes</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+<a id="__codelineno-43-5" name="__codelineno-43-5" href="#__codelineno-43-5"></a>    <span class="n">input_shape</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">200</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+<a id="__codelineno-43-6" name="__codelineno-43-6" href="#__codelineno-43-6"></a><span class="p">)</span>
 </code></pre></div>
-<p><strong>Parameters:</strong>
-- <code>num_classes</code>: int - Number of output classes
-- <code>input_shape</code>: tuple - Input shape (T, F, A)</p>
-<p><strong>Methods:</strong>
-- <code>forward(x)</code> - Forward pass
-- <code>predict(x)</code> - Inference</p>
 <hr />
 <h2 id="inference">Inference</h2>
 <h3 id="wsdppredict"><code>wsdp.predict()</code></h3>
 <p>Run inference on CSI data.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-10-1" name="__codelineno-10-1" href="#__codelineno-10-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">predict</span>
-<a id="__codelineno-10-2" name="__codelineno-10-2" href="#__codelineno-10-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<a id="__codelineno-10-3" name="__codelineno-10-3" href="#__codelineno-10-3"></a>
-<a id="__codelineno-10-4" name="__codelineno-10-4" href="#__codelineno-10-4"></a><span class="c1"># Create sample CSI data</span>
-<a id="__codelineno-10-5" name="__codelineno-10-5" href="#__codelineno-10-5"></a><span class="n">csi</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">5</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
-<a id="__codelineno-10-6" name="__codelineno-10-6" href="#__codelineno-10-6"></a>
-<a id="__codelineno-10-7" name="__codelineno-10-7" href="#__codelineno-10-7"></a><span class="c1"># Run prediction</span>
-<a id="__codelineno-10-8" name="__codelineno-10-8" href="#__codelineno-10-8"></a><span class="n">predictions</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span>
-<a id="__codelineno-10-9" name="__codelineno-10-9" href="#__codelineno-10-9"></a>    <span class="n">csi_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-10-10" name="__codelineno-10-10" href="#__codelineno-10-10"></a>    <span class="n">model_path</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-<a id="__codelineno-10-11" name="__codelineno-10-11" href="#__codelineno-10-11"></a>    <span class="n">num_classes</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">,</span>
-<a id="__codelineno-10-12" name="__codelineno-10-12" href="#__codelineno-10-12"></a><span class="p">)</span>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-44-1" name="__codelineno-44-1" href="#__codelineno-44-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">wsdp</span><span class="w"> </span><span class="kn">import</span> <span class="n">predict</span>
+<a id="__codelineno-44-2" name="__codelineno-44-2" href="#__codelineno-44-2"></a>
+<a id="__codelineno-44-3" name="__codelineno-44-3" href="#__codelineno-44-3"></a><span class="n">predictions</span> <span class="o">=</span> <span class="n">predict</span><span class="p">(</span><span class="n">csi_data</span><span class="p">,</span> <span class="n">model_path</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
 </code></pre></div>
-<p><strong>Parameters:</strong>
-- <code>csi_data</code>: np.ndarray - CSI data (B, T, F, A)
-- <code>model_path</code>: str - Path to model checkpoint
-- <code>num_classes</code>: int - Number of classes</p>
-<p><strong>Returns:</strong> np.ndarray - Predictions (B, num_classes)</p>
 <hr />
 <h2 id="cli">CLI</h2>
-<h3 id="commands">Commands</h3>
-<h4 id="wsdp-run"><code>wsdp run</code></h4>
-<p>Run the full training pipeline.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-11-1" name="__codelineno-11-1" href="#__codelineno-11-1"></a>wsdp<span class="w"> </span>run<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>INPUT_PATH<span class="w"> </span>OUTPUT_FOLDER<span class="w"> </span>DATASET
-<a id="__codelineno-11-2" name="__codelineno-11-2" href="#__codelineno-11-2"></a>
-<a id="__codelineno-11-3" name="__codelineno-11-3" href="#__codelineno-11-3"></a>Options:
-<a id="__codelineno-11-4" name="__codelineno-11-4" href="#__codelineno-11-4"></a><span class="w">  </span>-m,<span class="w"> </span>--model-path<span class="w"> </span>PATH<span class="w">    </span>Path<span class="w"> </span>to<span class="w"> </span>custom<span class="w"> </span>model
-<a id="__codelineno-11-5" name="__codelineno-11-5" href="#__codelineno-11-5"></a><span class="w">  </span>--lr<span class="w"> </span>FLOAT<span class="w">              </span>Learning<span class="w"> </span>rate
-<a id="__codelineno-11-6" name="__codelineno-11-6" href="#__codelineno-11-6"></a><span class="w">  </span>-e,<span class="w"> </span>--epochs<span class="w"> </span>INT<span class="w">        </span>Number<span class="w"> </span>of<span class="w"> </span>epochs
-<a id="__codelineno-11-7" name="__codelineno-11-7" href="#__codelineno-11-7"></a><span class="w">  </span>-b,<span class="w"> </span>--batch-size<span class="w"> </span>INT<span class="w">    </span>Batch<span class="w"> </span>size
-<a id="__codelineno-11-8" name="__codelineno-11-8" href="#__codelineno-11-8"></a><span class="w">  </span>-c,<span class="w"> </span>--config<span class="w"> </span>PATH<span class="w">       </span>Config<span class="w"> </span>file<span class="w"> </span>path
+<h3 id="wsdp-run"><code>wsdp run</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-45-1" name="__codelineno-45-1" href="#__codelineno-45-1"></a>wsdp<span class="w"> </span>run<span class="w"> </span>./data/elderAL<span class="w"> </span>./output<span class="w"> </span>elderAL<span class="w"> </span>--lr<span class="w"> </span><span class="m">0</span>.001<span class="w"> </span>--epochs<span class="w"> </span><span class="m">50</span>
 </code></pre></div>
-<h4 id="wsdp-download"><code>wsdp download</code></h4>
-<p>Download datasets.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-12-1" name="__codelineno-12-1" href="#__codelineno-12-1"></a>wsdp<span class="w"> </span>download<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span><span class="w"> </span>DATASET_NAME<span class="w"> </span>DEST
-<a id="__codelineno-12-2" name="__codelineno-12-2" href="#__codelineno-12-2"></a>
-<a id="__codelineno-12-3" name="__codelineno-12-3" href="#__codelineno-12-3"></a>Options:
-<a id="__codelineno-12-4" name="__codelineno-12-4" href="#__codelineno-12-4"></a><span class="w">  </span>-e,<span class="w"> </span>--email<span class="w"> </span>TEXT<span class="w">        </span>Email<span class="w"> </span><span class="k">for</span><span class="w"> </span>auth
-<a id="__codelineno-12-5" name="__codelineno-12-5" href="#__codelineno-12-5"></a><span class="w">  </span>-p,<span class="w"> </span>--password<span class="w"> </span>TEXT<span class="w">     </span>Password<span class="w"> </span><span class="k">for</span><span class="w"> </span>auth
-<a id="__codelineno-12-6" name="__codelineno-12-6" href="#__codelineno-12-6"></a><span class="w">  </span>-t,<span class="w"> </span>--token<span class="w"> </span>TEXT<span class="w">        </span>JWT<span class="w"> </span>token
+<h3 id="wsdp-download"><code>wsdp download</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-46-1" name="__codelineno-46-1" href="#__codelineno-46-1"></a>wsdp<span class="w"> </span>download<span class="w"> </span>elderAL<span class="w"> </span>./data<span class="w"> </span>--email<span class="w"> </span>you@example.com<span class="w"> </span>--password<span class="w"> </span>yourpassword
 </code></pre></div>
-<h4 id="wsdp-list"><code>wsdp list</code></h4>
-<p>List available datasets.</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-13-1" name="__codelineno-13-1" href="#__codelineno-13-1"></a>wsdp<span class="w"> </span>list<span class="w"> </span><span class="o">[</span>OPTIONS<span class="o">]</span>
-<a id="__codelineno-13-2" name="__codelineno-13-2" href="#__codelineno-13-2"></a>
-<a id="__codelineno-13-3" name="__codelineno-13-3" href="#__codelineno-13-3"></a>Options:
-<a id="__codelineno-13-4" name="__codelineno-13-4" href="#__codelineno-13-4"></a><span class="w">  </span>-V,<span class="w"> </span>--verbose<span class="w">   </span>Show<span class="w"> </span>detailed<span class="w"> </span>metadata
+<h3 id="wsdp-list"><code>wsdp list</code></h3>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-47-1" name="__codelineno-47-1" href="#__codelineno-47-1"></a>wsdp<span class="w"> </span>list<span class="w"> </span>-V
 </code></pre></div>
 <hr />
-<h2 id="configuration">Configuration</h2>
-<h3 id="yaml-config-file">YAML Config File</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-14-1" name="__codelineno-14-1" href="#__codelineno-14-1"></a><span class="c1"># config.yaml</span>
-<a id="__codelineno-14-2" name="__codelineno-14-2" href="#__codelineno-14-2"></a><span class="nt">widar</span><span class="p">:</span>
-<a id="__codelineno-14-3" name="__codelineno-14-3" href="#__codelineno-14-3"></a><span class="w">  </span><span class="nt">learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.001</span>
-<a id="__codelineno-14-4" name="__codelineno-14-4" href="#__codelineno-14-4"></a><span class="w">  </span><span class="nt">num_epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">50</span>
-<a id="__codelineno-14-5" name="__codelineno-14-5" href="#__codelineno-14-5"></a><span class="w">  </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">64</span>
-<a id="__codelineno-14-6" name="__codelineno-14-6" href="#__codelineno-14-6"></a>
-<a id="__codelineno-14-7" name="__codelineno-14-7" href="#__codelineno-14-7"></a><span class="nt">gait</span><span class="p">:</span>
-<a id="__codelineno-14-8" name="__codelineno-14-8" href="#__codelineno-14-8"></a><span class="w">  </span><span class="nt">learning_rate</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">0.0005</span>
-<a id="__codelineno-14-9" name="__codelineno-14-9" href="#__codelineno-14-9"></a><span class="w">  </span><span class="nt">num_epochs</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">100</span>
-<a id="__codelineno-14-10" name="__codelineno-14-10" href="#__codelineno-14-10"></a><span class="w">  </span><span class="nt">batch_size</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">32</span>
-</code></pre></div>
+<h2 id="algorithm-library-overview">Algorithm Library Overview</h2>
+<table>
+<thead>
+<tr>
+<th>Category</th>
+<th>Algorithm</th>
+<th>Function</th>
+<th>Key Reference</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Denoising</strong></td>
+<td>Wavelet</td>
+<td><code>wavelet_denoise_csi()</code></td>
+<td>Donoho &amp; Johnstone, 1994</td>
+</tr>
+<tr>
+<td></td>
+<td>Butterworth</td>
+<td><code>butterworth_denoise()</code></td>
+<td>Butterworth, 1930</td>
+</tr>
+<tr>
+<td></td>
+<td>Savitzky-Golay</td>
+<td><code>savgol_denoise()</code></td>
+<td>Savitzky &amp; Golay, 1964</td>
+</tr>
+<tr>
+<td><strong>Phase Calibration</strong></td>
+<td>Linear</td>
+<td><code>phase_calibration()</code></td>
+<td>Halperin et al., 2010</td>
+</tr>
+<tr>
+<td></td>
+<td>Polynomial</td>
+<td><code>polynomial_calibration()</code></td>
+<td>Extension of linear</td>
+</tr>
+<tr>
+<td></td>
+<td>STC</td>
+<td><code>stc_calibration()</code></td>
+<td>Xie et al., IEEE TWC 2019</td>
+</tr>
+<tr>
+<td></td>
+<td>Robust</td>
+<td><code>robust_phase_sanitization()</code></td>
+<td>Wang et al., IEEE ICPADS 2012</td>
+</tr>
+<tr>
+<td><strong>Normalization</strong></td>
+<td>Z-Score</td>
+<td><code>normalize_amplitude()</code></td>
+<td>Standard statistical</td>
+</tr>
+<tr>
+<td></td>
+<td>Min-Max</td>
+<td><code>normalize_amplitude()</code></td>
+<td>Standard statistical</td>
+</tr>
+<tr>
+<td><strong>Interpolation</strong></td>
+<td>Linear/Cubic/Nearest</td>
+<td><code>interpolate_grid()</code></td>
+<td>de Boor, 1978</td>
+</tr>
+<tr>
+<td><strong>Features</strong></td>
+<td>Doppler</td>
+<td><code>doppler_spectrum()</code></td>
+<td>Ali et al., MobiCom 2015</td>
+</tr>
+<tr>
+<td></td>
+<td>Entropy</td>
+<td><code>entropy_features()</code></td>
+<td>Shannon, 1948</td>
+</tr>
+<tr>
+<td></td>
+<td>CSI Ratio</td>
+<td><code>csi_ratio()</code></td>
+<td>Halperin et al., 2011</td>
+</tr>
+<tr>
+<td></td>
+<td>Tensor Decomposition</td>
+<td><code>tensor_decomposition()</code></td>
+<td>Kolda &amp; Bader, SIAM 2009</td>
+</tr>
+<tr>
+<td><strong>Detection</strong></td>
+<td>Activity</td>
+<td><code>detect_activity()</code></td>
+<td>Zhou et al., 2013</td>
+</tr>
+<tr>
+<td></td>
+<td>Change Point</td>
+<td><code>change_point_detection()</code></td>
+<td>Adams &amp; MacKay, 2007</td>
+</tr>
+</tbody>
+</table>
 <hr />
-<h2 id="type-hints">Type Hints</h2>
-<p>WSDP uses Python type hints throughout:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-15-1" name="__codelineno-15-1" href="#__codelineno-15-1"></a><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Optional</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<a id="__codelineno-15-2" name="__codelineno-15-2" href="#__codelineno-15-2"></a><span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<a id="__codelineno-15-3" name="__codelineno-15-3" href="#__codelineno-15-3"></a>
-<a id="__codelineno-15-4" name="__codelineno-15-4" href="#__codelineno-15-4"></a><span class="k">def</span><span class="w"> </span><span class="nf">process_csi</span><span class="p">(</span>
-<a id="__codelineno-15-5" name="__codelineno-15-5" href="#__codelineno-15-5"></a>    <span class="n">data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-15-6" name="__codelineno-15-6" href="#__codelineno-15-6"></a>    <span class="n">sampling_rate</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1000.0</span><span class="p">,</span>
-<a id="__codelineno-15-7" name="__codelineno-15-7" href="#__codelineno-15-7"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="nb">dict</span><span class="p">]:</span>
-<a id="__codelineno-15-8" name="__codelineno-15-8" href="#__codelineno-15-8"></a>    <span class="o">...</span>
-</code></pre></div>
-<hr />
-<p>For more examples, see the <a href="examples/">examples/</a> directory.</p>
+<p>For more examples, see the <a href="../examples/">examples/</a> directory.</p>
 
 
 
