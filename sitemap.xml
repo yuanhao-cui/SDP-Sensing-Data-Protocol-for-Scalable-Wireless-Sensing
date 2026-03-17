@@ -9,7 +9,51 @@
          <lastmod>2026-03-17</lastmod>
     </url>
     <url>
+         <loc>https://sdp-team.github.io/wsdp/api/algorithms/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/api/core/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/api/models/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/api/readers/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/datasets/overview/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/development/changelog/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/development/contributing/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
          <loc>https://sdp-team.github.io/wsdp/getting-started/installation/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/getting-started/quickstart/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/user-guide/cli/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/user-guide/configuration/</loc>
+         <lastmod>2026-03-17</lastmod>
+    </url>
+    <url>
+         <loc>https://sdp-team.github.io/wsdp/user-guide/python-api/</loc>
          <lastmod>2026-03-17</lastmod>
     </url>
 </urlset>
