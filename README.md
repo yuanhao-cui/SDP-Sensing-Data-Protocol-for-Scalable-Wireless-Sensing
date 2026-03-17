@@ -9,7 +9,7 @@
 [![PyTorch](https://img.shields.io/badge/PyTorch-1.10%2B-EE4C2C.svg)](https://pytorch.org)
 [![Tests](https://img.shields.io/badge/tests-pytest-blueviolet)](https://docs.pytest.org)
 [![Docs](https://img.shields.io/badge/docs-MkDocs-blue.svg)](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
-[![Colab](https://img.shields.io/badge/Colab-Tutorial-yellow.svg)](https://colab.research.google.com/github/sdp-team/wsdp/blob/main/examples/wsdp_tutorial.ipynb)
+[![Colab](https://img.shields.io/badge/Colab-Tutorial-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb)
 
 **Published and maintained by [SDP8.org](https://sdp8.org) — the official platform for reproducible wireless sensing.**
 
@@ -51,6 +51,68 @@ If you use SDP in your research, please cite:
 SDP is a **protocol-level abstraction** and unified benchmark for **reproducible wireless sensing**.
 
 > ⚠️ **SDP is not a new neural network**, but a standardized protocol that unifies CSI representations for fair comparison.
+
+## 🆚 Why Choose WSDP?
+
+| Capability | WSDP | SenseFi (2023) | CSIKit |
+|:----------:|:----:|:--------------:|:------:|
+| **Built-in Models** | **12 (MLP→Mamba/GNN)** | 11 (MLP→ViT) | ❌ |
+| **Preprocessing Algorithms** | **16+ (Wavelet, STC, etc.)** | ❌ | Basic |
+| **Datasets** | **5** | 4 | ❌ |
+| **Pluggable Architecture** | ✅ **Registry** | ❌ | ❌ |
+| **Protocol Abstraction** | ✅ **Unique** | ❌ | ❌ |
+| **Training Pipeline** | ✅ | ✅ | ❌ |
+| **CLI** | ✅ **Full** | Basic | ✅ |
+
+> *Verified from official GitHub repos on 2026-03-17.*
+
+---
+
+## 🧠 Model Zoo (12 Models, Baseline → SOTA)
+
+<div align="center">
+
+| Category | Models | Use Case |
+|:--------:|:------:|:---------|
+| **Baseline** | MLP, CNN1D, CNN2D, LSTM | Quick experiments, comparisons |
+| **Mainstream** | ResNet1D, ResNet2D, BiLSTM+Attn, EfficientNet | Production use |
+| **SOTA** | ViT, Mamba, GNN, CSIModel | Cutting-edge research |
+
+</div>
+
+```python
+from wsdp.models import create_model, list_models
+model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
+```
+
+---
+
+## 🧪 Algorithm Library (16+ Algorithms)
+
+<div align="center">
+
+| Category | Algorithms | Papers |
+|:--------:|:----------:|:------:|
+| **Denoising** | Wavelet, Butterworth, Savitzky-Golay | 3 |
+| **Phase Calibration** | Linear, Polynomial, STC, Robust | 4 |
+| **Amplitude** | Z-Score, Min-Max, IQR | 3 |
+| **Interpolation** | Linear, Cubic, Nearest | 3 |
+| **Features** | Doppler, Entropy, CSI Ratio, Tensor | 4 |
+| **Detection** | Variance, Change Point | 2 |
+
+</div>
+
+```python
+from wsdp.algorithms import denoise, calibrate, normalize
+denoised = denoise(csi, method='butterworth', order=5, cutoff=0.3)
+calibrated = calibrate(csi, method='stc')
+```
+
+See [Model Guide](docs/models.md) and [Algorithm Guide](docs/getting-started/algorithm-guide.md).
+
+---
+
+## 🎯 What is SDP? (Cont.)
 
 ### The Problem
 
@@ -223,55 +285,6 @@ output/
 | **ZTE** | .csv | 512 | ✅ | CSI with I/Q | ~4GB |
 
 **More datasets coming soon!** See [Roadmap](#roadmap).
-
----
-
-## 🧠 Built-in Model Library (12 Models)
-
-WSDP provides a complete pluggable model library from baselines to SOTA:
-
-| Category | Model | Description |
-|:--------:|:-----:|:------------|
-| **Baseline** | MLPModel | Fully-connected baseline |
-| | CNN1DModel | 1D convolution (temporal) |
-| | CNN2DModel | 2D convolution (spectral) |
-| | LSTMModel | LSTM temporal modeling |
-| **Mainstream** | ResNet1D | 1D residual network |
-| | ResNet2D | 2D residual network |
-| | BiLSTMAttention | BiLSTM + attention |
-| | EfficientNetCSI | Efficient CNN (configurable) |
-| **SOTA** | VisionTransformerCSI | ViT for CSI patches |
-| | MambaCSI | State space model |
-| | GraphNeuralCSI | GNN on antenna topology |
-| | CSIModel | CNN + Transformer (original) |
-
-```python
-from wsdp.models import create_model, list_models
-
-# Create any model with a single call
-model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
-
-# List all available models
-print(list_models())  # {'mlpmodel': 'baseline', 'cnn1dmodel': 'baseline', ...}
-```
-
-See [Model Selection Guide](docs/models.md) for detailed recommendations.
-
-## 🆚 WSDP vs Other WiFi CSI Libraries
-
-| Feature | [SenseFi](https://github.com/xyanchen/WiFi-CSI-Sensing-Benchmark) (2023) | [CSIKit](https://github.com/Gi-z/CSIKit) | **WSDP v0.3.1** |
-|:-------:|:---------:|:------:|:-----------:|
-| **Built-in Models** | 11 (MLP→ViT) | ❌ | **12 (MLP→Mamba/GNN)** |
-| **Datasets** | 4 | ❌ | **5** |
-| **Preprocessing Algorithms** | ❌ | Basic | **16+ (Wavelet, STC, etc.)** |
-| **Training Pipeline** | ✅ | ❌ | ✅ |
-| **CLI** | Basic | ✅ | **Full (run/download/list)** |
-| **Unified Data Format** | ❌ | ✅ CSIFrame | ✅ **CSIFrame** |
-| **Pluggable Architecture** | ❌ | ❌ | ✅ **Registry** |
-| **Protocol-level Abstraction** | ❌ | ❌ | ✅ **Unique** |
-| **Published** | Patterns (Cell Press) | pip | **pip + PyPI** |
-
-> *Data verified from official GitHub repositories on 2026-03-17. No fabricated comparisons.*
 
 ---
 
@@ -466,11 +479,11 @@ SDP enforces **deterministic calibration and denoising**, guaranteeing:
 
 ## 📚 Documentation & Resources
 
-- 📖 [Full Documentation](https://sdp-team.github.io/wsdp)
+- 📖 [Full Documentation](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
 - 🔧 [API Reference](docs/API_REFERENCE.md)
 - 🤝 [Contributing Guide](CONTRIBUTING.md)
 - 📝 [Changelog](CHANGELOG.md)
-- 💻 [Colab Tutorial](https://colab.research.google.com/github/sdp-team/wsdp/blob/main/examples/wsdp_tutorial.ipynb)
+- 💻 [Colab Tutorial](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb)
 
 ---
 
@@ -876,11 +889,11 @@ SDP 强制执行**确定性校准和去噪**，保证：
 
 ## 📚 文档与资源
 
-- 📖 [完整文档](https://sdp-team.github.io/wsdp)
+- 📖 [完整文档](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
 - 🔧 [API 参考](docs/API_REFERENCE.md)
 - 🤝 [贡献指南](CONTRIBUTING.md)
 - 📝 [更新日志](CHANGELOG.md)
-- 💻 [Colab 教程](https://colab.research.google.com/github/sdp-team/wsdp/blob/main/examples/wsdp_tutorial.ipynb)
+- 💻 [Colab 教程](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb)
 
 ---
 
