@@ -20,12 +20,14 @@
 If you use SDP in your research, please cite:
 
 ```bibtex
-@software{wsdp2026,
-  author = {Cui, Yuanhao and WSDP Team},
-  title = {SDP: Sensing Data Protocol for Scalable Wireless Sensing},
-  url = {https://github.com/yuanhao-cui/Sensing-Data-Protocol-for-Scalable-Wireless-Sensing},
-  version = {0.2.0},
-  year = {2026},
+@misc{zhang2026sdpunifiedprotocolbenchmarking,
+      title={SDP: A Unified Protocol and Benchmarking Framework for Reproducible Wireless Sensing}, 
+      author={Di Zhang and Jiawei Huang and Yuanhao Cui and Xiaowen Cao and Tony Xiao Han and Xiaojun Jing and Christos Masouros},
+      year={2026},
+      eprint={2601.08463},
+      archivePrefix={arXiv},
+      primaryClass={eess.SP},
+      url={https://arxiv.org/abs/2601.08463}, 
 }
 ```
 
