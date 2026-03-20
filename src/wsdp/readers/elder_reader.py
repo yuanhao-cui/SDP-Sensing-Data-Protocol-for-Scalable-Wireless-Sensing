@@ -57,7 +57,7 @@ class ElderReader(BaseReader):
                     if tx == target_tx:
                         col_mapping[idx] = (sub, rx)
                         if sub > max_sub: max_sub = sub
-                        if rx > max_rx: max_rx = max_rx
+                        if rx > max_rx: max_rx = rx
 
             if timestamp_idx == -1:
                 raise ValueError("cannot find column 'timestamp'")
