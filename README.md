@@ -214,8 +214,12 @@ data/
 │   ├── action1_walk_new/
 │   └── ...
 ├── widar/
+│
 ├── gait/
+│
 ├── xrf55/
+│   └── WIFI/
+│       └── sample.npy
 └── zte/
 ```
 
@@ -365,6 +369,7 @@ def my_denoise(csi, **kwargs):
 register_algorithm('denoise', 'my_method', my_denoise)
 result = denoise(csi, method='my_method')  # Works like built-in!
 ```
+You can try this in `examples/getting_started.ipynb` or just in your custom pipeline!
 
 **Configuration file support:**
 
@@ -385,6 +390,10 @@ normalize:
 from wsdp.algorithms import load_config, execute_pipeline
 config = load_config('algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
+```
+Or:
+```python
+pipeline("./data/elderAL", "./output", "elderAL", config_file='./algorithms_config.yaml')
 ```
 
 **Pipeline presets:**
