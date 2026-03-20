@@ -22,6 +22,32 @@ class BfeeReader(BaseReader):
             "complex": True,
         }
 
+    def sniff(self, file_path: str) -> bool:
+        """
+        Check for Intel IWL5300 Bfee binary format.
+        Looks for 0xBB code byte in the first few records.
+        """
+        try:
+            with open(file_path, 'rb') as f:
+                data = f.read(4096)
+            if len(data) < 10:
+                return False
+            # Check for Bfee marker (code 0xBB) in first few header positions
+            cur = 0
+            checked = 0
+            while cur + 3 < len(data) and checked < 5:
+                field_len = (data[cur] << 8) | data[cur + 1]
+                code = data[cur + 2]
+                if code == 0xBB:
+                    return True
+                if field_len < 1 or field_len > 4096:
+                    return False
+                cur += 3 + field_len - 1
+                checked += 1
+            return False
+        except Exception:
+            return False
+
     def read_file(self, file_path: str) -> CSIData:
         file_name = os.path.basename(file_path)
         ret_data = CSIData(file_name)

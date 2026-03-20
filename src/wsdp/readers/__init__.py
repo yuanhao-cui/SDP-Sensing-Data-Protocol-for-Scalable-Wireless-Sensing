@@ -62,6 +62,9 @@ def _process_file(reader, file_path):
     process function for concurrent reading
     """
     try:
+        # Sniff: skip files that don't match this reader's format
+        if not reader.sniff(str(file_path)):
+            return file_path.name, None, "format_mismatch"
         data = reader.read_file(str(file_path))
         return file_path.name, data, None
     except Exception as e:
@@ -79,6 +82,7 @@ def load_data(file_path: str, dataset: str) -> List[CSIData]:
     reader_class = get_reader_class(dataset)
     reader = reader_class()
     csi_data_list = []
+    skipped = 0
 
     with ProcessPoolExecutor(max_workers=16) as executor:
         futures = {executor.submit(_process_file, reader, file_path): file_path for file_path in files}
@@ -87,6 +91,12 @@ def load_data(file_path: str, dataset: str) -> List[CSIData]:
             if err is None:
                 csi_data_list.extend(data) if isinstance(data, List) else csi_data_list.append(data)
                 print(f"√ processed: {file_name}\n")
+            elif err == "format_mismatch":
+                skipped += 1
             else:
                 print(f"× unable to process {file_name}: {err}\n")
+
+    if skipped > 0:
+        print(f"[Info] skipped {skipped} file(s) (format mismatch for {dataset} reader)")
+
     return csi_data_list

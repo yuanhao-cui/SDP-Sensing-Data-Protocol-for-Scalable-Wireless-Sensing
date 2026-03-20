@@ -9,7 +9,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from .utils import load_api, load_mapping, download_ftp
 
 
-def download(dataset_name: str, dest: str, email: str = None, password: str = None, token: str = None):
+def download(dataset_name: str, dest: str, email: str = None, password: str = None, token: str = None, extensions: list = None):
     """
     Download a dataset by name.
 
@@ -24,11 +24,13 @@ def download(dataset_name: str, dest: str, email: str = None, password: str = No
         email: Email for authentication (optional, for non-interactive mode)
         password: Password for authentication (optional, for non-interactive mode)
         token: JWT token for authentication (optional, overrides email/password)
+        extensions: Optional list of file extensions to download (e.g. ['.csv', '.mat']).
+                    Only FTP datasets support this filter.
     """
     dn = load_mapping(dataset_name)
     if dataset_name != 'elderAL':
         try:
-            _download_without_aws(dataset_name, dest)
+            _download_without_aws(dataset_name, dest, extensions=extensions)
             return
         except Exception as e:
             print(f"Error occurred when tried to download with other sources: {e}, try to download with SDP Storage\n")
@@ -48,14 +50,22 @@ def download(dataset_name: str, dest: str, email: str = None, password: str = No
             "Authorization": f"Bearer {auth_token}",
         }
     else:
-        # Email/password auth
+        # Email/password auth — only prompt interactively if stdin is a TTY
         if not email:
-            email = input("Email: ").strip()
+            if sys.stdin.isatty():
+                email = input("Email: ").strip()
+            else:
+                print("error: email is required (non-interactive mode). Use --email or set WSDP_TOKEN.")
+                return
         if not password:
-            password = getpass.getpass("Password: ")
+            if sys.stdin.isatty():
+                password = getpass.getpass("Password: ")
+            else:
+                print("error: password is required (non-interactive mode). Use --password or set WSDP_TOKEN.")
+                return
 
         if not email or not password:
-            print("error: email and password cannot be null")
+            print("error: email and password cannot be empty")
             return
 
         api = load_api("auth")
@@ -221,13 +231,15 @@ def _single_thread_download(url, dest, file_name):
             os.remove(dest)
 
 
-def _download_without_aws(dataset_name: str, dest: str):
+def _download_without_aws(dataset_name: str, dest: str, extensions: list = None):
     if dataset_name == 'widar':
-        download_ftp(dataset_name, dest)
+        download_ftp(dataset_name, dest, extensions=extensions)
     elif dataset_name == 'gait':
-        download_ftp(dataset_name, dest)
+        download_ftp(dataset_name, dest, extensions=extensions)
     elif dataset_name == 'xrf55':
         os.environ['KAGGLEHUB_CACHE'] = dest
         print(f"os.environ['KAGGLEHUB_CACHE'] is changed to {dest}")
         path = kagglehub.dataset_download("xrfdataset/xrf55-rawdata")
         print("Path to dataset files:", path)
+    else:
+        raise ValueError(f"no direct download source for '{dataset_name}'")

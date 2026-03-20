@@ -22,6 +22,24 @@ class ZTEReader(BaseReader):
             "complex": True,
         }
 
+    def sniff(self, file_path: str) -> bool:
+        """
+        Check for ZTE CSV format (headers: csi_i_0, csi_q_0, rx_chain_num, timestamp).
+        """
+        try:
+            with open(file_path, 'rb') as f:
+                chunk = f.read(2048)
+            if len(chunk) < 10:
+                return False
+            try:
+                text = chunk.decode('utf-8')
+            except UnicodeDecodeError:
+                return False
+            # ZTE-specific headers
+            return ('csi_i_0' in text and 'csi_q_0' in text) or 'rx_chain_num' in text
+        except Exception:
+            return False
+
     def read_file(self, file_path: str) -> CSIData:
         ret = CSIData(file_path)
 

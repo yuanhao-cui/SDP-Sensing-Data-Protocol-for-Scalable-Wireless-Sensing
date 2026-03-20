@@ -38,15 +38,21 @@ def _process_single_csi(csi_data, dataset):
         frame_tensors.append(data)
     if frame_tensors:
         whole_csi = np.stack(frame_tensors, axis=0)
-        whole_csi = whole_csi.squeeze()
-        # discard data with too short time period(1 timestamp)
-        if whole_csi.ndim < 3:
-            print(f"only one timestamp: {csi_data.file_name} \n")
+        # Ensure 3D: (T, F, A) — guard against single-dimension data
+        if whole_csi.ndim == 2:
+            # (T, F) — single antenna, reshape to (T, F, 1)
+            whole_csi = np.expand_dims(whole_csi, -1)
+        elif whole_csi.ndim == 1:
+            # (T,) — too degenerate, skip
+            print(f"data too degenerate (1D): {csi_data.file_name}")
             return None, None, None
-        else:
-            whole_csi = phase_calibration(whole_csi)
-            cleaned_csi = wavelet_denoise_csi(whole_csi)
-            return cleaned_csi, label, group
+        # discard data with too short time period (1 timestamp)
+        if whole_csi.shape[0] < 2:
+            print(f"only one timestamp: {csi_data.file_name}")
+            return None, None, None
+        whole_csi = phase_calibration(whole_csi)
+        cleaned_csi = wavelet_denoise_csi(whole_csi)
+        return cleaned_csi, label, group
     return None, None, None
 
 
@@ -67,14 +73,15 @@ def _parse_file_info_from_filename(f_name, dataset):
             print(f"[Warning] Skipping file {f_name}: Invalid format for Gesture Recognition.")
 
     elif dataset == 'gait':
-        # Parse for Gait Recognition (pattern "user3-1-1-r1.dat")
+        # Parse for Gait Recognition (pattern "user{N}-{track}-{activity}-r{rep}.dat")
         m = re.search(r'user(\d+)-(\d+)-(\d+)-r(\d+)', base, re.IGNORECASE)
         if m:
             user_id = int(m.group(1))
             track_id = int(m.group(2))
-            data_serial = int(m.group(3))
+            activity_id = int(m.group(3))
+            rep_id = int(m.group(4))
 
-            return user_id, track_id, data_serial, None, None, None
+            return user_id, track_id, activity_id, rep_id, None, None
         else:
             print(f"[Warning] Skipping file {f_name}: Invalid format for Activity Recognition.")
 
@@ -120,8 +127,8 @@ def _selector(res, dataset):
         label = int(res[1])
         group = int(res[2])
     elif dataset == 'gait':
-        label = int(res[0])
-        group = int(res[1])
+        label = int(res[2])  # activity_id (movement type)
+        group = int(res[3])  # rep_id (repetition, prevents data leakage)
     elif dataset == 'xrf55':
         label = int(res[1])
         group = int(res[0])

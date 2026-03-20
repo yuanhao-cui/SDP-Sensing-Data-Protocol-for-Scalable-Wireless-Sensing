@@ -30,12 +30,42 @@ def _run_pipeline(args: argparse.Namespace) -> None:
 
 
 def _download_pipeline(args: argparse.Namespace) -> None:
+    from .readers import list_datasets
+
+    dataset = args.dataset_name
+    datasets = list_datasets()
+
+    if dataset not in datasets:
+        print(f"error: unknown dataset '{dataset}'. Available: {', '.join(datasets)}")
+        return
+
+    # elderAL requires authentication (SDP8 platform)
+    if dataset == "elderAL" and not args.token and not os.environ.get("WSDP_TOKEN"):
+        if not args.email or not args.password:
+            print("error: dataset 'elderAL' requires authentication.")
+            print("Please provide --email and --password, or --token / WSDP_TOKEN env var.")
+            print()
+            print("Examples:")
+            print("  wsdp download elderAL ./data --email user@example.com --password 'yourpass'")
+            print("  wsdp download elderAL ./data --token <jwt_token>")
+            print("  export WSDP_TOKEN=<jwt_token> && wsdp download elderAL ./data")
+            return
+
+    # Parse extensions filter
+    extensions = None
+    if args.ext:
+        extensions = [e.strip() for e in args.ext.split(',')]
+        if not all(e.startswith('.') for e in extensions):
+            print("error: --ext values must start with '.' (e.g. '.csv,.mat')")
+            return
+
     download(
         args.dataset_name,
         args.dest,
         email=args.email,
         password=args.password,
         token=args.token,
+        extensions=extensions,
     )
 
 
@@ -116,6 +146,11 @@ def main_cli() -> None:
     parser_download.add_argument(
         "--token", "-t", type=str, default=None,
         help="JWT token for authentication (env var: WSDP_TOKEN)"
+    )
+    parser_download.add_argument(
+        "--ext", type=str, default=None,
+        help="Comma-separated file extensions to download (e.g. '.csv,.mat'). "
+             "Files with other extensions will be skipped."
     )
     parser_download.set_defaults(func=_download_pipeline)
 

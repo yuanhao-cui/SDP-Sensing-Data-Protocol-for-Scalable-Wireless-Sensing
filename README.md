@@ -85,6 +85,12 @@ from wsdp.models import create_model, list_models
 model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
 ```
 
+> **⚠️ Baseline Model Architecture Note**
+>
+> Baseline models (MLP, CNN1D, CNN2D, LSTM) use a **Spatial Encoder** (Conv2d-based)
+> to compress the `(F, A)` antenna dimension before temporal processing. This prevents
+> parameter explosion from direct `(T, F, A)` flattening. See `CHANGELOG.md` for details.
+
 ---
 
 ## 🧪 Algorithm Library (16+ Algorithms)
@@ -192,10 +198,11 @@ wsdp download elderAL ./data --email you@example.com --password yourpassword
 wsdp download elderAL ./data --token YOUR_JWT_TOKEN
 
 # Download larger datasets:
-# wsdp download widar ./data --email you@example.com --password yourpassword
-# wsdp download gait ./data --email you@example.com --password yourpassword
-# wsdp download xrf55 ./data --email you@example.com --password yourpassword
+# wsdp download widar ./data
+# wsdp download gait ./data
+# wsdp download xrf55 ./data
 # wsdp download zte ./data --email you@example.com --password yourpassword
+# ⚠️ zte requires applying for access on the SDP platform first
 ```
 
 **Option B: From [SDP8.org](https://sdp8.org) Web Interface**
@@ -283,7 +290,7 @@ output/
 | Dataset | Format | Subcarriers | Complex | Scenarios | Size |
 |:-------:|:------:|:-----------:|:-------:|:---------:|:----:|
 | **Widar** | .dat (bfee) | 30 | ✅ | Gesture recognition | ~2GB |
-| **Gait** | .dat (bfee) | 30 | ✅ | Gait recognition | ~1GB |
+| **Gait** | .dat (bfee, Intel IWL5300) | 30 | ✅ | Gait recognition | ~1GB |
 | **XRF55** | .npy | 30 | ✅ | Human activity | ~3GB |
 | **ElderAL** | .csv | varies | ❌ | Elderly activity | ~500MB |
 | **ZTE** | .csv | 512 | ✅ | CSI with I/Q | ~4GB |
@@ -611,10 +618,11 @@ wsdp download elderAL ./data --email you@example.com --password yourpassword
 wsdp download elderAL ./data --token YOUR_JWT_TOKEN
 
 # 下载其他数据集：
-# wsdp download widar ./data --email you@example.com --password yourpassword
-# wsdp download gait ./data --email you@example.com --password yourpassword
-# wsdp download xrf55 ./data --email you@example.com --password yourpassword
+# wsdp download widar ./data
+# wsdp download gait ./data
+# wsdp download xrf55 ./data
 # wsdp download zte ./data --email you@example.com --password yourpassword
+# ⚠️ zte requires applying for access on the SDP platform first
 ```
 
 **方式 B：从 [SDP8.org](https://sdp8.org) 网页下载**

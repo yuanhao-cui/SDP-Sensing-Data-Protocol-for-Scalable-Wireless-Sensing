@@ -1,3 +1,4 @@
+import os
 import re
 import csv
 import numpy as np
@@ -20,6 +21,45 @@ class ElderReader(BaseReader):
             "frame_type": "BaseFrame",
             "complex": False,
         }
+
+    def sniff(self, file_path: str) -> bool:
+        """
+        Check for elderAL CSV format (headers: amp_tx\\d+_rx\\d+_sub\\d+).
+        Rejects Bfee binary format (.dat files with 0xBB markers).
+        """
+        try:
+            _, ext = os.path.splitext(file_path)
+
+            # Reject Bfee (.dat) binary — those belong to BfeeReader
+            if ext.lower() == '.dat':
+                # Quick check: if it has Bfee markers, reject
+                with open(file_path, 'rb') as f:
+                    head = f.read(512)
+                if len(head) >= 5:
+                    cur = 0
+                    while cur + 3 < len(head):
+                        field_len = (head[cur] << 8) | head[cur + 1]
+                        code = head[cur + 2]
+                        if code == 0xBB:
+                            return False  # Bfee format, not elderAL
+                        if field_len < 1:
+                            break
+                        cur += 3 + field_len - 1
+                # Non-Bfee .dat — could be elderAL binary, accept
+                return True
+
+            # CSV: check for elderAL column headers
+            with open(file_path, 'rb') as f:
+                chunk = f.read(2048)
+            if len(chunk) < 10:
+                return False
+            try:
+                text = chunk.decode('utf-8')
+                return 'amp_tx' in text and 'rx' in text and 'sub' in text
+            except UnicodeDecodeError:
+                return False
+        except Exception:
+            return False
 
     def _is_binary_file(self, file_path: str) -> bool:
         """检测文件是否为二进制格式"""

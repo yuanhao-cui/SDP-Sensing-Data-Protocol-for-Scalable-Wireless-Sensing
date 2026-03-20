@@ -34,11 +34,22 @@ Options:
   -e, --email TEXT        Email for authentication
   -p, --password TEXT     Password for authentication
   -t, --token TEXT        JWT token
+  --ext TEXT              Comma-separated extensions to download (e.g. '.csv,.mat')
 
 Examples:
-  wsdp download elderAL ./data
-  wsdp download widar ./data --token YOUR_JWT_TOKEN
+  wsdp download elderAL ./data --email user@example.com --password 'yourpass'
+  wsdp download widar ./data
+  wsdp download gait ./data
+  wsdp download xrf55 ./data
+  wsdp download zte ./data --email user@example.com --password 'yourpass'
 ```
+
+> ⚠️ **zte dataset**: Requires applying for access on the SDP platform first.
+> Account credentials alone are not sufficient — you must submit an access request
+> at [sdp8.org](https://sdp8.org) for the zte dataset specifically.
+
+> 📝 **gait dataset**: Data is in Intel IWL5300 binary (.dat) format.
+> Use `--ext .csv,.mat` to skip binary files (but note: gait has only .dat files).
 
 ### `wsdp list`
 
