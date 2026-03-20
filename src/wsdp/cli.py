@@ -84,7 +84,7 @@ def main_cli() -> None:
     parser_run.add_argument("dataset", type=str, help="dataset name")
     parser_run.add_argument("--model-path", "-m", type=str, help="path of custom model")
     parser_run.add_argument(
-        "--lr", "--learning-rate", type=float, default=None,
+        "--lr", "--learning-rate", dest="learning_rate", type=float, default=None,
         help="learning rate for training (default: from model_params.json)"
     )
     parser_run.add_argument(
