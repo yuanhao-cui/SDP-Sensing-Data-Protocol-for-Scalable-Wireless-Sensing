@@ -129,5 +129,8 @@ class BfeeReader(BaseReader):
                 rx_i = j % n_rx
                 tx_i = j // n_rx
                 csi_array[sc_idx, rx_i, tx_i] = np.complex64(real8 + 1j * imag8)
+        # Flatten antenna dims: (F=30, n_rx, n_tx) -> (F=30, n_rx*n_tx)
+        # Unifies BfeeReader output to (F, A) compatible with all algorithms
+        csi_array = csi_array.reshape(30, n_rx * n_tx)
         return BfeeFrame(timestamp, csi_array, bfee_count, n_rx, n_tx, rssi_a, rssi_b, rssi_c,
                          noise, agc, antenna_sel, fake_rate)
