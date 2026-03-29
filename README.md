@@ -46,6 +46,18 @@ If you use SDP in your research, please cite:
 <a id="english"></a>
 # 🇬🇧 English
 
+## 🆕 What's New in v0.4.0
+
+- **7 critical scientific bug fixes** -- corrected phase calibration, wavelet boundary handling, Doppler normalization, and more
+- **7 new SOTA models** -- THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense (19 total)
+- **6 new preprocessing algorithms** -- conjugate_multiply, agc_compensate, pca_fusion, bandpass, hampel, decimate (26+ total)
+- **Benchmark leaderboard** -- standardized model comparison across datasets
+- **CI/CD pipeline** -- automated testing, linting, and release workflow
+- **Experiment tracking & caching** -- reproducible runs with result caching
+- **GroupKFold cross-validation** -- user-aware evaluation to prevent data leakage
+
+---
+
 ## 🎯 What is SDP?
 
 SDP is a **protocol-level abstraction** and unified benchmark for **reproducible wireless sensing**.
@@ -56,8 +68,8 @@ SDP is a **protocol-level abstraction** and unified benchmark for **reproducible
 
 | Capability | WSDP | SenseFi (2023) | CSIKit |
 |:----------:|:----:|:--------------:|:------:|
-| **Built-in Models** | **12 (MLP→Mamba/GNN)** | 11 (MLP→ViT) | ❌ |
-| **Preprocessing Algorithms** | **16+ (Wavelet, STC, etc.)** | ❌ | Basic |
+| **Built-in Models** | **19 (MLP→Mamba/GNN)** | 11 (MLP→ViT) | ❌ |
+| **Preprocessing Algorithms** | **26+ (Wavelet, STC, etc.)** | ❌ | Basic |
 | **Datasets** | **5** | 4 | ❌ |
 | **Pluggable Architecture** | ✅ **Registry** | ❌ | ❌ |
 | **Protocol Abstraction** | ✅ **Unique** | ❌ | ❌ |
@@ -68,7 +80,7 @@ SDP is a **protocol-level abstraction** and unified benchmark for **reproducible
 
 ---
 
-## 🧠 Model Zoo (12 Models, Baseline → SOTA)
+## 🧠 Model Zoo (19 Models, Baseline → SOTA)
 
 <div align="center">
 
@@ -77,6 +89,9 @@ SDP is a **protocol-level abstraction** and unified benchmark for **reproducible
 | **Baseline** | MLP, CNN1D, CNN2D, LSTM | Quick experiments, comparisons |
 | **Mainstream** | ResNet1D, ResNet2D, BiLSTM+Attn, EfficientNet | Production use |
 | **SOTA** | ViT, Mamba, GNN, CSIModel | Cutting-edge research |
+| **Specialized** | THAT, CSITime, PA_CSI | Task-specific architectures |
+| **Lightweight** | WiFlexFormer, AttentionGRU | Efficient deployment |
+| **Cross-Domain** | EI, FewSense | Domain adaptation & few-shot |
 
 </div>
 
@@ -93,18 +108,19 @@ model = create_model("ResNet1D", num_classes=10, input_shape=(20, 30, 3))
 
 ---
 
-## 🧪 Algorithm Library (16+ Algorithms)
+## 🧪 Algorithm Library (26+ Algorithms in 7 Categories)
 
 <div align="center">
 
-| Category | Algorithms | Papers |
-|:--------:|:----------:|:------:|
-| **Denoising** | Wavelet, Butterworth, Savitzky-Golay | 3 |
+| Category | Algorithms | Count |
+|:--------:|:----------:|:-----:|
+| **Denoising** | Wavelet, Butterworth, Savitzky-Golay, Bandpass, Hampel | 5 |
 | **Phase Calibration** | Linear, Polynomial, STC, Robust | 4 |
-| **Amplitude** | Z-Score, Min-Max, IQR | 3 |
-| **Interpolation** | Linear, Cubic, Nearest | 3 |
-| **Features** | Doppler, Entropy, CSI Ratio, Tensor | 4 |
+| **Amplitude** | Z-Score, Min-Max, IQR Outlier, AGC Compensation | 4 |
+| **Interpolation** | Linear, Cubic, Nearest, Anti-alias Decimate | 4 |
+| **Features** | Doppler, Entropy, CSI Ratio, Tensor, Conjugate Multiply, PCA Fusion | 6 |
 | **Detection** | Variance, Change Point | 2 |
+| **Composition** | Pipeline presets, YAML config | - |
 
 </div>
 
@@ -420,17 +436,23 @@ processed = execute_pipeline(csi, steps)
 | **Denoising** | Wavelet | `wavelet_denoise_csi()` | Donoho & Johnstone, 1994 |
 | | Butterworth | `butterworth_denoise()` | Butterworth, 1930 |
 | | Savitzky-Golay | `savgol_denoise()` | Savitzky & Golay, 1964 |
+| | Bandpass | `bandpass_filter()` | Standard DSP |
+| | Hampel | `hampel_filter()` | Hampel, 1974 |
 | **Phase Calibration** | Linear | `phase_calibration()` | Halperin et al., 2010 |
 | | Polynomial | `polynomial_calibration()` | Extension of linear |
 | | STC | `stc_calibration()` | Xie et al., IEEE TWC 2019 |
 | | Robust | `robust_phase_sanitization()` | Wang et al., ICPADS 2012 |
 | **Normalization** | Z-Score | `normalize_amplitude()` | Standard statistical |
 | | Min-Max | `normalize_amplitude()` | Standard statistical |
+| | AGC Compensation | `agc_compensate()` | AGC gain correction |
 | **Interpolation** | Linear/Cubic/Nearest | `interpolate_grid()` | de Boor, 1978 |
+| | Anti-alias Decimate | `decimate()` | Anti-alias downsampling |
 | **Features** | Doppler | `doppler_spectrum()` | Ali et al., MobiCom 2015 |
 | | Entropy | `entropy_features()` | Shannon, 1948 |
 | | CSI Ratio | `csi_ratio()` | Halperin et al., 2011 |
 | | Tensor Decomposition | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
+| | Conjugate Multiply | `conjugate_multiply()` | Antenna pair correlation |
+| | PCA Fusion | `pca_fusion()` | Dimensionality reduction |
 | **Detection** | Activity | `detect_activity()` | Zhou et al., 2013 |
 | | Change Point | `change_point_detection()` | Adams & MacKay, 2007 |
 
@@ -507,9 +529,9 @@ SDP enforces **deterministic calibration and denoising**, guaranteeing:
 
 - [x] **v0.1** - Initial protocol design
 - [x] **v0.2** - 5 datasets support, CLI tool
-- [ ] **v0.3** - More datasets (WiFi-HAR, CSI-HAR, etc.)
-- [ ] **v0.4** - Online demo platform
-- [ ] **v0.5** - PyPI official release
+- [x] **v0.3** - More datasets (WiFi-HAR, CSI-HAR, etc.)
+- [x] **v0.4** - 19 models, 26+ algorithms, leaderboard, CI/CD, scientific bug fixes
+- [ ] **v0.5** - PyPI official release, online demo platform
 - [ ] **v1.0** - Full protocol standardization
 
 **Want a specific dataset?** [Open an issue](https://github.com/yuanhao-cui/Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/issues) and let us know!
@@ -533,6 +555,18 @@ MIT License - see [LICENSE](LICENSE) file.
 
 <a id="中文"></a>
 # 🇨🇳 中文
+
+## 🆕 v0.4.0 更新内容
+
+- **7 个关键科学 bug 修复** -- 修正相位校准、小波边界处理、多普勒归一化等问题
+- **7 个新 SOTA 模型** -- THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense（共 19 个）
+- **6 个新预处理算法** -- conjugate_multiply, agc_compensate, pca_fusion, bandpass, hampel, decimate（共 26+ 个）
+- **基准排行榜** -- 跨数据集标准化模型对比
+- **CI/CD 流水线** -- 自动化测试、代码检查和发布工作流
+- **实验追踪与缓存** -- 可复现运行，支持结果缓存
+- **GroupKFold 交叉验证** -- 用户感知评估，防止数据泄漏
+
+---
 
 ## 🎯 SDP 是什么？
 
@@ -831,17 +865,23 @@ processed = execute_pipeline(csi, steps)
 | **去噪** | 小波 | `wavelet_denoise_csi()` | Donoho & Johnstone, 1994 |
 | | 巴特沃斯 | `butterworth_denoise()` | Butterworth, 1930 |
 | | Savitzky-Golay | `savgol_denoise()` | Savitzky & Golay, 1964 |
+| | 带通滤波 | `bandpass_filter()` | 标准 DSP |
+| | Hampel 滤波 | `hampel_filter()` | Hampel, 1974 |
 | **相位校准** | 线性 | `phase_calibration()` | Halperin et al., 2010 |
 | | 多项式 | `polynomial_calibration()` | 线性校准的扩展 |
 | | STC | `stc_calibration()` | Xie et al., IEEE TWC 2019 |
 | | 鲁棒 | `robust_phase_sanitization()` | Wang et al., ICPADS 2012 |
 | **归一化** | Z-Score | `normalize_amplitude()` | 标准统计方法 |
 | | Min-Max | `normalize_amplitude()` | 标准统计方法 |
+| | AGC 补偿 | `agc_compensate()` | AGC 增益校正 |
 | **插值** | 线性/三次/最近邻 | `interpolate_grid()` | de Boor, 1978 |
+| | 抗混叠降采样 | `decimate()` | 抗混叠降采样 |
 | **特征提取** | 多普勒 | `doppler_spectrum()` | Ali et al., MobiCom 2015 |
 | | 熵 | `entropy_features()` | Shannon, 1948 |
 | | CSI 比率 | `csi_ratio()` | Halperin et al., 2011 |
 | | 张量分解 | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
+| | 共轭乘积 | `conjugate_multiply()` | 天线对相关 |
+| | PCA 融合 | `pca_fusion()` | 降维融合 |
 | **检测** | 活动 | `detect_activity()` | Zhou et al., 2013 |
 | | 变点 | `change_point_detection()` | Adams & MacKay, 2007 |
 
@@ -918,9 +958,9 @@ SDP 强制执行**确定性校准和去噪**，保证：
 
 - [x] **v0.1** - 初始协议设计
 - [x] **v0.2** - 5 个数据集支持，CLI 工具
-- [ ] **v0.3** - 更多数据集（WiFi-HAR、CSI-HAR 等）
-- [ ] **v0.4** - 在线演示平台
-- [ ] **v0.5** - PyPI 正式发布
+- [x] **v0.3** - 更多数据集（WiFi-HAR、CSI-HAR 等）
+- [x] **v0.4** - 19 个模型，26+ 算法，排行榜，CI/CD，科学 bug 修复
+- [ ] **v0.5** - PyPI 正式发布，在线演示平台
 - [ ] **v1.0** - 完整协议标准化
 
 **想要特定数据集？** [提交 issue](https://github.com/yuanhao-cui/Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/issues) 告诉我们！
