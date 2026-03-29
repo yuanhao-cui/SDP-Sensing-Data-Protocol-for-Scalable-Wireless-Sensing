@@ -1,0 +1,33 @@
+name: Verify Benchmark Submission
+
+on:
+  pull_request:
+    paths:
+      - 'benchmarks/submissions/*.json'
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Verify submissions
+        run: |
+          failed=0
+          for f in $(git diff --name-only origin/main...HEAD -- 'benchmarks/submissions/*.json'); do
+            echo "=== Checking $f ==="
+            if ! python scripts/verify_submission.py "$f"; then
+              failed=1
+            fi
+            echo ""
+          done
+          if [ "$failed" -ne 0 ]; then
+            echo "One or more submissions failed validation."
+            exit 1
+          fi

@@ -19,7 +19,7 @@ def predict(
     num_classes: int,
     custom_model_path: Optional[str] = None,
     device: Optional[str] = None,
-    padding_length: int = 1500,
+    padding_length: Optional[int] = None,
 ) -> np.ndarray:
     """
     Run inference on CSI data using a trained model.
@@ -31,7 +31,8 @@ def predict(
         num_classes: Number of output classes
         custom_model_path: Path to custom model Python file (optional)
         device: 'cuda' or 'cpu'. Auto-detected if None.
-        padding_length: Target time length for padding/truncation
+        padding_length: Target time length for padding/truncation.
+            If None, reads from checkpoint metadata; falls back to 1500.
 
     Returns:
         np.ndarray: Predicted class indices, shape (N,) or scalar for single sample
@@ -50,6 +51,14 @@ def predict(
     elif data.ndim != 4:
         raise ValueError(f"Expected 3D (T,F,A) or 4D (N,T,F,A) input, got shape {data.shape}")
 
+    # Load checkpoint to retrieve padding_length if stored
+    device_obj = torch.device(device)
+    checkpoint = torch.load(model_path, map_location=device_obj)
+
+    # Resolve padding_length: checkpoint > caller > fallback
+    if padding_length is None:
+        padding_length = checkpoint.get('padding_length', 1500)
+
     # Pad/truncate to target length
     samples = [data[i] for i in range(len(data))]
     samples = resize_csi_to_fixed_length(samples, target_length=padding_length)
@@ -65,8 +74,6 @@ def predict(
     else:
         model = CSIModel(num_classes=num_classes)
 
-    device_obj = torch.device(device)
-    checkpoint = torch.load(model_path, map_location=device_obj)
     model.load_state_dict(checkpoint['model_state_dict'])
     model = model.to(device_obj)
     model.eval()
@@ -86,7 +93,7 @@ def predict_single(
     num_classes: int,
     custom_model_path: Optional[str] = None,
     device: Optional[str] = None,
-    padding_length: int = 1500,
+    padding_length: Optional[int] = None,
 ) -> int:
     """
     Convenience function for single-sample inference.

@@ -29,6 +29,7 @@ nav:
     - XRF55: datasets/xrf55.md
     - ElderAL: datasets/elderal.md
     - ZTE: datasets/zte.md
+  - Leaderboard: leaderboard.md
   - Development:
     - Contributing: development/contributing.md
     - Changelog: development/changelog.md

@@ -275,7 +275,7 @@ class TestDetection:
         assert set(np.unique(result)).issubset({0, 1})
 
     def test_change_point_detection_returns_list(self, csi_complex):
-        result = change_point_detection(csi_complex, method='bayesian')
+        result = change_point_detection(csi_complex, method='mean_shift_ratio')
         assert isinstance(result, (list, np.ndarray))
 
 

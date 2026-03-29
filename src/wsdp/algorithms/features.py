@@ -37,39 +37,43 @@ def doppler_spectrum(csi, n_fft=64, hop_length=32):
     if csi.ndim < 2:
         raise ValueError(f"Expected at least 2D array, got shape {csi.shape}")
 
-    amplitude = np.abs(csi)
+    # Doppler frequency shift f_d = (1/2π)·dφ/dt resides in the phase
+    # of the complex CSI signal. STFT must operate on complex (or phase)
+    # data — using amplitude discards the Doppler information entirely.
+    # For real-valued input, fall back to amplitude-based STFT.
+    if np.iscomplexobj(csi):
+        signal = csi
+    else:
+        signal = np.abs(csi)
 
-    if amplitude.ndim == 2:
+    if signal.ndim == 2:
         # (T, F)
-        T, F = amplitude.shape
-        # Compute first to get actual output shape
-        _, _, Zxx_first = stft(amplitude[:, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+        T, F = signal.shape
+        _, _, Zxx_first = stft(signal[:, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
         n_freq, n_time = Zxx_first.shape
         spectrum = np.zeros((n_freq, n_time, F))
         spectrum[:, :, 0] = np.abs(Zxx_first)
         for f in range(1, F):
-            _, _, Zxx = stft(amplitude[:, f], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+            _, _, Zxx = stft(signal[:, f], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
             if Zxx.shape == (n_freq, n_time):
                 spectrum[:, :, f] = np.abs(Zxx)
             else:
-                # Pad or truncate to match expected shape
                 z = np.abs(Zxx)
                 if z.shape[0] < n_freq:
                     z = np.pad(z, ((0, n_freq - z.shape[0]), (0, 0)))
                 if z.shape[1] < n_time:
                     z = np.pad(z, ((0, 0), (0, n_time - z.shape[1])))
                 spectrum[:, :, f] = z[:n_freq, :n_time]
-    elif amplitude.ndim == 3:
+    elif signal.ndim == 3:
         # (T, F, A)
-        T, F, A = amplitude.shape
-        _, _, Zxx_first = stft(amplitude[:, 0, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+        T, F, A = signal.shape
+        _, _, Zxx_first = stft(signal[:, 0, 0], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
         n_freq, n_time = Zxx_first.shape
         spectrum = np.zeros((n_freq, n_time, F, A))
         for f in range(F):
             for a in range(A):
-                _, _, Zxx = stft(amplitude[:, f, a], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
+                _, _, Zxx = stft(signal[:, f, a], nperseg=min(n_fft, T), noverlap=min(n_fft, T) - hop_length)
                 z = np.abs(Zxx)
-                # Ensure correct shape
                 if z.shape[0] < n_freq:
                     z = np.pad(z, ((0, n_freq - z.shape[0]), (0, 0)))
                 if z.shape[1] < n_time:
@@ -115,9 +119,13 @@ def entropy_features(csi, bins=50):
     amplitude = np.abs(csi)
 
     def _compute_entropy(signal_1d):
-        hist, _ = np.histogram(signal_1d, bins=bins, density=True)
-        hist = hist[hist > 0]
-        return -np.sum(hist * np.log2(hist + 1e-12))
+        # Shannon entropy: H = -Σ p·log2(p), where p is probability mass.
+        # density=True returns probability density f(x) where ∫f(x)dx=1,
+        # NOT probability mass Σp=1. Using density as probability is wrong.
+        counts, _ = np.histogram(signal_1d, bins=bins)
+        p = counts / counts.sum()
+        p = p[p > 0]
+        return -np.sum(p * np.log2(p))
 
     if amplitude.ndim == 2:
         # (T, F) -> (F,)
@@ -189,21 +197,25 @@ def csi_ratio(csi, antenna_pairs=None):
     return result
 
 
-def tensor_decomposition(csi, rank=10, method='cp'):
+def tensor_decomposition(csi, rank=10, method='cp', n_iter=0):
     """
-    Decompose CSI tensor using CP or Tucker decomposition.
+    Decompose CSI tensor using HOSVD-based approximation or Tucker decomposition.
 
-    Tensor decomposition extracts latent factors from multi-dimensional
-    CSI data, capturing temporal, frequency, and spatial patterns
-    simultaneously. Useful for feature dimensionality reduction and
-    noise removal.
+    Note: The 'cp' method uses an HOSVD-based rank-1 factor initialization,
+    NOT iterative CP-ALS.  When ``n_iter`` > 0, Alternating Least Squares
+    (ALS) refinement iterations are applied after the HOSVD initialization
+    to improve the CP approximation quality.  With ``n_iter=0`` (default)
+    the result is a single-shot HOSVD approximation which is fast but may
+    be less accurate than true iterative CP decomposition.
 
     Args:
         csi: CSI array of shape (T, F, A) — complex or real
         rank: Rank of the decomposition (number of components) (default: 10)
         method: Decomposition method
-            - 'cp': Canonical Polyadic (CP) decomposition
-            - 'tucker': Tucker decomposition
+            - 'cp': HOSVD-based CP approximation (+ optional ALS refinement)
+            - 'tucker': Tucker decomposition (HOSVD)
+        n_iter: Number of ALS refinement iterations for 'cp' method
+            (default: 0 = pure HOSVD, no ALS). Ignored for 'tucker'.
 
     Returns:
         np.ndarray: Reconstructed low-rank CSI tensor of same shape as input
@@ -211,7 +223,7 @@ def tensor_decomposition(csi, rank=10, method='cp'):
     Reference:
         Kolda TG, Bader BW. "Tensor Decompositions and Applications."
         SIAM Review, vol. 51, no. 3, pp. 455-500, 2009.
-        For CSI: Wang X, et al. "Tensor-Based Low-Rank 
+        For CSI: Wang X, et al. "Tensor-Based Low-Rank
         Representation for WiFi Sensing." IEEE IoT Journal, 2022.
     """
     if csi.size == 0:
@@ -232,8 +244,8 @@ def tensor_decomposition(csi, rank=10, method='cp'):
     if np.iscomplexobj(csi):
         # Stack real and imaginary as additional "channels" in a 4th dimension
         # then do 3D decomposition on each
-        real_decomp = _simple_cp_decomposition(np.real(csi), rank)
-        imag_decomp = _simple_cp_decomposition(np.imag(csi), rank)
+        real_decomp = _hosvd_cp_approximation(np.real(csi), rank, n_iter)
+        imag_decomp = _hosvd_cp_approximation(np.imag(csi), rank, n_iter)
 
         if method == 'cp':
             reconstructed = real_decomp['reconstructed'] + 1j * imag_decomp['reconstructed']
@@ -241,24 +253,57 @@ def tensor_decomposition(csi, rank=10, method='cp'):
             reconstructed = real_decomp['reconstructed'] + 1j * imag_decomp['reconstructed']
         return reconstructed
     else:
-        return _simple_cp_decomposition(csi, rank) if method == 'cp' \
+        return _hosvd_cp_approximation(csi, rank, n_iter) if method == 'cp' \
             else _simple_tucker_decomposition(csi, rank)
 
 
-def _simple_cp_decomposition(tensor, rank):
-    """Simple CP decomposition using SVD-based ALS initialization."""
+def _hosvd_cp_approximation(tensor, rank, n_iter=0):
+    """HOSVD-based CP approximation with optional ALS refinement.
+
+    Initializes factor matrices via truncated SVD of each mode unfolding
+    (HOSVD). When n_iter > 0, refines with Alternating Least Squares (ALS).
+
+    Args:
+        tensor: 3D array of shape (T, F, A).
+        rank: Number of rank-1 components.
+        n_iter: Number of ALS refinement iterations (default 0).
+    """
     T, F, A = tensor.shape
     rank = min(rank, T, F, A)
 
-    # Use HOSVD-like initialization then reconstruct
-    # Factor matrices via SVD unfolding
+    # HOSVD initialization: factor matrices via SVD unfolding
     U1 = _svd_factor(tensor.reshape(T, -1), rank)  # temporal
     U2 = _svd_factor(np.transpose(tensor, (1, 0, 2)).reshape(F, -1), rank)  # freq
     U3 = _svd_factor(np.transpose(tensor, (2, 0, 1)).reshape(A, -1), rank)  # spatial
 
-    # Khatri-Rao product for CP reconstruction
-    # Z = sum_r lambda_r * u1_r ⊗ u2_r ⊗ u3_r
-    weights = np.ones(rank)
+    # Optional ALS refinement
+    for _ in range(n_iter):
+        # Mode-0: fix U2, U3, solve for U1
+        # Unfold tensor along mode 0: X_(0) = (T, F*A)
+        X0 = tensor.reshape(T, F * A)
+        # Khatri-Rao product of U3 and U2: (F*A, rank)
+        kr_32 = np.einsum('ir,jr->ijr', U2, U3).reshape(F * A, rank)
+        U1, _ = np.linalg.qr(X0 @ kr_32)
+        U1 = U1[:, :rank]
+
+        # Mode-1: fix U1, U3, solve for U2
+        X1 = np.transpose(tensor, (1, 0, 2)).reshape(F, T * A)
+        kr_31 = np.einsum('ir,jr->ijr', U1, U3).reshape(T * A, rank)
+        U2, _ = np.linalg.qr(X1 @ kr_31)
+        U2 = U2[:, :rank]
+
+        # Mode-2: fix U1, U2, solve for U3
+        X2 = np.transpose(tensor, (2, 0, 1)).reshape(A, T * F)
+        kr_12 = np.einsum('ir,jr->ijr', U1, U2).reshape(T * F, rank)
+        U3, _ = np.linalg.qr(X2 @ kr_12)
+        U3 = U3[:, :rank]
+
+    # Compute weights: λ_r = tensor contracted with u1_r, u2_r, u3_r
+    weights = np.zeros(rank)
+    for r in range(rank):
+        weights[r] = np.einsum('ijk,i,j,k->', tensor, U1[:, r], U2[:, r], U3[:, r])
+
+    # Reconstruct: Z = sum_r λ_r * u1_r ⊗ u2_r ⊗ u3_r
     reconstructed = np.zeros_like(tensor)
     for r in range(rank):
         outer = np.outer(U1[:, r], U2[:, r])
@@ -304,3 +349,121 @@ def _svd_factor(matrix, rank):
     rank = min(rank, min(matrix.shape))
     U, _, _ = np.linalg.svd(matrix, full_matrices=False)
     return U[:, :rank]
+
+
+def conjugate_multiply(csi, ref_antenna=0):
+    """
+    Compute conjugate multiplication between antenna pairs.
+
+    Eliminates common CFO/SFO phase errors shared across antennas by
+    computing the channel ratio relative to a reference antenna:
+
+        H_ratio_i = H_i * conj(H_ref) / |H_ref|^2
+
+    This preserves the differential phase caused by multipath propagation
+    while canceling transmitter-side phase noise.
+
+    Args:
+        csi: CSI array of shape (T, F, A) — must be complex, A >= 2
+        ref_antenna: Reference antenna index (default: 0)
+
+    Returns:
+        np.ndarray: (T, F, A-1) complex conjugate multiplication results,
+            excluding the reference antenna
+
+    Reference:
+        Li X, et al. "IndoTrack: Device-Free Indoor Human Tracking with
+        Commodity Wi-Fi." Proc. ACM MobiCom, 2017.
+    """
+    if csi.size == 0:
+        return np.array([], dtype=np.complex128)
+    if csi.ndim != 3:
+        raise ValueError(f"Expected 3D array (T, F, A), got shape {csi.shape}")
+
+    T, F, A = csi.shape
+
+    if A < 2:
+        raise ValueError(f"Need at least 2 antennas for conjugate multiply, got {A}")
+    if not (0 <= ref_antenna < A):
+        raise ValueError(
+            f"ref_antenna must be in [0, {A}), got {ref_antenna}"
+        )
+    if not np.iscomplexobj(csi):
+        raise ValueError("CSI must be complex-valued for conjugate multiplication")
+
+    # H_ref: (T, F)
+    h_ref = csi[:, :, ref_antenna]
+    h_ref_conj = np.conj(h_ref)
+    # |H_ref|^2 with numerical safety
+    h_ref_power = np.abs(h_ref) ** 2
+    h_ref_power = np.where(h_ref_power < 1e-20, 1e-20, h_ref_power)
+
+    # Select non-reference antenna indices
+    other_antennas = [a for a in range(A) if a != ref_antenna]
+    result = np.empty((T, F, len(other_antennas)), dtype=np.complex128)
+
+    for idx, a in enumerate(other_antennas):
+        # H_ratio = H_i * conj(H_ref) / |H_ref|^2
+        result[:, :, idx] = csi[:, :, a] * h_ref_conj / h_ref_power
+
+    return result
+
+
+def pca_subcarrier_fusion(csi, n_components=5):
+    """
+    PCA along subcarrier dimension to extract motion components.
+
+    For each antenna stream, treats (T, F) as a matrix where columns are
+    subcarrier time series. After centering, SVD extracts the top-K
+    principal components that capture dominant motion patterns.
+
+    The first component typically represents the strongest motion signal,
+    while higher components capture progressively weaker motion or noise.
+
+    Args:
+        csi: CSI array of shape (T, F, A) or (T, F) — complex or real.
+            If complex, amplitude is used.
+        n_components: Number of principal components to keep (default: 5).
+            Must be <= min(T, F).
+
+    Returns:
+        np.ndarray: (T, n_components, A) or (T, n_components) projected data
+
+    Reference:
+        Wang W, et al. "Understanding and Modeling of WiFi Signal Based
+        Human Activity Recognition." Proc. ACM MobiCom (CARM), 2015.
+    """
+    if csi.size == 0:
+        return np.array([])
+    if csi.ndim < 2 or csi.ndim > 3:
+        raise ValueError(f"Expected 2D or 3D array, got shape {csi.shape}")
+    if n_components < 1:
+        raise ValueError(f"n_components must be >= 1, got {n_components}")
+
+    # Work on amplitude for complex input
+    data = np.abs(csi) if np.iscomplexobj(csi) else csi.copy()
+
+    squeezed = False
+    if data.ndim == 2:
+        data = data[:, :, np.newaxis]
+        squeezed = True
+
+    T, F, A = data.shape
+    K = min(n_components, T, F)
+
+    result = np.empty((T, K, A), dtype=np.float64)
+
+    for a in range(A):
+        mat = data[:, :, a].astype(np.float64)  # (T, F)
+        # Center columns (subcarriers)
+        col_mean = np.mean(mat, axis=0, keepdims=True)
+        mat_centered = mat - col_mean
+        # SVD: mat_centered = U * diag(S) * Vt
+        U, S, _ = np.linalg.svd(mat_centered, full_matrices=False)
+        # Project: top-K components = U[:, :K] * S[:K]
+        result[:, :, a] = U[:, :K] * S[:K]
+
+    if squeezed:
+        result = result[:, :, 0]
+
+    return result

@@ -455,18 +455,18 @@ Detect change points in CSI time series.
 ```python
 from wsdp.algorithms import change_point_detection
 
-change_points = change_point_detection(csi, method='bayesian')
+change_points = change_point_detection(csi, method='mean_shift_ratio')
 ```
 
 **Parameters:**
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `csi` | np.ndarray | required | CSI array of shape (T, F, A) or (T, F) |
-| `method` | str | 'bayesian' | 'bayesian', 'cusum', or 'variance' |
+| `method` | str | 'mean_shift_ratio' | 'mean_shift_ratio', 'cusum', or 'variance' |
 
 **Returns:** `np.ndarray` — Array of time indices where change points detected.
 
-**Reference:** Adams RP, MacKay DJC. "Bayesian Online Changepoint Detection." *arXiv:0710.3742*, 2007.
+**Reference:** Page ES. "Continuous Inspection Schemes." *Biometrika*, 1954. (CUSUM)
 
 ---
 
