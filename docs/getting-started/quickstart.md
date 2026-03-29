@@ -1,20 +1,23 @@
 # Quick Start
 
+Get from zero to trained model in 5 minutes.
+
 ## Installation
 
 ```bash
 pip install wsdp
 ```
 
-## 3-Step Usage
+## 5-Minute Quickstart
 
-### 1. Download Data
+### 1. Download a Dataset
 
 ```bash
-wsdp download elderAL ./data
+# Create a free account at sdp8.org, then:
+wsdp download elderAL ./data --email you@example.com --password yourpassword
 ```
 
-### 2. Train
+### 2. Train with Defaults
 
 ```bash
 wsdp run ./data/elderAL ./output elderAL --lr 0.001 --epochs 50
@@ -27,4 +30,60 @@ ls ./output/
 # best_model.pth, confusion_matrix.png, output.log
 ```
 
-See [CLI Usage](../user-guide/cli.md) for all options.
+### 4. Try an Algorithm Preset
+
+Apply optimized preprocessing before training:
+
+```bash
+# High-quality preprocessing pipeline
+wsdp run ./data/elderAL ./output elderAL --algorithm-preset high_quality --epochs 50
+
+# Phase-sensitive preprocessing (good for localization tasks)
+wsdp run ./data/elderAL ./output elderAL --algorithm-preset phase_sensitive --epochs 50
+```
+
+Available presets: `minimal`, `standard`, `high_quality`, `realtime`, `phase_sensitive`, `cross_domain`.
+
+### 5. Try a Different Model
+
+WSDP ships with 19 models. Swap models with a single flag:
+
+```bash
+# Lightweight model for edge deployment (~62K params)
+wsdp run ./data/elderAL ./output elderAL --model WiFlexFormer --epochs 50
+
+# SOTA two-stream Transformer (~300K params)
+wsdp run ./data/elderAL ./output elderAL --model THAT --epochs 50
+
+# Phase-amplitude attention model
+wsdp run ./data/elderAL ./output elderAL --model PA_CSI --epochs 50
+```
+
+## Python API Quickstart
+
+```python
+from wsdp import pipeline, predict
+import numpy as np
+
+# Train
+pipeline(
+    input_path='./data/elderAL',
+    output_folder='./output',
+    dataset='elderAL',
+    model_name='THAT',
+    algorithm_preset='standard',
+    num_epochs=50,
+)
+
+# Predict
+csi = np.random.randn(5, 200, 30, 3) + 1j * np.random.randn(5, 200, 30, 3)
+predictions = predict(csi, './output/best_model.pth', num_classes=6)
+```
+
+## What's Next?
+
+- [Model Selection Guide](../models.md) - Compare all 19 models
+- [CLI Usage](../user-guide/cli.md) - Full CLI reference
+- [Python API](../user-guide/python-api.md) - Programmatic usage
+- [Configuration](../user-guide/configuration.md) - YAML configs and algorithm presets
+- [Algorithm Reference](../api/algorithms.md) - All 26 built-in algorithms

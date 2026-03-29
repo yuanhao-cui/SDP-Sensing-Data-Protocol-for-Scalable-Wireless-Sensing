@@ -2,7 +2,7 @@
 
 ## Overview
 
-WSDP provides 12 built-in models organized into three tiers, from lightweight baselines to state-of-the-art architectures. All models share a unified interface and are accessible through the pluggable registry.
+WSDP provides 19 built-in models organized into five categories, from lightweight baselines to state-of-the-art and cross-domain architectures. All models share a unified interface and are accessible through the pluggable registry.
 
 ## Quick Start
 
@@ -48,6 +48,25 @@ State-of-the-art architectures for maximum accuracy.
 | **MambaCSI** | State space model (Mamba) for temporal modeling | Long sequences, linear complexity | ~1-5M |
 | **GraphNeuralCSI** | GNN on antenna/subcarrier topology | Physical structure modeling | ~0.5-2M |
 | **CSIModel** | CNN + Transformer (original WSDP model) | General-purpose | ~1-2M |
+| **THAT** | Two-stream conv-augmented Transformer | Gesture/activity recognition | ~300K |
+| **CSITime** | Inception-Time variant for CSI | General activity recognition | ~80K |
+| **PA_CSI** | Phase-Amplitude dual-channel attention | Phase-sensitive tasks | ~292K |
+
+### Lightweight Models
+Compact architectures designed for edge and resource-constrained deployment.
+
+| Model | Description | Best For | Params (default) |
+|-------|-------------|----------|------------------|
+| **WiFlexFormer** | Efficient WiFi Transformer | Edge deployment | ~62K |
+| **AttentionGRU** | Single GRU + temporal attention | Ultra-lightweight | ~52K |
+
+### Cross-Domain Models
+Architectures with built-in domain adaptation for cross-environment generalization.
+
+| Model | Description | Best For | Params (default) |
+|-------|-------------|----------|------------------|
+| **EI** | Gradient reversal domain adaptation | Cross-environment generalization | ~226K |
+| **FewSense** | Prototypical few-shot learning | Few-shot cross-domain | ~458K |
 
 ## Choosing a Model
 
@@ -55,26 +74,31 @@ State-of-the-art architectures for maximum accuracy.
 
 | Dataset Size | Recommended Models |
 |-------------|-------------------|
-| Small (<1K samples) | MLPModel, CNN2DModel, LSTMModel |
-| Medium (1K-10K) | ResNet1D, BiLSTMAttention, CSIModel |
-| Large (>10K) | VisionTransformerCSI, MambaCSI, EfficientNetCSI |
+| Small (<1K samples) | MLPModel, CNN2DModel, LSTMModel, AttentionGRU, FewSense |
+| Medium (1K-10K) | ResNet1D, BiLSTMAttention, CSIModel, THAT, CSITime, PA_CSI |
+| Large (>10K) | VisionTransformerCSI, MambaCSI, EfficientNetCSI, EI |
 
 ### By Computational Budget
 
 | Budget | Recommended Models |
 |--------|-------------------|
-| Low (CPU / small GPU) | MLPModel, CNN1DModel, CNN2DModel, LSTMModel |
-| Medium (single GPU) | ResNet1D, ResNet2D, BiLSTMAttention, GraphNeuralCSI |
-| High (multi-GPU) | VisionTransformerCSI, MambaCSI, EfficientNetCSI |
+| Ultra-low (MCU / edge) | AttentionGRU, WiFlexFormer |
+| Low (CPU / small GPU) | MLPModel, CNN1DModel, CNN2DModel, LSTMModel, CSITime |
+| Medium (single GPU) | ResNet1D, ResNet2D, BiLSTMAttention, GraphNeuralCSI, THAT, PA_CSI |
+| High (multi-GPU) | VisionTransformerCSI, MambaCSI, EfficientNetCSI, EI, FewSense |
 
 ### By Task Characteristics
 
 | Task Type | Recommended Models |
 |-----------|-------------------|
-| Gesture recognition | VisionTransformerCSI, CSIModel, ResNet2D |
-| Gait analysis | BiLSTMAttention, MambaCSI, LSTMModel |
-| Activity detection | ResNet1D, EfficientNetCSI, CNN1DModel |
-| Fall detection | CNN2DModel, ResNet1D, MLPModel |
+| Gesture recognition | VisionTransformerCSI, CSIModel, ResNet2D, THAT |
+| Gait analysis | BiLSTMAttention, MambaCSI, LSTMModel, CSITime |
+| Activity detection | ResNet1D, EfficientNetCSI, CNN1DModel, CSITime, THAT |
+| Fall detection | CNN2DModel, ResNet1D, MLPModel, AttentionGRU |
+| Phase-sensitive tasks | PA_CSI, GraphNeuralCSI |
+| Edge / real-time | WiFlexFormer, AttentionGRU |
+| Cross-environment | EI, FewSense |
+| Few-shot learning | FewSense |
 
 ## Input Format
 
@@ -99,6 +123,8 @@ all_models = list_models()
 # Filter by category
 baselines = list_models("baseline")
 sota_models = list_models("sota")
+lightweight = list_models("lightweight")
+cross_domain = list_models("cross_domain")
 
 # Get a model by name
 model = get_model("MambaCSI", num_classes=10, input_shape=(20, 30, 3))
@@ -117,7 +143,7 @@ class MyModel(nn.Module):
         super().__init__()
         T, F, A = input_shape
         self.fc = nn.Linear(T * F * A * 2, num_classes)
-    
+
     def forward(self, x):
         # x: (B, T, F, A) complex or real
         return self.fc(x.reshape(x.shape[0], -1))
@@ -134,10 +160,12 @@ model = create_model("MyModel", num_classes=10, input_shape=(20, 30, 3))
 
 1. **Start with baselines**: Always establish a baseline with MLPModel or CNN1DModel before trying complex architectures.
 
-2. **Match model to data**: 
-   - Short sequences → CNN-based models
-   - Long sequences → LSTM/Mamba models
-   - Rich spatial structure → ViT or GNN models
+2. **Match model to data**:
+   - Short sequences -> CNN-based models
+   - Long sequences -> LSTM/Mamba models
+   - Rich spatial structure -> ViT or GNN models
+   - Edge deployment -> WiFlexFormer or AttentionGRU
+   - Cross-environment -> EI or FewSense
 
 3. **Hyperparameter tuning**: Most models expose key hyperparameters:
    - `base_channels`: Controls model width
@@ -147,3 +175,11 @@ model = create_model("MyModel", num_classes=10, input_shape=(20, 30, 3))
 4. **EfficientNetCSI**: Use `width_mult` and `depth_mult` < 1.0 for smaller models, > 1.0 for larger.
 
 5. **VisionTransformerCSI**: Larger `patch_size` = fewer patches = faster but less detailed.
+
+6. **THAT**: Two-stream design processes temporal and spectral features in parallel for strong gesture recognition.
+
+7. **WiFlexFormer / AttentionGRU**: Under 100K parameters each, ideal for on-device inference with minimal accuracy trade-off.
+
+8. **EI**: Requires source and target domain data during training for gradient reversal-based adaptation.
+
+9. **FewSense**: Best when only a handful of labeled samples are available in the target domain.

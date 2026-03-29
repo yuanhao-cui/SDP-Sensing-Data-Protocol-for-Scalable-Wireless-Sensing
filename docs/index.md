@@ -13,6 +13,16 @@ A Python library for downloading, processing, analyzing and training on Wi-Fi CS
 
 **Published and maintained by [SDP8.org](https://sdp8.org)** - the official platform for reproducible wireless sensing research.
 
+## 🆕 What's New in v0.4.0
+
+- **7 critical scientific bug fixes** -- corrected phase calibration, wavelet boundary handling, Doppler normalization, and more
+- **7 new SOTA models** -- THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense (19 total)
+- **6 new preprocessing algorithms** -- conjugate_multiply, agc_compensate, pca_fusion, bandpass, hampel, decimate (26+ total)
+- **Benchmark leaderboard** -- standardized model comparison across datasets
+- **CI/CD pipeline** -- automated testing, linting, and release workflow
+- **Experiment tracking & caching** -- reproducible runs with result caching
+- **GroupKFold cross-validation** -- user-aware evaluation to prevent data leakage
+
 ## 🚀 Features
 
 - **Multi-dataset support**: Widar, Gait, XRF55, ElderAL, ZTE datasets
@@ -25,16 +35,17 @@ A Python library for downloading, processing, analyzing and training on Wi-Fi CS
 
 ## 🧪 Signal Processing Algorithm Library
 
-WSDP provides a comprehensive, pluggable signal preprocessing library with **16+ algorithms**:
+WSDP provides a comprehensive, pluggable signal preprocessing library with **26+ algorithms in 7 categories**:
 
 | Category | Algorithms | Description |
 |----------|-----------|-------------|
-| **Denoising** | Wavelet, Butterworth, Savitzky-Golay | Remove noise while preserving features |
+| **Denoising** | Wavelet, Butterworth, Savitzky-Golay, Bandpass, Hampel | Remove noise while preserving features |
 | **Phase Calibration** | Linear, Polynomial, STC, Robust | Correct hardware phase errors |
-| **Amplitude** | Z-Score, Min-Max, IQR Outlier Removal | Normalize and clean amplitude |
-| **Interpolation** | Linear, Cubic, Nearest | Resample to canonical grids |
-| **Features** | Doppler Spectrum, Entropy, CSI Ratio, Tensor | Extract motion/activity features |
+| **Amplitude** | Z-Score, Min-Max, IQR Outlier, AGC Compensation | Normalize and clean amplitude |
+| **Interpolation** | Linear, Cubic, Nearest, Anti-alias Decimate | Resample to canonical grids |
+| **Features** | Doppler, Entropy, CSI Ratio, Tensor, Conjugate Multiply, PCA Fusion | Extract motion/activity features |
 | **Detection** | Variance-based, Change Point | Detect activity and transitions |
+| **Composition** | Pipeline presets, YAML config | Chain algorithms declaratively |
 
 **Unified API**:
 ```python
@@ -47,7 +58,7 @@ features = extract_features(csi, features=['doppler', 'entropy'])
 
 See [Algorithm Guide](getting-started/algorithm-guide.md) for details.
 
-## 🧠 Model Zoo (12 Models)
+## 🧠 Model Zoo (19 Models)
 
 WSDP provides a complete pluggable model library from baselines to SOTA:
 
@@ -65,6 +76,13 @@ WSDP provides a complete pluggable model library from baselines to SOTA:
 | | MambaCSI | State space model |
 | | GraphNeuralCSI | GNN on antenna topology |
 | | CSIModel | CNN + Transformer |
+| **Specialized** | THAT | Two-stream Transformer (Li et al., 2021, ~300K params) |
+| | CSITime | Inception-Time for CSI (Yadav et al., 2023, ~80K params) |
+| | PA_CSI | Phase-Amplitude Attention (Sensors 2025, ~292K params) |
+| **Lightweight** | WiFlexFormer | Efficient WiFi Transformer (arXiv 2411.04224, ~62K params) |
+| | AttentionGRU | Attention + GRU (Sensors 2025, ~52K params) |
+| **Cross-Domain** | EI | Environment-Independent (Jiang et al., 2020, ~226K params) |
+| | FewSense | Few-shot Prototypical (TMC 2022, ~458K params) |
 
 ```python
 from wsdp.models import create_model, list_models
@@ -80,8 +98,9 @@ print(list_models())
 
 | Feature | SenseFi (2023) | CSIKit | **WSDP** |
 |:-------:|:--------------:|:------:|:--------:|
-| **Models** | 11 | ❌ | **12** |
-| **Preprocessing** | ❌ | Basic | **16+ algorithms** |
+| **Models** | 11 | ❌ | **19** |
+| **Preprocessing** | ❌ | Basic | **26+ algorithms** |
+| **Leaderboard** | ❌ | ❌ | ✅ **Built-in** |
 | **Pluggable** | ❌ | ❌ | ✅ **Registry** |
 | **Protocol Abstraction** | ❌ | ❌ | ✅ **Unique** |
 
