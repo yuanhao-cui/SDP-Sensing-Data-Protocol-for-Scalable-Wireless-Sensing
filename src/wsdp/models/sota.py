@@ -141,7 +141,11 @@ class _SelectiveSSM(nn.Module):
                                  groups=self.d_inner, bias=False)
         self.x_proj = nn.Linear(self.d_inner, d_state + d_state, bias=False)
         self.dt_proj = nn.Linear(self.d_inner, self.d_inner, bias=True)
-        self.A_log = nn.Parameter(torch.log(torch.arange(1, d_state + 1, dtype=torch.float32)))
+        # HiPPO-LegS initialization (Gu et al., NeurIPS 2020):
+        # A_n = -(2n+1)^{1/2} * (2n+3)^{1/2}  for n = 0, ..., d_state-1
+        n = torch.arange(d_state, dtype=torch.float32)
+        hippo_A = -torch.sqrt((2 * n + 1) * (2 * n + 3))
+        self.A_log = nn.Parameter(torch.log(-hippo_A))  # store log of positive magnitude
         self.D = nn.Parameter(torch.ones(self.d_inner))
         self.out_proj = nn.Linear(self.d_inner, d_model, bias=False)
 
@@ -167,7 +171,7 @@ class _SelectiveSSM(nn.Module):
         h = torch.zeros(B, self.d_inner, self.d_state, device=x.device, dtype=x.dtype)
         outputs = []
         for i in range(L):
-            h = deltaA[:, i] * h + deltaB[:, i]
+            h = deltaA[:, i] * h + deltaB[:, i] * x_conv[:, i].unsqueeze(-1)
             y = (h * C_ssm[:, i].unsqueeze(1)).sum(-1)  # (B, d_inner)
             outputs.append(y + self.D * x_conv[:, i])
         y = torch.stack(outputs, dim=1)  # (B, L, d_inner)
@@ -301,10 +305,11 @@ class GraphNeuralCSI(nn.Module):
                         # Connect if adjacent in frequency or antenna dimension
                         if abs(f1 - f2) <= 1 and abs(a1 - a2) <= 1:
                             adj[i, j] = 1.0
-        # Normalize: D^{-1/2} A D^{-1/2}
-        adj = adj + torch.eye(N)  # add self-loops
-        degree = adj.sum(dim=1, keepdim=True).clamp(min=1)
-        adj = adj / degree
+        # Symmetric normalization: D^{-1/2} A D^{-1/2} (Kipf & Welling, ICLR 2017)
+        adj = adj + torch.eye(N)  # add self-loops (Â = A + I)
+        degree = adj.sum(dim=1).clamp(min=1)
+        d_inv_sqrt = degree.pow(-0.5)
+        adj = adj * d_inv_sqrt.unsqueeze(1) * d_inv_sqrt.unsqueeze(0)
         return adj
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:

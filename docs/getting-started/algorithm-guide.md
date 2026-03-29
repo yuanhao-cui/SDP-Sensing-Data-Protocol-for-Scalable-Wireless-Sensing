@@ -186,7 +186,7 @@ activity = detect_activity(csi, window=32, threshold=0.1)
 # Returns: boolean array (T,) — True = activity detected
 
 # Find transition points
-change_points = change_point_detection(csi, method='bayesian')
+change_points = change_point_detection(csi, method='mean_shift_ratio')
 # Returns: array of time indices where transitions occur
 ```
 

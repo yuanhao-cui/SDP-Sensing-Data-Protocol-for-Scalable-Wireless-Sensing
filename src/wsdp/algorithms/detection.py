@@ -67,7 +67,7 @@ def detect_activity(csi, window=32, threshold=0.1):
     return variance_trace > threshold
 
 
-def change_point_detection(csi, method='bayesian'):
+def change_point_detection(csi, method='mean_shift_ratio'):
     """
     Detect change points in CSI time series.
 
@@ -78,8 +78,9 @@ def change_point_detection(csi, method='bayesian'):
     Args:
         csi: CSI array of shape (T, F, A) or (T, F) — complex or real
         method: Detection method
-            - 'bayesian': Bayesian Online Change Point Detection
-              (approximated via likelihood ratio)
+            - 'mean_shift_ratio': Mean-shift ratio test — compares
+              distribution means before/after each candidate point.
+              (Note: NOT Bayesian Online Changepoint Detection.)
             - 'cusum': Cumulative Sum (CUSUM) control chart
             - 'variance': Variance-based detection
 
@@ -87,8 +88,6 @@ def change_point_detection(csi, method='bayesian'):
         np.ndarray: Array of time indices where change points detected
 
     Reference:
-        Adams RP, MacKay DJC. "Bayesian Online Changepoint Detection."
-        arXiv:0710.3742, 2007.
         Page ES. "Continuous Inspection Schemes." Biometrika, 1954. (CUSUM)
     """
     if csi.size == 0:
@@ -96,7 +95,7 @@ def change_point_detection(csi, method='bayesian'):
     if csi.ndim < 2:
         raise ValueError(f"Expected at least 2D array, got shape {csi.shape}")
 
-    valid_methods = ('bayesian', 'cusum', 'variance')
+    valid_methods = ('mean_shift_ratio', 'cusum', 'variance')
     if method not in valid_methods:
         raise ValueError(f"Unknown method '{method}'. Supported: {valid_methods}")
 
@@ -113,18 +112,19 @@ def change_point_detection(csi, method='bayesian'):
     if T < 4:
         return np.array([], dtype=int)
 
-    if method == 'bayesian':
-        return _bayesian_changepoint(signal)
+    if method == 'mean_shift_ratio':
+        return _mean_shift_changepoint(signal)
     elif method == 'cusum':
         return _cusum_changepoint(signal)
     else:
         return _variance_changepoint(signal)
 
 
-def _bayesian_changepoint(signal):
+def _mean_shift_changepoint(signal):
     """
-    Approximate Bayesian Online Change Point Detection.
-    Uses log-likelihood ratio between recent window and historical data.
+    Mean-shift ratio change point detection.
+    Compares mean difference between historical and recent segments,
+    normalized by combined standard deviation.
     """
     T = len(signal)
     scores = np.zeros(T)

@@ -1,8 +1,11 @@
 import os
 import struct
+import logging
 import numpy as np
 
 from typing import Dict, Any
+
+logger = logging.getLogger(__name__)
 from wsdp.readers.base import BaseReader
 from wsdp.structure import CSIData
 from wsdp.structure import BfeeFrame
@@ -72,7 +75,7 @@ class BfeeReader(BaseReader):
                 else:
                     f.seek(field_len - 1, 1)
                     cur += (field_len - 1)
-        print(f"[Info] {file_name}: B_FEE records={len(ret_data.frames)}")
+        logger.info(f"{file_name}: B_FEE records={len(ret_data.frames)}")
         return ret_data
 
     def parse_bfee_record(self, payload: bytes):
@@ -126,8 +129,10 @@ class BfeeReader(BaseReader):
                 bit_index += 16
                 if real8 & 0x80: real8 -= 256
                 if imag8 & 0x80: imag8 -= 256
-                rx_i = j % n_rx
-                tx_i = j // n_rx
+                # Linux 802.11n CSI Tool (read_bfee.m): tx varies fastest
+                # i.e. tx_i = j % n_tx, rx_i = j // n_tx
+                tx_i = j % n_tx
+                rx_i = j // n_tx
                 csi_array[sc_idx, rx_i, tx_i] = np.complex64(real8 + 1j * imag8)
         # Flatten antenna dims: (F=30, n_rx, n_tx) -> (F=30, n_rx*n_tx)
         # Unifies BfeeReader output to (F, A) compatible with all algorithms

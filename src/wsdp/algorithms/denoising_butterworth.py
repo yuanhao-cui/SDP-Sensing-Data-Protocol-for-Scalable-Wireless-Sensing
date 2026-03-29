@@ -75,6 +75,94 @@ def butterworth_denoise(csi, order=5, cutoff=0.3):
     return result
 
 
+def butterworth_bandpass(csi, order=4, low_freq=0.5, high_freq=50.0, fs=1000.0):
+    """
+    Butterworth bandpass filter for CSI time series.
+
+    Applies a zero-phase Butterworth bandpass filter along the time axis
+    for each subcarrier-antenna pair. Used to isolate human motion
+    frequency bands from static clutter and high-frequency noise.
+
+    Typical frequency ranges for WiFi sensing:
+    - Breathing: 0.1-0.5 Hz
+    - Gait/walking: 0.5-3 Hz
+    - Hand gestures: 1-50 Hz
+
+    For complex CSI, real and imaginary parts are filtered separately.
+
+    Args:
+        csi: CSI array of shape (T, F, A) or (T, F) — complex or real
+        order: Filter order (default: 4)
+        low_freq: Lower cutoff frequency in Hz (default: 0.5)
+        high_freq: Upper cutoff frequency in Hz (default: 50.0)
+        fs: Sampling rate in Hz (default: 1000.0)
+
+    Returns:
+        np.ndarray: Bandpass-filtered CSI, same shape and dtype as input
+
+    Reference:
+        Butterworth S. "On the theory of filter amplifiers."
+        Wireless Engineer, vol. 7, pp. 536-541, 1930.
+    """
+    if csi.size == 0:
+        return csi.copy()
+    if csi.ndim < 2:
+        raise ValueError(f"Expected at least 2D array, got shape {csi.shape}")
+    if order < 1:
+        raise ValueError(f"order must be >= 1, got {order}")
+
+    nyq = fs / 2.0
+    if low_freq <= 0:
+        raise ValueError(f"low_freq must be > 0, got {low_freq}")
+    if high_freq >= nyq:
+        raise ValueError(
+            f"high_freq ({high_freq}) must be < Nyquist frequency ({nyq})"
+        )
+    if low_freq >= high_freq:
+        raise ValueError(
+            f"low_freq ({low_freq}) must be < high_freq ({high_freq})"
+        )
+
+    T = csi.shape[0]
+    if T < 3:
+        return csi.copy()
+
+    low = low_freq / nyq
+    high = high_freq / nyq
+    b, a = butter(order, [low, high], btype='band')
+
+    # Minimum length for filtfilt: padlen = 3 * max(len(a), len(b))
+    min_len = 3 * max(len(a), len(b)) + 1
+    if T < min_len:
+        return csi.copy()
+
+    def _apply_filter(signal_1d):
+        """Apply bandpass filter to a 1D real signal."""
+        return filtfilt(b, a, signal_1d)
+
+    if csi.ndim == 2:
+        result = np.empty_like(csi)
+        for f in range(csi.shape[1]):
+            if np.iscomplexobj(csi):
+                result[:, f] = _apply_filter(np.real(csi[:, f])) + \
+                               1j * _apply_filter(np.imag(csi[:, f]))
+            else:
+                result[:, f] = _apply_filter(csi[:, f])
+    elif csi.ndim == 3:
+        result = np.empty_like(csi)
+        for f in range(csi.shape[1]):
+            for a_idx in range(csi.shape[2]):
+                if np.iscomplexobj(csi):
+                    result[:, f, a_idx] = _apply_filter(np.real(csi[:, f, a_idx])) + \
+                                          1j * _apply_filter(np.imag(csi[:, f, a_idx]))
+                else:
+                    result[:, f, a_idx] = _apply_filter(csi[:, f, a_idx])
+    else:
+        raise ValueError(f"Expected 2D or 3D array, got shape {csi.shape}")
+
+    return result
+
+
 def savgol_denoise(csi, window_length=11, polyorder=3):
     """
     Savitzky-Golay filter for CSI denoising.

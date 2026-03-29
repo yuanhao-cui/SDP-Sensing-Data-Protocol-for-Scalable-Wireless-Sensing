@@ -1,25 +1,35 @@
+import os
 import time
+import logging
+from typing import Optional, Callable
+
 import torch
 
+logger = logging.getLogger(__name__)
 
-def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader, 
-                num_epochs, device, checkpoint_path):
+
+def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader,
+                num_epochs, device, checkpoint_path, padding_length=None,
+                progress_callback: Optional[Callable] = None,
+                resume_from: Optional[str] = None):
     """
     param:
         model (nn.Module): model to training process.
         criterion: loss function
-        optimizer: 
+        optimizer:
         scheduler: to refine learning rate
         train_loader: Pytorch dataLoader which return data and label
         val_loader: Pytorch dataLoader which return data and label
         num_epochs (int): total epoches of training process
         device (str): cuda or cpu
         checkpoint_path (str): path to save best model
+        progress_callback: optional callable invoked after each epoch with a dict of metrics
+        resume_from: optional path to a checkpoint file to resume training from
 
     return:
         history: dict contains training and evaluation record
     """
-    
+
     history = {
         'train_loss': [], 'train_acc': [],
         'val_loss': [], 'val_acc': [],
@@ -28,6 +38,22 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
 
     best_val_acc = 0.0
     start_epoch = 0
+
+    # Resume from checkpoint if specified
+    if resume_from and os.path.isfile(resume_from):
+        logger.info(f"Resuming training from checkpoint: {resume_from}")
+        ckpt = torch.load(resume_from, map_location=device)
+        model.load_state_dict(ckpt['model_state_dict'])
+        optimizer.load_state_dict(ckpt['optimizer_state_dict'])
+        if scheduler and ckpt.get('scheduler_state_dict') is not None:
+            scheduler.load_state_dict(ckpt['scheduler_state_dict'])
+        start_epoch = ckpt.get('epoch', 0) + 1
+        best_val_acc = ckpt.get('best_val_acc', 0.0)
+        if 'history' in ckpt:
+            history = ckpt['history']
+        logger.info(f"Resumed from epoch {start_epoch}, best_val_acc={best_val_acc:.2f}%")
+    elif resume_from:
+        logger.warning(f"resume_from path not found: {resume_from}. Starting from scratch.")
 
     for epoch in range(start_epoch, num_epochs):
         epoch_start_time = time.time()
@@ -100,18 +126,33 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
         history['val_acc'].append(epoch_val_acc)
         history['epoch'].append(epoch_duration)
         history['lr'].append(current_lr)
-        
+
+        if progress_callback:
+            progress_callback({
+                'epoch': epoch + 1,
+                'total_epochs': num_epochs,
+                'train_loss': epoch_train_loss,
+                'train_acc': epoch_train_acc,
+                'val_loss': epoch_val_loss,
+                'val_acc': epoch_val_acc,
+                'lr': current_lr,
+                'best_val_acc': best_val_acc,
+            })
+
         if epoch_val_acc > best_val_acc:
             best_val_acc = epoch_val_acc
             print(f"  -> new best acc: {best_val_acc:.2f}%. saved to {checkpoint_path}")
             
-            torch.save({
+            save_dict = {
                 'epoch': epoch,
                 'model_state_dict': model.state_dict(),
                 'optimizer_state_dict': optimizer.state_dict(),
                 'scheduler_state_dict': scheduler.state_dict() if scheduler else None,
                 'best_val_acc': best_val_acc,
                 'history': history,
-            }, checkpoint_path)
+            }
+            if padding_length is not None:
+                save_dict['padding_length'] = padding_length
+            torch.save(save_dict, checkpoint_path)
             
     return history

@@ -45,6 +45,8 @@ _ALGORITHM_REGISTRY: Dict[str, Dict[str, str]] = {
         'wavelet': 'wsdp.algorithms.denoising:wavelet_denoise_csi',
         'butterworth': 'wsdp.algorithms.denoising_butterworth:butterworth_denoise',
         'savgol': 'wsdp.algorithms.denoising_butterworth:savgol_denoise',
+        'bandpass': 'wsdp.algorithms.denoising_butterworth:butterworth_bandpass',
+        'hampel': 'wsdp.algorithms.amplitude:hampel_filter',
     },
     'calibrate': {
         'linear': 'wsdp.algorithms.phase_calibration:phase_calibration',
@@ -55,17 +57,21 @@ _ALGORITHM_REGISTRY: Dict[str, Dict[str, str]] = {
     'normalize': {
         'z-score': 'wsdp.algorithms.amplitude:normalize_amplitude',
         'min-max': 'wsdp.algorithms.amplitude:normalize_amplitude',
+        'agc': 'wsdp.algorithms.amplitude:agc_compensate',
     },
     'interpolate': {
         'linear': 'wsdp.algorithms.interpolation:interpolate_grid',
         'cubic': 'wsdp.algorithms.interpolation:interpolate_grid',
         'nearest': 'wsdp.algorithms.interpolation:interpolate_grid',
+        'decimate': 'wsdp.algorithms.interpolation:decimate_antialias',
     },
     'extract_features': {
         'doppler': 'wsdp.algorithms.features:doppler_spectrum',
         'entropy': 'wsdp.algorithms.features:entropy_features',
         'ratio': 'wsdp.algorithms.features:csi_ratio',
         'decomposition': 'wsdp.algorithms.features:tensor_decomposition',
+        'conjugate_multiply': 'wsdp.algorithms.features:conjugate_multiply',
+        'pca_fusion': 'wsdp.algorithms.features:pca_subcarrier_fusion',
     },
     'detect': {
         'activity': 'wsdp.algorithms.detection:detect_activity',

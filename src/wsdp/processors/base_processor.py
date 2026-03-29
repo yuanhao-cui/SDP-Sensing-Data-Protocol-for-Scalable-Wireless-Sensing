@@ -1,8 +1,11 @@
 import os
 import re
+import logging
 import numpy as np
 
 from typing import List
+
+logger = logging.getLogger(__name__)
 from pathlib import Path
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor
@@ -44,13 +47,13 @@ def _process_single_csi(csi_data, dataset):
             whole_csi = np.expand_dims(whole_csi, -1)
         elif whole_csi.ndim == 1:
             # (T,) — too degenerate, skip
-            print(f"data too degenerate (1D): {csi_data.file_name}")
+            logger.warning(f"data too degenerate (1D): {csi_data.file_name}")
             return None, None, None
         # discard data with too short time period (1 timestamp)
         if whole_csi.shape[0] < 2:
-            print(f"only one timestamp: {csi_data.file_name}")
+            logger.warning(f"only one timestamp: {csi_data.file_name}")
             return None, None, None
-        whole_csi = phase_calibration(whole_csi)
+        whole_csi = phase_calibration(whole_csi, dataset=dataset)
         cleaned_csi = wavelet_denoise_csi(whole_csi)
         return cleaned_csi, label, group
     return None, None, None
@@ -70,7 +73,7 @@ def _parse_file_info_from_filename(f_name, dataset):
             receiver_number = int(m.group(6))
             return user_id, gesture_type, torso_position, orientation, data_serial, receiver_number
         else:
-            print(f"[Warning] Skipping file {f_name}: Invalid format for Gesture Recognition.")
+            logger.warning(f"Skipping file {f_name}: Invalid format for Gesture Recognition.")
 
     elif dataset == 'gait':
         # Parse for Gait Recognition (pattern "user{N}-{track}-{activity}-r{rep}.dat")
@@ -83,7 +86,7 @@ def _parse_file_info_from_filename(f_name, dataset):
 
             return user_id, track_id, activity_id, rep_id, None, None
         else:
-            print(f"[Warning] Skipping file {f_name}: Invalid format for Activity Recognition.")
+            logger.warning(f"Skipping file {f_name}: Invalid format for Activity Recognition.")
 
     elif dataset == 'xrf55':
         m = re.search(r'(\d+)_(\d+)_', base)
@@ -92,7 +95,7 @@ def _parse_file_info_from_filename(f_name, dataset):
             action_id = int(m.group(2))
             return user_id, action_id, None, None, None, None
         else:
-            print(f"[Warning] Skipping file {f_name}: Invalid format for xrf55.")
+            logger.warning(f"Skipping file {f_name}: Invalid format for xrf55.")
 
     elif dataset == 'elderAL':
         m = re.search(r"user(\d+)_position(\d+)_activity(\d+)", f_name)
@@ -102,7 +105,7 @@ def _parse_file_info_from_filename(f_name, dataset):
             action_id = int(m.group(3))
             return user_id, position_id, action_id, None, None, None
         else:
-            print(f"[Warning] Skipping file {f_name}: Invalid format for ElderAL Dataset.")
+            logger.warning(f"Skipping file {f_name}: Invalid format for ElderAL Dataset.")
 
     elif dataset == 'zte':
         base = _process_file_path(f_name)[0][1]
@@ -113,28 +116,50 @@ def _parse_file_info_from_filename(f_name, dataset):
             action_id = m.group(3)
             return user_id, position_id, action_id, None, None, None
         else:
-            print(f"[Warning] Skipping file {f_name}: Invalid format for ZTE Dataset.")
+            logger.warning(f"Skipping file {f_name}: Invalid format for ZTE Dataset.")
 
     else:
-        print(f"[Error] Unknown task type: {dataset}")
+        logger.error(f"Unknown task type: {dataset}")
 
 
 def _selector(res, dataset):
+    """
+    Extract label and group from parsed filename metadata.
+
+    Group variable determines how GroupShuffleSplit partitions data.
+    Following standard evaluation protocols:
+    - Widar (Zheng et al., MobiSys 2019): group=user_id for cross-person eval
+    - Gait: group=user_id for person-independent evaluation
+    - XRF55: group=user_id (already correct)
+    - ElderAL/ZTE: group=position_id
+
+    Args:
+        res: Tuple of parsed metadata from _parse_file_info_from_filename.
+        dataset: Dataset name string.
+
+    Returns:
+        Tuple of (label, group).
+
+    Raises:
+        ValueError: If dataset is unknown.
+    """
     label = None
     group = None
 
     if dataset == 'widar':
-        label = int(res[1])
-        group = int(res[2])
+        label = int(res[1])   # gesture_type
+        group = int(res[0])   # user_id (cross-person generalization)
     elif dataset == 'gait':
-        label = int(res[2])  # activity_id (movement type)
-        group = int(res[3])  # rep_id (repetition, prevents data leakage)
+        label = int(res[2])   # activity_id (movement type)
+        group = int(res[0])   # user_id (person-independent evaluation)
     elif dataset == 'xrf55':
-        label = int(res[1])
-        group = int(res[0])
-    elif dataset == 'elderAL' or 'zte':
-        label = int(res[2])
-        group = int(res[1])
+        label = int(res[1])   # action_id
+        group = int(res[0])   # user_id
+    elif dataset in ('elderAL', 'zte'):
+        label = int(res[2])   # action_id
+        group = int(res[1])   # position_id
+    else:
+        raise ValueError(f"Unknown dataset: {dataset}")
 
     return label, group
 
