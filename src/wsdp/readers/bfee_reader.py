@@ -5,10 +5,11 @@ import numpy as np
 
 from typing import Dict, Any
 
-logger = logging.getLogger(__name__)
 from wsdp.readers.base import BaseReader
 from wsdp.structure import CSIData
 from wsdp.structure import BfeeFrame
+
+logger = logging.getLogger(__name__)
 
 
 class BfeeReader(BaseReader):
@@ -60,7 +61,8 @@ class BfeeReader(BaseReader):
             cur = 0
             while (cur + 3) < filesize:
                 hdr = f.read(3)
-                if len(hdr) < 3: break
+                if len(hdr) < 3:
+                    break
                 field_len = (hdr[0] << 8) | hdr[1]
                 code = hdr[2]
                 cur += 3
@@ -100,8 +102,10 @@ class BfeeReader(BaseReader):
         fake_rate = (payload[18] | (payload[19] << 8)) & 0xffff
 
         calc_len = (30 * (n_rx * n_tx * 8 * 2 + 3) + 7) // 8
-        if csi_len != calc_len: return None
-        if len(payload) < (20 + csi_len): return None
+        if csi_len != calc_len:
+            return None
+        if len(payload) < (20 + csi_len):
+            return None
 
         csi_bytes = payload[20: 20 + csi_len]
         csi_array = np.zeros((30, n_rx, n_tx), dtype=np.complex64)
@@ -127,8 +131,10 @@ class BfeeReader(BaseReader):
                 real8 = get_bits_u8(bit_index)
                 imag8 = get_bits_u8(bit_index + 8)
                 bit_index += 16
-                if real8 & 0x80: real8 -= 256
-                if imag8 & 0x80: imag8 -= 256
+                if real8 & 0x80:
+                    real8 -= 256
+                if imag8 & 0x80:
+                    imag8 -= 256
                 # Linux 802.11n CSI Tool (read_bfee.m): tx varies fastest
                 # i.e. tx_i = j % n_tx, rx_i = j // n_tx
                 tx_i = j % n_tx

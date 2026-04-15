@@ -3,14 +3,15 @@ import re
 import logging
 import numpy as np
 
-from typing import List
-
-logger = logging.getLogger(__name__)
 from pathlib import Path
 from functools import partial
 from concurrent.futures import ProcessPoolExecutor
+from typing import List
+
 from wsdp.algorithms import phase_calibration, wavelet_denoise_csi
 from wsdp.structure import CSIData
+
+logger = logging.getLogger(__name__)
 
 
 class BaseProcessor:

@@ -8,7 +8,6 @@ All models follow the unified interface:
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-import math
 
 from .registry import register_model
 
@@ -267,7 +266,7 @@ class GraphNeuralCSI(nn.Module):
         self.num_time_steps = T
         self.num_freq = F_dim
         self.num_antennas = A_dim
-        num_nodes = F_dim * A_dim
+        # num_nodes = F_dim * A_dim
 
         # Build adjacency matrix based on subcarrier/antenna proximity
         adj = self._build_adjacency(F_dim, A_dim)

@@ -31,6 +31,8 @@ import importlib
 from pathlib import Path
 from typing import Any, Callable, Dict, Optional, Union
 
+import numpy as np
+
 
 # ============================================================================
 # Algorithm Registry
@@ -396,7 +398,6 @@ def execute_pipeline(csi, steps: Dict[str, Dict[str, Any]]) -> 'np.ndarray':
         ... }
         >>> processed = execute_pipeline(csi, steps)
     """
-    import numpy as np  # lazy import to avoid circular issues
 
     result = csi.copy()
 

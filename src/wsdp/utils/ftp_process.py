@@ -86,7 +86,7 @@ def _download_current_dir(ftp, local_dir, extensions=None, stats=None):
             try:
                 try:
                     file_size = ftp.size(filename)
-                except:
+                except Exception:
                     file_size = None
 
                 with tqdm(total=file_size, unit='B', unit_scale=True, desc=filename, leave=False) as pbar:

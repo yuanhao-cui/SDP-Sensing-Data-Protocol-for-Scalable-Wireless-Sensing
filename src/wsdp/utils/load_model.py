@@ -13,7 +13,7 @@ def load_custom_model(model_file_path, num_classes):
 
         model_class = custom_model_module.model
         if not issubclass(model_class, nn.Module):
-            raise TypeError(f"custom model is not a subclass of torch.nn.Module")
+            raise TypeError("custom model is not a subclass of torch.nn.Module")
 
         model = model_class(num_classes)
 

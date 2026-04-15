@@ -94,7 +94,6 @@ def run_hparam_search(
             "Install it with: pip install optuna"
         )
 
-    import numpy as np
     import torch
     import torch.nn as nn
     from torch.utils.data import DataLoader

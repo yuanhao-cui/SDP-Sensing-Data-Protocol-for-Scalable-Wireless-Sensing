@@ -20,7 +20,7 @@ from sklearn.metrics import confusion_matrix, classification_report, accuracy_sc
 from torch.utils.data import DataLoader
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
 from torch.optim.lr_scheduler import ReduceLROnPlateau
-from typing import Optional, List, Tuple, Callable
+from typing import Optional, Tuple, Callable
 
 import logging
 

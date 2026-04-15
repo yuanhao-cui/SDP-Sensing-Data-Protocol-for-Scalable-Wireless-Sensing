@@ -60,7 +60,6 @@ All models are registered in the model registry under category "baseline":
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 
 from .registry import register_model
 
@@ -195,7 +194,7 @@ class CNN2DModel(nn.Module):
         super().__init__()
         T, F_dim, A = input_shape
         self.spatial_encoder = SpatialEncoder(F_dim, A, base_channels)
-        spatial_dim = self.spatial_encoder.spatial_dim  # 1024
+        # spatial_dim = self.spatial_encoder.spatial_dim  # 1024
 
         layers = []
         ch = 1

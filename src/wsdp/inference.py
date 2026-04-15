@@ -7,7 +7,7 @@ on preprocessed CSI data using trained models.
 import torch
 import numpy as np
 
-from typing import List, Union, Optional
+from typing import Optional
 from .models import CSIModel
 from .utils import load_custom_model
 from .utils.resize import resize_csi_to_fixed_length

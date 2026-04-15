@@ -40,7 +40,7 @@ def download(dataset_name: str, dest: str, email: str = None, password: str = No
 
     if auth_token:
         # JWT token auth
-        print(f"Using JWT token authentication")
+        print("Using JWT token authentication")
         api = load_api("auth")
         payload = {"fileKey": dn}
         headers = {
@@ -117,7 +117,7 @@ def _download_file_from_url(url, dest, file_name):
             url = head_resp.headers.get('Location', url)
             print(f"Redirected to: {url}")
         file_size = int(head_resp.headers.get('content-length', 0))
-    except Exception as e:
+    except Exception:
         print("cannot get size of dataset, download with single thread...")
         file_size = 0
 

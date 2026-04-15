@@ -1,1 +1,1 @@
-from .CSIDataset import CSIDataset
+from .CSIDataset import CSIDataset as CSIDataset

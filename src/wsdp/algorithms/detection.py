@@ -186,7 +186,7 @@ def _cusum_changepoint(signal):
                 deduped.append(cp)
         change_points = np.array(deduped)
 
-    scores = cusum_pos + cusum_neg
+    _ = cusum_pos + cusum_neg
     return change_points
 
 

@@ -1,1 +1,1 @@
-from .base_processor import BaseProcessor
+from .base_processor import BaseProcessor as BaseProcessor

@@ -3,7 +3,7 @@ import re
 import csv
 import numpy as np
 
-from typing import Dict, Any, List
+from typing import Dict, Any
 from wsdp.readers.base import BaseReader
 from wsdp.structure import CSIData
 from wsdp.structure import BaseFrame
@@ -163,8 +163,10 @@ class ElderReader(BaseReader):
 
                         if tx == target_tx:
                             col_mapping[idx] = (sub, rx)
-                            if sub > max_sub: max_sub = sub
-                            if rx > max_rx: max_rx = rx
+                            if sub > max_sub:
+                                max_sub = sub
+                            if rx > max_rx:
+                                max_rx = rx
 
                 if timestamp_idx == -1:
                     raise ValueError("cannot find column 'timestamp'")
@@ -174,7 +176,8 @@ class ElderReader(BaseReader):
 
                 row_count = 0
                 for row in reader:
-                    if not row: continue
+                    if not row:
+                        continue
 
                     try:
                         ts_str = row[timestamp_idx]
@@ -197,7 +200,7 @@ class ElderReader(BaseReader):
 
         except UnicodeDecodeError as e:
             print(f"encoding error in {file_path}: {e}")
-            print(f"  hint: this file may be binary format, expected CSV")
-            print(f"  try re-downloading from SDP8 platform with proper credentials")
+            print("  hint: this file may be binary format, expected CSV")
+            print("  try re-downloading from SDP8 platform with proper credentials")
 
         return csi_data

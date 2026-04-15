@@ -11,7 +11,6 @@ All models follow the unified interface:
 
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
 from torch.autograd import Function
 
 from .registry import register_model

@@ -62,7 +62,7 @@ class XrfReader(BaseReader):
                     return False
                 # Try to read and check header byte pattern
                 with open(file_path, 'rb') as f:
-                    header = np.fromfile(f, dtype=np.int16, count=4)
+                    _ = np.fromfile(f, dtype=np.int16, count=4)
                 # Header should be nonzero or structured differently from pure data
                 return True
             return False
@@ -109,9 +109,9 @@ class XrfReader(BaseReader):
             print(f"reshape failed for {file_path}: {e}")
             return []
 
-        I = pkt_array[:, :, 0].astype(np.float32)
-        Q = pkt_array[:, :, 1].astype(np.float32)
-        csi_complex = I + 1j * Q  # (n_packets, 270)
+        I_data = pkt_array[:, :, 0].astype(np.float32)
+        Q_data = pkt_array[:, :, 1].astype(np.float32)
+        csi_complex = I_data + 1j * Q_data  # (n_packets, 270)
 
         # Parse labels from path: .../Scene_X/{lb|nb}/YY/YY_AA_BB.dat
         parts = file_path.split(os.sep)
