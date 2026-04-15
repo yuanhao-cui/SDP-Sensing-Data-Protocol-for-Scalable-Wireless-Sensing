@@ -31,8 +31,6 @@ def wavelet_denoise_csi(csi_tensor, wavelet='db4', level=None,
 
     denoised_amplitude = np.copy(amplitude)
 
-    T, S, R = csi_tensor.shape
-
     def _denoise_channel(channel):
         try:
             # in case of dividing zero
@@ -96,9 +94,17 @@ def wavelet_denoise_csi(csi_tensor, wavelet='db4', level=None,
             logger.warning("wavelet denoising fail: %s. original signal will be returned.", e)
             return channel
 
-    for rx in range(R):
+    if csi_tensor.ndim == 2:
+        T, S = csi_tensor.shape
         for sc in range(S):
-            denoised_amplitude[:, sc, rx] = _denoise_channel(amplitude[:, sc, rx])
+            denoised_amplitude[:, sc] = _denoise_channel(amplitude[:, sc])
+    elif csi_tensor.ndim == 3:
+        T, S, R = csi_tensor.shape
+        for rx in range(R):
+            for sc in range(S):
+                denoised_amplitude[:, sc, rx] = _denoise_channel(amplitude[:, sc, rx])
+    else:
+        raise ValueError(f"Expected 2D or 3D array, got shape {csi_tensor.shape}")
             
     denoised_csi_tensor = denoised_amplitude * np.exp(1j * phase)
     
