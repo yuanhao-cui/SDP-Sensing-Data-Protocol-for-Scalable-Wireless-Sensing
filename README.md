@@ -517,11 +517,36 @@ SDP enforces **deterministic calibration and denoising**, guaranteeing:
 
 ## 📚 Documentation & Resources
 
-- 📖 [Full Documentation](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
-- 🔧 [API Reference](docs/API_REFERENCE.md)
-- 🤝 [Contributing Guide](CONTRIBUTING.md)
-- 📝 [Changelog](CHANGELOG.md)
-- 💻 [Colab Tutorial](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb)
+### 🎓 Tutorials (Recommended Order)
+
+| # | Resource | What You'll Learn |
+|:-:|:---------|:------------------|
+| 1 | [**Quickstart Notebook**](examples/quickstart.ipynb) | 5-min intro — registry exploration & processor customization |
+| 2 | [**Getting Started Notebook**](examples/getting_started.ipynb) | Algorithm deep-dive — phase calibration & denoising with step-by-step visualizations |
+| 3 | [**Full Tutorial Notebook**](examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-Open-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | End-to-end workflow — install → preprocess → train → evaluate → CLI |
+
+### 📘 User Guide
+
+| Resource | Description |
+|:---------|:------------|
+| [Installation](docs/getting-started/installation.md) | Setup & environment configuration |
+| [Quickstart Guide](docs/getting-started/quickstart.md) | First steps with WSDP |
+| [Algorithm Guide](docs/getting-started/algorithm-guide.md) | How to choose and chain preprocessing algorithms |
+| [Python API](docs/user-guide/python-api.md) | Programmatic usage in detail |
+| [CLI Reference](docs/user-guide/cli.md) | Command-line interface usage |
+| [Configuration](docs/user-guide/configuration.md) | YAML config files & pipeline presets |
+
+### 📊 Reference
+
+| Resource | Description |
+|:---------|:------------|
+| [Full Documentation Site](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/) | Complete MkDocs documentation |
+| [API Reference](docs/API_REFERENCE.md) | All public APIs |
+| [Dataset Overview](docs/datasets/overview.md) | Format details & download guide for all 5 datasets |
+| [Model Guide](docs/models.md) | All 19 models with architecture details |
+| [Leaderboard](docs/leaderboard.md) | Benchmark comparison across models & datasets |
+| [Changelog](CHANGELOG.md) | Version history |
+| [Contributing](CONTRIBUTING.md) | Development guide & PR process |
 
 ---
 
@@ -946,11 +971,36 @@ SDP 强制执行**确定性校准和去噪**，保证：
 
 ## 📚 文档与资源
 
-- 📖 [完整文档](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/)
-- 🔧 [API 参考](docs/API_REFERENCE.md)
-- 🤝 [贡献指南](CONTRIBUTING.md)
-- 📝 [更新日志](CHANGELOG.md)
-- 💻 [Colab 教程](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb)
+### 🎓 教程（推荐学习顺序）
+
+| # | 资源 | 你将学到 |
+|:-:|:-----|:---------|
+| 1 | [**快速上手 Notebook**](examples/quickstart.ipynb) | 5 分钟入门 — 注册表探索与处理器定制 |
+| 2 | [**入门指南 Notebook**](examples/getting_started.ipynb) | 算法详解 — 相位校准与去噪的逐步可视化演示 |
+| 3 | [**完整教程 Notebook**](examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-打开-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | 端到端流程 — 安装 → 预处理 → 训练 → 评估 → CLI |
+
+### 📘 使用指南
+
+| 资源 | 说明 |
+|:-----|:-----|
+| [安装指南](docs/getting-started/installation.md) | 环境搭建与配置 |
+| [快速开始](docs/getting-started/quickstart.md) | WSDP 第一步 |
+| [算法指南](docs/getting-started/algorithm-guide.md) | 如何选择和组合预处理算法 |
+| [Python API](docs/user-guide/python-api.md) | 编程接口详细用法 |
+| [CLI 参考](docs/user-guide/cli.md) | 命令行接口使用说明 |
+| [配置文件](docs/user-guide/configuration.md) | YAML 配置与 Pipeline 预设 |
+
+### 📊 参考资料
+
+| 资源 | 说明 |
+|:-----|:-----|
+| [完整文档站](https://yuanhao-cui.github.io/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/) | MkDocs 完整文档 |
+| [API 参考](docs/API_REFERENCE.md) | 所有公开 API |
+| [数据集总览](docs/datasets/overview.md) | 5 个数据集的格式详情与下载说明 |
+| [模型指南](docs/models.md) | 全部 19 个模型的架构详情 |
+| [排行榜](docs/leaderboard.md) | 跨模型、跨数据集的基准对比 |
+| [更新日志](CHANGELOG.md) | 版本历史 |
+| [贡献指南](CONTRIBUTING.md) | 开发规范与 PR 流程 |
 
 ---
 
