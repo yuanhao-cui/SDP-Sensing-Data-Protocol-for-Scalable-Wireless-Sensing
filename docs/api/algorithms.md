@@ -17,8 +17,8 @@ WSDP provides a comprehensive algorithm library for CSI processing with a **plug
 ## Unified API
 
 ```python
-from wsdp.algorithms import denoise, calibrate, normalize, interpolate
-from wsdp.algorithms import extract_features, detect, remove_outliers
+from wsdp.algorithms import denoise, calibrate, normalize
+from wsdp.algorithms import extract_features
 
 denoised = denoise(csi, method='butterworth', order=5)
 calibrated = calibrate(denoised, method='stc')

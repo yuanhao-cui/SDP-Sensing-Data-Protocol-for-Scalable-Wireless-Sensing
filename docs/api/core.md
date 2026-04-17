@@ -76,7 +76,7 @@ Download datasets from [SDP8.org](https://sdp8.org).
 ```python
 from wsdp import download
 
-download(dataset, output_path, email=None, password=None, token=None)
+download(dataset_name, dest, email=None, password=None, token=None)
 ```
 
 ## Internal Helpers
