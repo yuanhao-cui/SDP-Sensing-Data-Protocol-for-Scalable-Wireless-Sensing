@@ -201,7 +201,7 @@ def run_level4_pipeline_tests(data_dir, output_dir):
     with ProcessPoolExecutor(max_workers=min(4, len(dataset_tests))) as executor:
         futures = {
             executor.submit(
-                test_dataset_pipelines,
+                run_dataset_pipelines,
                 dataset, path, output_dir
             ): dataset for dataset, path in dataset_tests
         }
@@ -241,7 +241,7 @@ def run_level4_pipeline_tests(data_dir, output_dir):
     }
 
 
-def test_dataset_pipelines(dataset, dataset_path, output_dir):
+def run_dataset_pipelines(dataset, dataset_path, output_dir):
     """测试单个数据集的所有模型组合"""
     from wsdp import pipeline
     
