@@ -1,4 +1,4 @@
-venv/
+.venv/
 __pycache__/
 *.pyc
 .pytest_cache/
@@ -13,4 +13,4 @@ data/
 .idea/
 *output/
 AGENTS.md
-
+CLAUDE.md

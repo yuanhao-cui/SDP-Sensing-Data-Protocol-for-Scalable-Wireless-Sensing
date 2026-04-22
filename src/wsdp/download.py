@@ -1,8 +1,11 @@
 import os
 import sys
 import getpass
+import urllib3
 import requests
 import kagglehub
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 from tqdm import tqdm
 from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -84,7 +87,7 @@ def download(dataset_name: str, dest: str, email: str = None, password: str = No
     print(f"prepare to download: {dataset_name}")
 
     try:
-        response = requests.post(api, headers=headers, json=payload, timeout=20)
+        response = requests.post(api, headers=headers, json=payload, timeout=20, allow_redirects=True, verify=False)
 
         if response.status_code == 200:
             url = response.text

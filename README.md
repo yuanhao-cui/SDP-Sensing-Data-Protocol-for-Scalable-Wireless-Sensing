@@ -200,6 +200,8 @@ wsdp --version
 ### Step 2: Download Dataset (2 minutes)
 
 > 🔑 **Required**: Create a free account at **[SDP8.org](https://sdp8.org)** — your account credentials are needed for dataset downloads.
+>
+> 🌐 **VPN is recommended** for downloading datasets.
 
 **Option A: From CLI (Recommended for testing)**
 
@@ -663,6 +665,8 @@ wsdp --version
 ### 第 2 步：下载数据集（2 分钟）
 
 > 🔑 **前提条件**：在 **[SDP8.org](https://sdp8.org)** 注册免费账号 — 下载数据集需要使用账号凭证。
+>
+> 🌐 **建议使用 VPN 下载**数据集。
 
 **方式 A：命令行下载（测试推荐）**
 
