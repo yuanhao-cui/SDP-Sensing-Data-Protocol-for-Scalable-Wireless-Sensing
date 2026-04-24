@@ -192,7 +192,10 @@ def interpolate(csi, target_K=30, method='cubic', **kwargs):
     """
     func = get_algorithm('interpolate', method)
     filtered = _filter_kwargs(func, kwargs)
-    return func(csi, target_K=target_K, method=method, **filtered)
+    sig = inspect.signature(func)
+    if 'method' in sig.parameters:
+        return func(csi, target_K=target_K, method=method, **filtered)
+    return func(csi, target_K=target_K, **filtered)
 
 
 def extract_features(csi, features=None, **kwargs):

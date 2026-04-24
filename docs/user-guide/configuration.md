@@ -34,31 +34,28 @@ All hyperparameters can be overridden via CLI:
 | Config File | `--config` | None |
 | Num Workers | `--num-workers` | `4` |
 | Use Cache | `--use-cache` | `False` |
-| Algorithm Preset | `--algorithm-preset` | None |
 
 ## Algorithm Presets
 
-Presets provide pre-configured algorithm pipelines for common scenarios. Use them via CLI or Python API:
-
-```bash
-wsdp run ./data/elderAL ./output elderAL --algorithm-preset high_quality
-```
+Presets provide pre-configured algorithm pipelines for common scenarios. Use them via the Python API:
 
 ```python
-from wsdp import pipeline
-pipeline(..., algorithm_preset='high_quality')
+from wsdp.algorithms import apply_preset, execute_pipeline
+
+steps = apply_preset('high_quality')
+processed = execute_pipeline(csi, steps)
 ```
 
 ### Available Presets
 
 | Preset | Steps | Use Case |
 |--------|-------|----------|
-| `minimal` | Wavelet denoise, z-score normalize | Quick experiments, already-clean data |
-| `standard` | Wavelet denoise, STC calibration, z-score normalize | General-purpose default |
-| `high_quality` | Hampel outlier removal, Butterworth denoise, robust calibration, AGC normalize | Maximum signal quality, offline processing |
-| `realtime` | Savgol denoise, min-max normalize | Low-latency edge applications |
-| `phase_sensitive` | Linear calibration, conjugate multiply, PCA fusion | Tasks relying on phase information (e.g., localization) |
-| `cross_domain` | Bandpass denoise, AGC normalize, activity detection | Preprocessing for domain adaptation models |
+| `high_quality` | Butterworth denoise, STC calibration, z-score normalize | Maximum accuracy |
+| `fast` | Savgol denoise, linear calibration, min-max normalize | Speed-optimized |
+| `robust` | Wavelet denoise, robust calibration, z-score normalize | Noisy environments |
+| `gesture_recognition` | Butterworth denoise, STC calibration, z-score normalize, cubic interpolation | Gesture tasks |
+| `activity_detection` | Savgol denoise, polynomial calibration, z-score normalize | HAR tasks |
+| `localization` | Wavelet denoise, robust calibration, z-score normalize, cubic interpolation | Localization tasks |
 
 ## Algorithm Selection via YAML
 
@@ -66,29 +63,17 @@ For fine-grained control, define custom algorithm pipelines in YAML:
 
 ```yaml
 # algorithms_config.yaml
-algorithms:
-  - category: outliers
-    method: hampel
-    params:
-      window: 5
-      threshold: 3.0
+denoise:
+  method: butterworth
+  params:
+    order: 5
+    cutoff: 0.3
 
-  - category: denoise
-    method: butterworth
-    params:
-      order: 5
-      cutoff: 20.0
+calibrate:
+  method: stc
 
-  - category: calibrate
-    method: stc
-
-  - category: normalize
-    method: agc
-    params:
-      target_power: 1.0
-
-  - category: features
-    method: conjugate_multiply
+normalize:
+  method: z-score
 ```
 
 Usage:
@@ -99,13 +84,20 @@ config = load_config('algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 
-Or pass it to the pipeline:
+To use algorithm configs with the training pipeline, preprocess data first:
 ```python
+from wsdp.algorithms import load_config, execute_pipeline
+from wsdp import pipeline
+
+config = load_config('algorithms_config.yaml')
+processed = execute_pipeline(csi, config)
+
+# Then pass preprocessed data to custom training logic
+# or use the standard pipeline on already-cleaned data
 pipeline(
     input_path='./data/elderAL',
     output_folder='./output',
     dataset='elderAL',
-    config='algorithms_config.yaml',
 )
 ```
 

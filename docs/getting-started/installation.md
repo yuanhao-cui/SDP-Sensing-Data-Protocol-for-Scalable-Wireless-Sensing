@@ -17,8 +17,8 @@ pip install wsdp
 ### Clone the Repository
 
 ```bash
-git clone https://github.com/sdp-team/wsdp.git
-cd wsdp
+git clone https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing.git
+cd SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing
 ```
 
 ### Install in Development Mode

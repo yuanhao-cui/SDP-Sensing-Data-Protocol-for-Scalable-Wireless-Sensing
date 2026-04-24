@@ -32,17 +32,21 @@ ls ./output/
 
 ### 4. Try an Algorithm Preset
 
-Apply optimized preprocessing before training:
+Apply optimized preprocessing manually before training:
 
-```bash
+```python
+from wsdp.algorithms import apply_preset, execute_pipeline
+
 # High-quality preprocessing pipeline
-wsdp run ./data/elderAL ./output elderAL --algorithm-preset high_quality --epochs 50
+steps = apply_preset('high_quality')
+processed = execute_pipeline(csi_data, steps)
 
-# Phase-sensitive preprocessing (good for localization tasks)
-wsdp run ./data/elderAL ./output elderAL --algorithm-preset phase_sensitive --epochs 50
+# Robust preprocessing (good for noisy environments)
+steps = apply_preset('robust')
+processed = execute_pipeline(csi_data, steps)
 ```
 
-Available presets: `minimal`, `standard`, `high_quality`, `realtime`, `phase_sensitive`, `cross_domain`.
+Available presets: `high_quality`, `fast`, `robust`, `gesture_recognition`, `activity_detection`, `localization`.
 
 ### 5. Try a Different Model
 
@@ -64,20 +68,21 @@ wsdp run ./data/elderAL ./output elderAL --model PA_CSI --epochs 50
 ```python
 from wsdp import pipeline, predict
 import numpy as np
+import glob
 
-# Train
+# Train (uses default CSIModel; num_seeds=1 for a single checkpoint)
 pipeline(
     input_path='./data/elderAL',
     output_folder='./output',
     dataset='elderAL',
-    model_name='THAT',
-    algorithm_preset='standard',
     num_epochs=50,
+    num_seeds=1,
 )
 
-# Predict
+# Predict: auto-locate the checkpoint saved by pipeline
+checkpoint_path = glob.glob('./output/best_checkpoint_*.pth')[0]
 csi = np.random.randn(5, 200, 30, 3) + 1j * np.random.randn(5, 200, 30, 3)
-predictions = predict(csi, './output/best_model.pth', num_classes=6)
+predictions = predict(csi, checkpoint_path, num_classes=6)
 ```
 
 ## What's Next?

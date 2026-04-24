@@ -102,7 +102,7 @@ cleaned = remove_outliers(csi, method='iqr', factor=1.5)
 cleaned = remove_outliers(csi, method='z-score', threshold=3.0)
 
 # Interpolation (including decimation)
-resampled = interpolate(csi, method='decimate', factor=2)
+resampled = interpolate(csi, method='decimate', target_K=15)
 ```
 
 ### Algorithm Presets
@@ -113,17 +113,9 @@ from wsdp.algorithms import apply_preset, execute_pipeline
 # Apply a preset
 steps = apply_preset('high_quality')
 processed = execute_pipeline(csi, steps)
-
-# Use presets in the training pipeline
-pipeline(
-    input_path='./data/elderAL',
-    output_folder='./output',
-    dataset='elderAL',
-    algorithm_preset='phase_sensitive',
-)
 ```
 
-Available presets: `minimal`, `standard`, `high_quality`, `realtime`, `phase_sensitive`, `cross_domain`.
+Available presets: `high_quality`, `fast`, `robust`, `gesture_recognition`, `activity_detection`, `localization`.
 
 ## Preprocessing Cache
 
