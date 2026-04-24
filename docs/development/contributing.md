@@ -46,8 +46,8 @@ register_model("custom", "MyModel", MyModel)
 
 To contribute your model upstream:
 
-1. Add the model class to `wsdp/models/`.
-2. Register it in `wsdp/models/__init__.py` with the appropriate category.
+1. Add the model class to `src/wsdp/models/`.
+2. Register it in `src/wsdp/models/__init__.py` with the appropriate category.
 3. Add unit tests in `tests/test_models.py`.
 4. Add an entry to `docs/models.md`.
 5. Submit a PR with benchmark results on at least one built-in dataset.
@@ -68,8 +68,8 @@ register_algorithm('denoise', 'my_method', my_denoise)
 
 To contribute your algorithm upstream:
 
-1. Add the algorithm function to the appropriate module in `wsdp/algorithms/`.
-2. Register it in the category's `__init__.py`.
+1. Add the algorithm function to the appropriate module in `src/wsdp/algorithms/`.
+2. Register it in `src/wsdp/algorithms/__init__.py` or `src/wsdp/algorithms/registry.py`.
 3. Add unit tests in `tests/test_algorithms.py`.
 4. Document parameters and references in `docs/api/algorithms.md`.
 5. Submit a PR.

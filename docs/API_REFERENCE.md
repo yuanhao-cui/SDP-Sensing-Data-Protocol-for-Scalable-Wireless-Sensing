@@ -54,7 +54,7 @@ pipeline(
 |-----------|------|---------|-------------|
 | `input_path` | str | required | Path to input data directory |
 | `output_folder` | str | required | Path to output directory |
-| `dataset` | str | required | Dataset name (widar, gait, xrf55, elderal, zte) |
+| `dataset` | str | required | Dataset name (widar, gait, xrf55, elderAL, zte) |
 | `model_path` | str | None | Path to custom model file |
 | `learning_rate` | float | None | Learning rate (overrides config) |
 | `num_epochs` | int | None | Number of epochs (overrides config) |
@@ -95,8 +95,7 @@ frame = CSIFrame(
 
 | Reader | Dataset | Format |
 |--------|---------|--------|
-| `WidarReader` | Widar | .dat (bfee) |
-| `GaitReader` | Gait | .dat (bfee) |
+| `BfeeReader` | Widar / Gait | .dat (bfee) |
 | `XRF55Reader` | XRF55 | .npy |
 | `ElderALReader` | ElderAL | .csv |
 | `ZTEReader` | ZTE | .csv |
@@ -578,6 +577,8 @@ features = extract_features(csi, features=['doppler', 'entropy'])
 | `'entropy'` | `entropy_features()` | `bins` |
 | `'ratio'` | `csi_ratio()` | `antenna_pairs` |
 | `'decomposition'` | `tensor_decomposition()` | `rank`, `method` |
+| `'conjugate_multiply'` | `conjugate_multiply()` | `antenna_pairs` |
+| `'pca_fusion'` | `pca_fusion()` | `n_components` |
 
 ---
 
@@ -1036,6 +1037,8 @@ wsdp list -V
 | | Entropy | `entropy_features()` | Shannon, 1948 |
 | | CSI Ratio | `csi_ratio()` | Halperin et al., 2011 |
 | | Tensor Decomposition | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
+| | Conjugate Multiply | `conjugate_multiply()` | Xie et al., IEEE TWC 2019 |
+| | PCA Fusion | `pca_fusion()` | Ma et al., IEEE GLOBECOM 2015 |
 | **Detection** | Activity | `detect_activity()` | Zhou et al., 2013 |
 | | Change Point | `change_point_detection()` | Adams & MacKay, 2007 |
 

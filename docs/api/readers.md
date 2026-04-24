@@ -6,8 +6,7 @@ See [Full API Reference](../API_REFERENCE.md) for complete documentation.
 
 | Reader | Dataset | Format |
 |--------|---------|--------|
-| WidarReader | Widar | .dat (bfee) |
-| GaitReader | Gait | .dat (bfee) |
+| BfeeReader | Widar / Gait | .dat (bfee) |
 | XRF55Reader | XRF55 | .npy |
 | ElderALReader | ElderAL | .csv |
 | ZTEReader | ZTE | .csv |
@@ -15,8 +14,8 @@ See [Full API Reference](../API_REFERENCE.md) for complete documentation.
 ## Usage
 
 ```python
-from wsdp.readers import WidarReader
+from wsdp.readers import BfeeReader
 
-reader = WidarReader()
+reader = BfeeReader()
 data = reader.read_file("/path/to/file.dat")
 ```

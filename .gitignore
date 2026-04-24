@@ -9,3 +9,8 @@ build/
 htmlcov/
 .coverage
 site/
+data/
+.idea/
+*output/
+AGENTS.md
+

@@ -59,10 +59,10 @@ features = extract_features(normalized, features=['doppler', 'entropy'])
 
 | Algorithm | Function | Description |
 |-----------|----------|-------------|
-| `linear` | `interpolate(csi, method='linear', target_len=200)` | Linear interpolation to target sequence length. |
-| `cubic` | `interpolate(csi, method='cubic', target_len=200)` | Cubic spline interpolation. Smoother than linear. |
-| `nearest` | `interpolate(csi, method='nearest', target_len=200)` | Nearest-neighbor interpolation. Fastest, no smoothing. |
-| `decimate` | `interpolate(csi, method='decimate', factor=2)` | Downsample with anti-aliasing filter. Reduces temporal resolution by given factor. |
+| `linear` | `interpolate(csi, method='linear', target_K=30)` | Linear interpolation to target number of subcarriers. |
+| `cubic` | `interpolate(csi, method='cubic', target_K=30)` | Cubic spline interpolation. Smoother than linear. |
+| `nearest` | `interpolate(csi, method='nearest', target_K=30)` | Nearest-neighbor interpolation. Fastest, no smoothing. |
+| `decimate` | `interpolate(csi, method='decimate', target_K=15)` | Downsample with anti-aliasing filter. Reduces to the target number of subcarriers. |
 
 ### Feature Extraction
 
@@ -116,12 +116,12 @@ Available presets:
 
 | Preset | Description |
 |--------|-------------|
-| `minimal` | Basic denoising + normalization only |
-| `standard` | Wavelet denoise + STC calibration + z-score normalization |
-| `high_quality` | Full pipeline: hampel outlier removal, butterworth denoise, robust calibration, AGC normalization |
-| `realtime` | Optimized for low latency: savgol denoise + min-max normalization |
-| `phase_sensitive` | Emphasizes phase processing: linear calibration + conjugate multiply + PCA fusion |
-| `cross_domain` | Preprocessing for domain adaptation: bandpass denoise + AGC + activity detection |
+| `high_quality` | Maximum accuracy: butterworth denoise + STC calibration + z-score normalization |
+| `fast` | Speed-optimized: savgol denoise + linear calibration + min-max normalization |
+| `robust` | Noisy environments: wavelet denoise + robust calibration + z-score normalization |
+| `gesture_recognition` | Gesture tasks: butterworth denoise + STC calibration + z-score normalization + cubic interpolation |
+| `activity_detection` | HAR tasks: savgol denoise + polynomial calibration + z-score normalization |
+| `localization` | Localization tasks: wavelet denoise + robust calibration + z-score normalization + cubic interpolation |
 
 ### Load from Config File
 
