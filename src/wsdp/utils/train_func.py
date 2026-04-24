@@ -36,7 +36,7 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
         'epoch': [], 'lr': []
     }
 
-    best_val_acc = 0.0
+    best_val_acc = None
     start_epoch = 0
 
     # Resume from checkpoint if specified
@@ -136,10 +136,10 @@ def train_model(model, criterion, optimizer, scheduler, train_loader, val_loader
                 'val_loss': epoch_val_loss,
                 'val_acc': epoch_val_acc,
                 'lr': current_lr,
-                'best_val_acc': best_val_acc,
+                'best_val_acc': best_val_acc if best_val_acc is not None else 0.0,
             })
 
-        if epoch_val_acc > best_val_acc:
+        if best_val_acc is None or epoch_val_acc > best_val_acc:
             best_val_acc = epoch_val_acc
             print(f"  -> new best acc: {best_val_acc:.2f}%. saved to {checkpoint_path}")
             

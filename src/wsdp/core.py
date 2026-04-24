@@ -27,6 +27,13 @@ import logging
 logger = logging.getLogger(__name__)
 
 
+def _raise_no_usable_samples(input_path: str, dataset: str) -> None:
+    raise ValueError(
+        f"No usable samples were produced from '{input_path}' for dataset '{dataset}'. "
+        "All files may have been filtered out during reading/preprocessing or had invalid filenames."
+    )
+
+
 def _load_and_preprocess(
     input_path: str,
     dataset: str,
@@ -43,7 +50,13 @@ def _load_and_preprocess(
     res = processor.process(csi_data_list, dataset=dataset)
 
     unadjusted_data = res[0]
+    if not unadjusted_data:
+        _raise_no_usable_samples(input_path, dataset)
+
     processed_data = resize_csi_to_fixed_length(unadjusted_data, target_length=pad_len)
+    if not processed_data:
+        _raise_no_usable_samples(input_path, dataset)
+
     logger.info(f"processed_data's shape: {processed_data[0].shape}")
 
     labels = res[1]
@@ -83,36 +96,54 @@ def _create_data_split(
     Returns:
         (train_data, val_data, test_data, train_labels, val_labels, test_labels)
     """
-    if use_simple_split:
-        train_data, temp_data, train_labels, temp_labels = train_test_split(
-            processed_data, labels,
-            test_size=test_split, random_state=seed
+    try:
+        if use_simple_split:
+            train_data, temp_data, train_labels, temp_labels = train_test_split(
+                processed_data, labels,
+                test_size=test_split, random_state=seed
+            )
+            test_data, val_data, test_labels, val_labels = train_test_split(
+                temp_data, temp_labels,
+                test_size=val_split, random_state=seed
+            )
+        else:
+            splitter_1 = GroupShuffleSplit(n_splits=1, test_size=test_split, random_state=seed)
+            train_idx, temp_idx = next(
+                splitter_1.split(processed_data, labels, groups=groups)
+            )
+
+            train_data = processed_data[train_idx]
+            train_labels = labels[train_idx]
+
+            temp_data = processed_data[temp_idx]
+            temp_labels = labels[temp_idx]
+            temp_groups = groups[temp_idx]
+
+            splitter_2 = GroupShuffleSplit(n_splits=1, test_size=val_split, random_state=seed)
+            test_idx, val_idx = next(splitter_2.split(temp_data, temp_labels, groups=temp_groups))
+
+            test_data = temp_data[test_idx]
+            test_labels = temp_labels[test_idx]
+
+            val_data = temp_data[val_idx]
+            val_labels = temp_labels[val_idx]
+    except ValueError as exc:
+        raise ValueError(
+            f"Unable to create train/val/test splits from {len(processed_data)} usable sample(s). "
+            "Please provide more data or adjust test_split/val_split."
+        ) from exc
+
+    split_sizes = {
+        'train': len(train_data),
+        'val': len(val_data),
+        'test': len(test_data),
+    }
+    empty_splits = [name for name, size in split_sizes.items() if size == 0]
+    if empty_splits:
+        raise ValueError(
+            f"Unable to create non-empty train/val/test splits from {len(processed_data)} usable sample(s). "
+            f"Empty split(s): {', '.join(empty_splits)}. Please provide more data or adjust test_split/val_split."
         )
-        test_data, val_data, test_labels, val_labels = train_test_split(
-            temp_data, temp_labels,
-            test_size=val_split, random_state=seed
-        )
-    else:
-        splitter_1 = GroupShuffleSplit(n_splits=1, test_size=test_split, random_state=seed)
-        train_idx, temp_idx = next(
-            splitter_1.split(processed_data, labels, groups=groups)
-        )
-
-        train_data = processed_data[train_idx]
-        train_labels = labels[train_idx]
-
-        temp_data = processed_data[temp_idx]
-        temp_labels = labels[temp_idx]
-        temp_groups = groups[temp_idx]
-
-        splitter_2 = GroupShuffleSplit(n_splits=1, test_size=val_split, random_state=seed)
-        test_idx, val_idx = next(splitter_2.split(temp_data, temp_labels, groups=temp_groups))
-
-        test_data = temp_data[test_idx]
-        test_labels = temp_labels[test_idx]
-
-        val_data = temp_data[val_idx]
-        val_labels = temp_labels[val_idx]
 
     train_data = np.stack(train_data, axis=0)
     val_data = np.stack(val_data, axis=0)

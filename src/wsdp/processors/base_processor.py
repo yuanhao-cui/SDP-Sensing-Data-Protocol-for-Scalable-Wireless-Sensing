@@ -34,7 +34,13 @@ class BaseProcessor:
 # function for parallel processing
 def _process_single_csi(csi_data, dataset):
     res = _parse_file_info_from_filename(csi_data.file_name, dataset)
+    if res is None:
+        return None, None, None
+
     label, group = _selector(res, dataset)
+    if label is None or group is None:
+        return None, None, None
+
     sorted_frames = sorted(csi_data.frames, key=lambda frame: frame.timestamp)
     frame_tensors = []
     for frame in sorted_frames:
@@ -42,12 +48,12 @@ def _process_single_csi(csi_data, dataset):
         frame_tensors.append(data)
     if frame_tensors:
         whole_csi = np.stack(frame_tensors, axis=0)
-        # Ensure 3D: (T, F, A) — guard against single-dimension data
+        # Ensure 3D: (T, F, A) - guard against single-dimension data
         if whole_csi.ndim == 2:
-            # (T, F) — single antenna, reshape to (T, F, 1)
+            # (T, F) - single antenna, reshape to (T, F, 1)
             whole_csi = np.expand_dims(whole_csi, -1)
         elif whole_csi.ndim == 1:
-            # (T,) — too degenerate, skip
+            # (T,) - too degenerate, skip
             logger.warning(f"data too degenerate (1D): {csi_data.file_name}")
             return None, None, None
         # discard data with too short time period (1 timestamp)
@@ -144,6 +150,10 @@ def _selector(res, dataset):
     Raises:
         ValueError: If dataset is unknown.
     """
+    if res is None:
+        logger.warning(f"Skipping sample: unable to derive label/group for dataset {dataset}.")
+        return None, None
+
     label = None
     group = None
 
