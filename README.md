@@ -46,7 +46,7 @@ If you use SDP in your research, please cite:
 <a id="english"></a>
 # 🇬🇧 English
 
-## 🆕 What's New in v0.4.0
+## 🆕 What's New in v0.5.0
 
 - **7 critical scientific bug fixes** -- corrected phase calibration, wavelet boundary handling, Doppler normalization, and more
 - **7 new SOTA models** -- THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense (19 total)
@@ -583,7 +583,7 @@ MIT License - see [LICENSE](LICENSE) file.
 <a id="中文"></a>
 # 🇨🇳 中文
 
-## 🆕 v0.4.0 更新内容
+## 🆕 v0.5.0 更新内容
 
 - **7 个关键科学 bug 修复** -- 修正相位校准、小波边界处理、多普勒归一化等问题
 - **7 个新 SOTA 模型** -- THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense（共 19 个）
