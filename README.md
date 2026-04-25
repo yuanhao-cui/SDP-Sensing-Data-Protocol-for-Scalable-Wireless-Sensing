@@ -397,7 +397,7 @@ You can try this in `examples/getting_started.ipynb` or just in your custom pipe
 **Configuration file support:**
 
 ```yaml
-# algorithms_config.yaml
+# examples/configs/algorithms_config.yaml
 denoise:
   method: butterworth
   params:
@@ -411,12 +411,12 @@ normalize:
 
 ```python
 from wsdp.algorithms import load_config, execute_pipeline
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 Or:
 ```python
-pipeline("./data/elderAL", "./output", "elderAL", config_file='./algorithms_config.yaml')
+pipeline("./data/elderAL", "./output", "elderAL", config_file='./examples/configs/algorithms_config.yaml')
 ```
 
 **Pipeline presets:**
@@ -855,7 +855,7 @@ result = denoise(csi, method='my_method')  # 像内置算法一样使用！
 **配置文件支持：**
 
 ```yaml
-# algorithms_config.yaml
+# examples/configs/algorithms_config.yaml
 denoise:
   method: butterworth
   params:
@@ -869,7 +869,7 @@ normalize:
 
 ```python
 from wsdp.algorithms import load_config, execute_pipeline
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 

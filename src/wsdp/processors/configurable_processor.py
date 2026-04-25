@@ -1,0 +1,65 @@
+"""ConfigurableProcessor: run a user-defined algorithm pipeline over a list of CSIData."""
+
+from concurrent.futures import ProcessPoolExecutor
+from functools import partial
+
+import numpy as np
+
+from wsdp.algorithms import execute_pipeline
+
+
+class ConfigurableProcessor:
+    """Processor that applies a user-defined algorithm pipeline to each CSI sample.
+
+    Args:
+        pipeline_steps: dict describing the algorithm pipeline, e.g.
+            {'denoise': {'method': 'wavelet'},
+             'calibrate': {'method': 'stc'},
+             'normalize': {'method': 'z-score'}}
+    """
+
+    def __init__(self, pipeline_steps):
+        self.pipeline_steps = pipeline_steps
+
+    def process(self, data_list, **kwargs):
+        dataset = kwargs.get('dataset', '')
+        all_data, all_labels, all_groups = [], [], []
+
+        worker_func = partial(
+            _process_single_csi_configurable,
+            dataset=dataset,
+            pipeline_steps=self.pipeline_steps,
+        )
+
+        with ProcessPoolExecutor(max_workers=4) as executor:
+            results = executor.map(worker_func, data_list)
+            for csi, label, group in results:
+                if csi is not None:
+                    all_data.append(csi)
+                    all_labels.append(label)
+                    all_groups.append(group)
+        return all_data, all_labels, all_groups
+
+
+def _process_single_csi_configurable(csi_data, dataset, pipeline_steps):
+    """Worker: parse one CSIData, build (T, F, A) tensor, run configured pipeline."""
+    from wsdp.processors.base_processor import _parse_file_info_from_filename, _selector
+
+    res = _parse_file_info_from_filename(csi_data.file_name, dataset)
+    label, group = _selector(res, dataset)
+
+    sorted_frames = sorted(csi_data.frames, key=lambda f: f.timestamp)
+    frame_tensors = [f.csi_array for f in sorted_frames]
+
+    if not frame_tensors:
+        return None, None, None
+
+    whole_csi = np.stack(frame_tensors, axis=0)
+    if whole_csi.ndim == 2:
+        whole_csi = np.expand_dims(whole_csi, -1)
+    if whole_csi.shape[0] < 2:
+        return None, None, None
+
+    cleaned_csi = execute_pipeline(whole_csi, pipeline_steps)
+
+    return cleaned_csi, label, group

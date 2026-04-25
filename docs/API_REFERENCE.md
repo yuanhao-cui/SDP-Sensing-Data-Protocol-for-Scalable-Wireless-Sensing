@@ -670,7 +670,7 @@ WSDP supports YAML and JSON configuration files for algorithm selection.
 #### YAML Format
 
 ```yaml
-# algorithms_config.yaml
+# examples/configs/algorithms_config.yaml
 denoise:
   method: butterworth
   params:
@@ -714,7 +714,7 @@ Load algorithm configuration from a file.
 ```python
 from wsdp.algorithms import load_config
 
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 ```
 
 #### `save_config()`

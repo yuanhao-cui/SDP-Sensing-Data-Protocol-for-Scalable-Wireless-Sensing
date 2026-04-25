@@ -24,7 +24,7 @@ from torch.utils.data import DataLoader
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
 
 from wsdp import readers
-from configurable_processor import ConfigurableProcessor
+from wsdp.processors import ConfigurableProcessor
 from wsdp.models import create_model, list_models
 from wsdp.datasets import CSIDataset
 from wsdp.utils import resize_csi_to_fixed_length, train_model

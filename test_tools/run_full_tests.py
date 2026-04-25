@@ -18,7 +18,6 @@ WSDP 全量测试规划与执行脚本
 - L4: Pipeline集成 (60组合) - 慢速，需下载数据
 """
 
-import os
 import sys
 import json
 import time

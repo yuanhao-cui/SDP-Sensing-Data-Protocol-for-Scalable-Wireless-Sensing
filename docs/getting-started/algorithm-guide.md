@@ -93,7 +93,7 @@ processed = execute_pipeline(csi, steps)
 
 ### Configuration File
 
-Create `algorithms_config.yaml`:
+Use the example config at `examples/configs/algorithms_config.yaml` (or create your own):
 
 ```yaml
 denoise:
@@ -114,7 +114,7 @@ Use it:
 ```python
 from wsdp.algorithms import load_config, execute_pipeline
 
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 

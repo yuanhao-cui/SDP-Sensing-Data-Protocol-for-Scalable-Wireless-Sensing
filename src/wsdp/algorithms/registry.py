@@ -20,7 +20,7 @@ Usage:
 
     # Load from config file
     >>> from wsdp.algorithms import load_config
-    >>> config = load_config('algorithms_config.yaml')
+    >>> config = load_config('examples/configs/algorithms_config.yaml')
 
     # Apply a preset
     >>> from wsdp.algorithms import apply_preset

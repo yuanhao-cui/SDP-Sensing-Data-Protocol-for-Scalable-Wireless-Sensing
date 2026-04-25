@@ -128,7 +128,7 @@ Available presets:
 ```python
 from wsdp.algorithms import load_config, execute_pipeline
 
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 

@@ -62,7 +62,7 @@ processed = execute_pipeline(csi, steps)
 For fine-grained control, define custom algorithm pipelines in YAML:
 
 ```yaml
-# algorithms_config.yaml
+# examples/configs/algorithms_config.yaml
 denoise:
   method: butterworth
   params:
@@ -80,7 +80,7 @@ Usage:
 ```python
 from wsdp.algorithms import load_config, execute_pipeline
 
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 ```
 
@@ -89,7 +89,7 @@ To use algorithm configs with the training pipeline, preprocess data first:
 from wsdp.algorithms import load_config, execute_pipeline
 from wsdp import pipeline
 
-config = load_config('algorithms_config.yaml')
+config = load_config('examples/configs/algorithms_config.yaml')
 processed = execute_pipeline(csi, config)
 
 # Then pass preprocessed data to custom training logic

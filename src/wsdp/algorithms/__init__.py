@@ -22,7 +22,7 @@ WiFi Channel State Information (CSI) data.
     register_algorithm('denoise', 'my_method', my_func)
 
     # Use config files
-    config = load_config('algorithms_config.yaml')
+    config = load_config('examples/configs/algorithms_config.yaml')
 
     # Apply presets
     steps = apply_preset('high_quality')
