@@ -1,5 +1,0 @@
-{
-  "auth": "https://sdp8.net/sdp/v1/api/getUrl",
-  "widar": "ftp://widarftp:widar2019@166.111.80.127:40121/CSI/",
-  "gait": "ftp://widarftp:widar2019@166.111.80.127:40121/Gait_Dataset/CSI_Gait/"
-}
