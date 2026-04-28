@@ -39,10 +39,37 @@ def _canonical_dataset(dataset: str) -> str:
     return _READER_ALIASES.get(normalized.lower(), normalized)
 
 
-def get_reader_class(dataset: str) -> type[BaseReader]:
-    """Return the reader class for a dataset name."""
+def register_reader(dataset: str, reader_class: type[BaseReader], *, aliases: list[str] | None = None, replace: bool = False) -> None:
+    """Register a dataset reader so raw-data loading is pluggable."""
+
+    if not issubclass(reader_class, BaseReader):
+        raise TypeError("reader_class must inherit BaseReader")
+    if dataset in _READER_REGISTRY and not replace:
+        raise ValueError(f"reader already registered for dataset: {dataset}")
+    _READER_REGISTRY[dataset] = reader_class
+    for alias in aliases or []:
+        _READER_ALIASES[alias.lower()] = dataset
+
+
+def unregister_reader(dataset: str) -> bool:
+    """Remove a reader registration, returning whether it existed."""
 
     canonical = _canonical_dataset(dataset)
+    removed = _READER_REGISTRY.pop(canonical, None) is not None
+    for alias, target in list(_READER_ALIASES.items()):
+        if target == canonical:
+            del _READER_ALIASES[alias]
+    return removed
+
+
+def get_reader_class(dataset: str | type[BaseReader] | BaseReader) -> type[BaseReader]:
+    """Return the reader class for a dataset name, class, or instance."""
+
+    if isinstance(dataset, type) and issubclass(dataset, BaseReader):
+        return dataset
+    if isinstance(dataset, BaseReader):
+        return dataset.__class__
+    canonical = _canonical_dataset(str(dataset))
     reader_cls = _READER_REGISTRY.get(canonical)
     if reader_cls is None:
         raise ValueError(f"not supported dataset: {dataset}")
@@ -74,7 +101,7 @@ def _process_file(reader_class: type[BaseReader], file_path: Path) -> tuple[str,
         return file_path.name, [], str(exc)
 
 
-def load_data(file_path: str, dataset: str, max_workers: int | None = 16) -> list[CSIData]:
+def load_data(file_path: str, dataset: str | type[BaseReader] | BaseReader, max_workers: int | None = 16) -> list[CSIData]:
     """Load CSIData objects from one file or all matching files in a folder."""
 
     input_path = Path(file_path)
@@ -119,6 +146,8 @@ __all__ = [
     "ElderReader",
     "XrfReader",
     "ZTEReader",
+    "register_reader",
+    "unregister_reader",
     "get_reader_class",
     "list_datasets",
     "get_all_reader_metadata",

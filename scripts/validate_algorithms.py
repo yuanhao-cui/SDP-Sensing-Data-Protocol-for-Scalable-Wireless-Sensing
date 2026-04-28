@@ -11,11 +11,15 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 
 from sdp_mvp import (  # noqa: E402
+    AlgorithmStep,
     SignalProcessingConfig,
     fft_bandpass,
     hampel_filter,
+    list_algorithms,
     phase_sanitize_linear,
     process_csi_sample,
+    register_algorithm,
+    register_model,
 )
 
 
@@ -106,18 +110,45 @@ def validate_pipeline() -> dict[str, object]:
     }
 
 
+
+def validate_modular_plugins() -> dict[str, object]:
+    rng = np.random.default_rng(31)
+    csi = rng.standard_normal((32, 8, 2)) + 1j * rng.standard_normal((32, 8, 2))
+
+    def scale(csi: np.ndarray, factor: float = 1.0) -> np.ndarray:
+        return csi * factor
+
+    register_algorithm("custom", "scale", scale, replace=True)
+    register_model("mean_feature", lambda **_: lambda x: float(np.mean(x)), replace=True)
+    out = process_csi_sample(
+        csi,
+        steps=[
+            AlgorithmStep("custom", "scale", {"factor": 0.5}),
+            {"category": "feature", "method": "tensor", "channels": ("amp",), "output_key": "features"},
+        ],
+        model="mean_feature",
+    )
+    return {
+        "custom_registered": "scale" in list_algorithms("custom"),
+        "features_shape": tuple(out["features"].shape),
+        "has_model_output": "model_output" in out,
+    }
+
 def main() -> None:
     results = {
         "hampel": validate_hampel(),
         "bandpass": validate_bandpass(),
         "phase": validate_phase_sanitization(),
         "pipeline": validate_pipeline(),
+        "modular_plugins": validate_modular_plugins(),
     }
 
     assert results["hampel"]["mse_after"] < results["hampel"]["mse_before"]
     assert results["bandpass"]["mse_after"] < results["bandpass"]["mse_before"]
     assert results["phase"]["slope_after"] < 0.1 * results["phase"]["slope_before"]
     assert results["pipeline"]["features_finite"] is True
+    assert results["modular_plugins"]["custom_registered"] is True
+    assert results["modular_plugins"]["has_model_output"] is True
 
     for section, values in results.items():
         print(f"[{section}]")
