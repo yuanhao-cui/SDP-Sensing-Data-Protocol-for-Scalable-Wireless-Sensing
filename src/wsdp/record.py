@@ -14,6 +14,17 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 
+CONFIGURABLE_ALGORITHM_ORDER = [
+    "denoise",
+    "outliers",
+    "calibrate",
+    "normalize",
+    "interpolate",
+    "extract_features",
+    "detect",
+]
+
+
 @dataclass
 class SeedRecord:
     """Metrics for a single random seed."""
@@ -32,7 +43,7 @@ class PipelineRecord:
     total_samples: int
     reader: str
     processor_type: str  # "BaseProcessor" | "ConfigurableProcessor"
-    processor_steps: Optional[Dict[str, Any]]
+    algorithm_modules: List[str]
     model: str
     seeds: List[SeedRecord]
     best_test_acc: float
@@ -51,9 +62,16 @@ class PipelineRecord:
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> "PipelineRecord":
         """Reconstruct from a plain dictionary."""
-        seeds_data = data.pop("seeds", [])
+        record_data = dict(data)
+        seeds_data = record_data.pop("seeds", [])
         seeds = [SeedRecord(**s) for s in seeds_data]
-        return cls(seeds=seeds, **data)
+        if "algorithm_modules" not in record_data and "processor_steps" in record_data:
+            record_data["algorithm_modules"] = algorithm_modules_from_steps(
+                record_data.pop("processor_steps")
+            )
+        else:
+            record_data.pop("processor_steps", None)
+        return cls(seeds=seeds, **record_data)
 
     @classmethod
     def load_json(cls, path: str) -> "PipelineRecord":
@@ -69,7 +87,7 @@ def persist_pipeline_record(
     total_samples: int,
     reader_name: str,
     processor_type: str,
-    processor_steps: Optional[Dict[str, Any]],
+    algorithm_modules: List[str],
     model: str,
     seed_records: List[SeedRecord],
 ) -> Path:
@@ -83,7 +101,7 @@ def persist_pipeline_record(
         total_samples=total_samples,
         reader=reader_name,
         processor_type=processor_type,
-        processor_steps=processor_steps,
+        algorithm_modules=algorithm_modules,
         model=model,
         seeds=seed_records,
         best_test_acc=best,
@@ -91,3 +109,12 @@ def persist_pipeline_record(
     target = Path(output_folder) / "pipeline_record.json"
     record.save_json(str(target))
     return target
+
+
+def algorithm_modules_from_steps(processor_steps: Optional[Dict[str, Any]]) -> List[str]:
+    """Return configured algorithm module names without parameter values."""
+    if processor_steps is None:
+        return []
+    ordered = [name for name in CONFIGURABLE_ALGORITHM_ORDER if name in processor_steps]
+    extras = [name for name in processor_steps if name not in ordered]
+    return ordered + extras

@@ -18,7 +18,7 @@ from .processors.base_processor import BaseProcessor
 from .processors import ConfigurableProcessor
 from .models import create_model
 from .algorithms import apply_preset, load_config as load_algorithm_config
-from .record import SeedRecord, persist_pipeline_record
+from .record import SeedRecord, algorithm_modules_from_steps, persist_pipeline_record
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 from torch.utils.data import DataLoader
 from sklearn.model_selection import GroupShuffleSplit, train_test_split
@@ -446,10 +446,10 @@ def pipeline(
     reader_name = readers.get_reader_class(dataset_name).__name__
     if resolved_pipeline_steps is None:
         proc_type = "BaseProcessor"
-        proc_steps = {"phase_calibration": "default", "wavelet_denoise_csi": "default"}
+        algorithm_modules = ["phase_calibration", "wavelet_denoise_csi"]
     else:
         proc_type = "ConfigurableProcessor"
-        proc_steps = resolved_pipeline_steps
+        algorithm_modules = algorithm_modules_from_steps(resolved_pipeline_steps)
     model_str = f"custom:{model_path}" if model_path is not None else model_name
 
     persist_pipeline_record(
@@ -458,7 +458,7 @@ def pipeline(
         total_samples=len(processed_data),
         reader_name=reader_name,
         processor_type=proc_type,
-        processor_steps=proc_steps,
+        algorithm_modules=algorithm_modules,
         model=model_str,
         seed_records=seed_records,
     )
