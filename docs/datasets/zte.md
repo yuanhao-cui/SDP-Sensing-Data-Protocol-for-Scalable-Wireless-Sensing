@@ -10,9 +10,23 @@
 |----------|-------|
 | **Format** | .csv |
 | **Subcarriers** | 512 |
-| **CSI Shape** | (Time, 512, 3, 3) |
-| **Complex** | ✅ |
+| **Complex** | ✅ (I/Q pairs) |
+| **Reader** | `ZTEReader` |
 | **Size** | ~4GB |
+
+## Raw Data
+
+CSVs nested as `user{u}_pos{p}_action{a}/*.csv`. Columns: `timestamp`, `rx_chain_num`
+(e.g. `rx0-...-tx0`), and `csi_i_0..511` / `csi_q_0..511` I/Q values; each row is one
+(timestamp, rx chain) measurement.
+
+## After the Reader
+
+One `CSIData` per CSV file; only `tx0` rows are kept, grouped by `timestamp` into frames
+of `(512, 3)` complex64 (subcarrier × rx chain, `I + j·Q`). `to_numpy()` → `(T, 512, 3)`
+complex-valued.
+
+**Label** = `action`; **group** = `pos` (location-held-out split).
 
 ## Usage
 
@@ -24,16 +38,6 @@ wsdp run ./data/zte ./output zte
 ```python
 from wsdp import pipeline
 pipeline('./data/zte', './output', 'zte')
-```
-
-## Data Structure
-
-```
-data/zte/
-├── user0_pos0_action0/
-│   ├── sample1.csv
-│   └── ...
-└── user0_pos0_action1/
 ```
 
 ---

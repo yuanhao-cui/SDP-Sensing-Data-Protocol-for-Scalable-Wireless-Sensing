@@ -8,14 +8,30 @@
 
 | Property | Value |
 |----------|-------|
-| **Format** | .npy |
+| **Formats** | .npy (SDP8) / .dat (Kaggle raw) |
 | **Subcarriers** | 30 |
-| **Processed .npy Shape** | (3, 30, 3, 1000) — (receiver, subcarrier, antenna, time) |
-| **Sample Shape** | (1000, 30, 9) — (time, subcarrier, antenna); 9 = 3 receivers × 3 antennas; 1 sample per file |
-| **Complex** | ✅ |
+| **Complex** | .dat: ✅ (I/Q) · .npy: ❌ (real-valued) |
+| **Reader** | `XrfReader` |
 | **Classes** | 55 activities |
 | **Samples** | 9,900 |
 | **Size** | ~3GB |
+
+## Raw Data
+
+- `.npy`: real-valued `(270, 1000)` array (270 = 3 Rx × 3 Ant × 30 subcarriers flattened,
+  1000 time steps), reshaped internally to (rx, subcarrier, antenna, time).
+- `.dat` (Kaggle): int16 binary — 40-value header + 199 packets × 270 complex I/Q values;
+  paths follow `Scene_X/{lb|nb}/YY_AA_BB.dat` (parsed into `CSIData._xrf55_labels`).
+
+## After the Reader
+
+One `CSIData` per file (all 3 receivers kept in a single sample); frames are `BaseFrame`
+with `(30, 9)` `csi_array` (subcarrier × 3 Rx × 3 Ant). `to_numpy()` → `(1000, 30, 9)`
+float64 for `.npy`, `(199, 30, 9)` complex64 for `.dat`.
+
+Filenames follow `user_action_trial` (e.g. `03_01_01`): **label** = `action`,
+**group** = `trial`. Default split is the official repetition protocol — train 1–12,
+val 13–16, test 17–20 (repetition-disjoint `GroupShuffleSplit` fallback on trial subsets).
 
 ## Usage
 

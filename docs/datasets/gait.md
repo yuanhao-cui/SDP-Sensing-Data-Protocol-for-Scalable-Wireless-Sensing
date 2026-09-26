@@ -8,13 +8,26 @@
 
 | Property | Value |
 |----------|-------|
-| **Format** | .dat (bfee) |
+| **Format** | .dat (bfee binary) |
 | **Subcarriers** | 30 |
-| **CSI Shape** | (Time, 30, 1, 3) |
 | **Complex** | ✅ |
-| **Classes** | 11 gait patterns |
+| **Reader** | `BfeeReader` |
+| **Classes** | 11 users |
 | **Samples** | 22,500 |
 | **Size** | ~1GB |
+
+## Raw Data
+
+Flat `.dat` files named `user{user_id}-{track_id}-{repetition}-r{receiver}.dat`.
+Same bfee binary format as [Widar](widar.md).
+
+## After the Reader
+
+One `CSIData` per file; frames are `BfeeFrame` with `(30, n_rx*n_tx)` complex64
+`csi_array`. `to_numpy()` → `(T, 30, 3)` complex64 typically (3 Rx × 1 Tx, e.g.
+`(2917, 30, 3)`).
+
+**Label** = `user_id`; **group** = `track_id*100 + receiver` (held-out condition split).
 
 ## Usage
 
