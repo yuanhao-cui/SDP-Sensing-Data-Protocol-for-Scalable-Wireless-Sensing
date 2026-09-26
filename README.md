@@ -392,6 +392,7 @@ Want to go deeper? Here's where to modify:
 WSDP features a **Registry Pattern** that makes algorithms pluggable:
 
 ```python
+import numpy as np
 from wsdp.algorithms import denoise, calibrate, register_algorithm
 
 # Unified API — switch methods with one parameter
@@ -399,8 +400,9 @@ denoised = denoise(csi, method='butterworth', order=5)
 calibrated = calibrate(csi, method='stc')
 
 # Register your own algorithm
+# A custom algorithm takes the CSI array (T, F, A) and returns the processed array.
 def my_denoise(csi, **kwargs):
-    return my_custom_filter(csi)
+    return csi - np.mean(csi, axis=0, keepdims=True)  # remove static component
 
 register_algorithm('denoise', 'my_method', my_denoise)
 result = denoise(csi, method='my_method')  # Works like built-in!
@@ -506,7 +508,7 @@ Config-file form: [`examples/configs/modular_pipeline.yaml`](examples/configs/mo
 
 ---
 
-## 🧪 Understanding SDP (10-Min Deep Dive)
+## 🧪 Understanding SDP (3-Minute Overview)
 
 ### The SDP Pipeline
 
@@ -554,13 +556,13 @@ SDP enforces **deterministic calibration and denoising**, guaranteeing:
 
 ## 📚 Documentation & Resources
 
-### 🎓 Tutorials (Recommended Order)
+### 🎓 Tutorials (Jupyter Notebooks, Recommended Order)
 
 | # | Resource | What You'll Learn |
 |:-:|:---------|:------------------|
-| 1 | [**Quickstart Notebook**](examples/quickstart.ipynb) | 5-min intro — registry exploration & processor customization |
-| 2 | [**Getting Started Notebook**](examples/getting_started.ipynb) | Algorithm deep-dive — phase calibration & denoising with step-by-step visualizations |
-| 3 | [**Full Tutorial Notebook**](examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-Open-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | End-to-end workflow — install → preprocess → train → evaluate → CLI |
+| 1 | [**Quickstart**](examples/quickstart.ipynb) | 5-min intro — install → download → first training run |
+| 2 | [**Getting Started**](examples/getting_started.ipynb) | Algorithm deep-dive — phase calibration & denoising with step-by-step visualizations |
+| 3 | [**Full Tutorial**](examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-Open-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | Beyond the basics — inference with trained checkpoints & the CLI |
 
 ### 📘 User Guide
 

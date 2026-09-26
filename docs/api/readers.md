@@ -7,8 +7,8 @@ See [Full API Reference](../API_REFERENCE.md) for complete documentation.
 | Reader | Dataset | Format |
 |--------|---------|--------|
 | BfeeReader | Widar / Gait | .dat (bfee) |
-| XRF55Reader | XRF55 | .npy |
-| ElderALReader | ElderAL | .csv |
+| XrfReader | XRF55 | .npy |
+| ElderReader | ElderAL | .csv |
 | ZTEReader | ZTE | .csv |
 
 ## Usage

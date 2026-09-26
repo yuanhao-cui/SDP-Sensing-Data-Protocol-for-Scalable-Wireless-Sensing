@@ -18,8 +18,13 @@ WiFi Channel State Information (CSI) data.
     # List available algorithms
     list_algorithms('denoise')
 
-    # Register custom algorithm
-    register_algorithm('denoise', 'my_method', my_func)
+    # Register a custom algorithm: it takes the CSI array (T, F, A)
+    # and returns the processed array, e.g. removing the static component
+    def my_denoise(csi, **kwargs):
+        return csi - np.mean(csi, axis=0, keepdims=True)
+
+    register_algorithm('denoise', 'my_method', my_denoise)
+    denoise(csi, method='my_method')
 
     # Use config files
     config = load_config('examples/configs/algorithms_config.yaml')

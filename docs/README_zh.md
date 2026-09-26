@@ -295,6 +295,7 @@ pipeline("./data/my_dataset", "./output", "xrf55", reader="my_format")
 WSDP 采用**注册表模式**，让算法可以自由切换：
 
 ```python
+import numpy as np
 from wsdp.algorithms import denoise, calibrate, register_algorithm
 
 # 统一 API — 一个参数切换方法
@@ -302,8 +303,9 @@ denoised = denoise(csi, method='butterworth', order=5)
 calibrated = calibrate(csi, method='stc')
 
 # 注册你自己的算法
+# 自定义算法接收 CSI 数组 (T, F, A)，返回处理后的数组
 def my_denoise(csi, **kwargs):
-    return my_custom_filter(csi)
+    return csi - np.mean(csi, axis=0, keepdims=True)  # 去除静态分量
 
 register_algorithm('denoise', 'my_method', my_denoise)
 result = denoise(csi, method='my_method')  # 像内置算法一样使用！
@@ -398,7 +400,7 @@ data, labels, groups = ModularProcessor(steps).process(csi_data_list, dataset="x
 
 ---
 
-## 🧪 理解 SDP（10 分钟深度阅读）
+## 🧪 理解 SDP（3 分钟速览）
 
 ### SDP 流程
 
@@ -446,13 +448,13 @@ SDP 强制执行**确定性校准和去噪**，保证：
 
 ## 📚 文档与资源
 
-### 🎓 教程（推荐学习顺序）
+### 🎓 教程（Jupyter Notebook，推荐学习顺序）
 
 | # | 资源 | 你将学到 |
 |:-:|:-----|:---------|
-| 1 | [**快速上手 Notebook**](../examples/quickstart.ipynb) | 5 分钟入门 — 注册表探索与处理器定制 |
-| 2 | [**入门指南 Notebook**](../examples/getting_started.ipynb) | 算法详解 — 相位校准与去噪的逐步可视化演示 |
-| 3 | [**完整教程 Notebook**](../examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-打开-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | 端到端流程 — 安装 → 预处理 → 训练 → 评估 → CLI |
+| 1 | [**快速上手**](../examples/quickstart.ipynb) | 5 分钟入门 — 安装 → 下载 → 跑通第一次训练 |
+| 2 | [**入门指南**](../examples/getting_started.ipynb) | 算法详解 — 相位校准与去噪的逐步可视化演示 |
+| 3 | [**完整教程**](../examples/wsdp_tutorial.ipynb) [![Colab](https://img.shields.io/badge/Colab-打开-yellow.svg)](https://colab.research.google.com/github/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/wsdp_tutorial.ipynb) | 进阶用法 — 用训练好的 checkpoint 推理 & CLI 命令行 |
 
 ### 📘 使用指南
 
