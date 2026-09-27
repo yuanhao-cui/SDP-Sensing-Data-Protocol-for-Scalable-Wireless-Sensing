@@ -63,7 +63,7 @@ model = create_model("AttentionGRU", num_classes=6, input_shape=(200, 30, 3))
 
 # Cross-domain models
 model = create_model("EI", num_classes=6, input_shape=(200, 30, 3), num_domains=3)
-model = create_model("FewSense", num_classes=6, input_shape=(200, 30, 3), n_support=5)
+model = create_model("FewSense", num_classes=6, input_shape=(200, 30, 3))
 
 # Use any model in the pipeline
 pipeline(
@@ -96,9 +96,8 @@ normalized = normalize(calibrated, method='z-score')
 # AGC compensation requires the per-frame AGC gain values (shape (T,), from BfeeFrame.agc):
 normalized = normalize(calibrated, method='agc', agc_values=agc_values)
 
-# Feature extraction (including new algorithms)
-features = extract_features(normalized, features=['conjugate_multiply'])
-fused = extract_features(normalized, features=['pca_fusion'])
+# Feature extraction
+features = extract_features(normalized, features=['doppler', 'entropy', 'ratio'])
 
 # Outlier removal (both methods use `factor` as the threshold multiplier)
 cleaned = remove_outliers(csi, method='iqr', factor=1.5)
@@ -107,6 +106,12 @@ cleaned = remove_outliers(csi, method='z-score', factor=3.0)
 # Interpolation (including decimation)
 resampled = interpolate(csi, method='decimate', target_K=15)
 ```
+
+> The unified `extract_features()` supports `doppler`, `entropy`, `ratio` and
+> `decomposition`. Additional registered features (`conjugate_multiply`,
+> `pca_fusion`) are only available as pipeline steps — via `pipeline_steps`,
+> an algorithm config file, or `ModularProcessor` (see below) — not through
+> the unified API.
 
 ### Algorithm Presets
 
@@ -204,9 +209,13 @@ pipeline(
 Monitor training progress programmatically:
 
 ```python
-def my_callback(epoch, total_epochs, metrics):
-    print(f"Epoch {epoch}/{total_epochs} - "
-          f"loss: {metrics['loss']:.4f}, acc: {metrics['accuracy']:.4f}")
+# The callback receives a single metrics dict after each epoch with keys:
+# epoch, total_epochs, train_loss, train_acc, val_loss, val_acc, lr, best_val_acc
+# (accuracies in percent, 0-100)
+def my_callback(metrics):
+    print(f"Epoch {metrics['epoch']}/{metrics['total_epochs']} - "
+          f"train_loss: {metrics['train_loss']:.4f}, "
+          f"val_acc: {metrics['val_acc']:.2f}%")
 
 pipeline(
     input_path='./data/elderAL',
