@@ -2,6 +2,8 @@
 
 WSDP includes a comprehensive algorithm library for CSI signal processing. This guide helps you choose and use the right algorithms for your use case.
 
+> Want to try these algorithms hands-on? The [Getting Started notebook](https://github.com/yuanhao-cui/SDP-Sensing-Data-Protocol-for-Scalable-Wireless-Sensing/blob/main/examples/getting_started.ipynb) runs phase calibration, denoising, and visualization on synthetic CSI data — no dataset download required.
+
 ## Overview
 
 WSDP algorithms are organized into six categories:
