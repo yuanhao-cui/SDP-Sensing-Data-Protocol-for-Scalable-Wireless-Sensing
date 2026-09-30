@@ -34,15 +34,15 @@ features = extract_features(normalized, features=['doppler', 'entropy'])
 |-----------|----------|-------------|
 | `wavelet` | `denoise(csi, method='wavelet')` | Wavelet-based denoising using soft thresholding. Good general-purpose denoiser. |
 | `butterworth` | `denoise(csi, method='butterworth', order=5)` | Butterworth low-pass filter. Smooth frequency response with configurable order. |
-| `savgol` | `denoise(csi, method='savgol', window=11, polyorder=3)` | Savitzky-Golay filter. Preserves signal shape while removing high-frequency noise. |
+| `savgol` | `denoise(csi, method='savgol', window_length=11, polyorder=3)` | Savitzky-Golay filter. Preserves signal shape while removing high-frequency noise. |
 | `bandpass` | `denoise(csi, method='bandpass', low_freq=0.5, high_freq=50.0, fs=1000.0)` | Bandpass filter for isolating activity-related frequency components. |
-| `hampel` | `denoise(csi, method='hampel', window=5, threshold=3.0)` | Hampel identifier. Replaces outlier samples with local median. Effective against impulse noise. |
+| `hampel` | `denoise(csi, method='hampel', window_size=5, n_sigma=3.0)` | Hampel identifier. Replaces outlier samples with local median. Effective against impulse noise. |
 
 ### Calibration
 
 | Algorithm | Function | Description |
 |-----------|----------|-------------|
-| `linear` | `calibrate(csi, method='linear', reference=ref)` | Linear phase calibration using a static reference measurement. |
+| `linear` | `calibrate(csi, method='linear')` | Linear phase calibration. Removes timing and phase offsets via a linear fit of the phase across subcarriers. |
 | `polynomial` | `calibrate(csi, method='polynomial', degree=3)` | Polynomial fitting for phase error correction across subcarriers. |
 | `stc` | `calibrate(csi, method='stc')` | Spatial-temporal calibration. Removes phase offsets across antennas and time. |
 | `robust` | `calibrate(csi, method='robust')` | Robust calibration using median-based estimation, resilient to outliers. |
@@ -53,7 +53,7 @@ features = extract_features(normalized, features=['doppler', 'entropy'])
 |-----------|----------|-------------|
 | `z-score` | `normalize(csi, method='z-score')` | Standardize to zero mean, unit variance per subcarrier. |
 | `min-max` | `normalize(csi, method='min-max')` | Scale to [0, 1] range per subcarrier. |
-| `agc` | `normalize(csi, method='agc', target_power=1.0)` | Automatic gain control. Normalizes signal power over sliding windows. |
+| `agc` | `normalize(csi, method='agc', agc_values=agc)` | AGC compensation for Intel IWL5300 CSI. Recovers the true amplitude from per-frame AGC gain values in dB (`agc_values`, shape `(T,)`, e.g. from `BfeeFrame.agc`). |
 
 ### Interpolation
 
@@ -77,17 +77,26 @@ features = extract_features(normalized, features=['doppler', 'entropy'])
 
 ### Detection
 
+Detection algorithms are called through their dedicated functions (registered as the `detect` category):
+
+```python
+from wsdp.algorithms import detect_activity, change_point_detection
+
+segments = detect_activity(csi, window=32, threshold=0.1)
+points = change_point_detection(csi, method='mean_shift_ratio')
+```
+
 | Algorithm | Function | Description |
 |-----------|----------|-------------|
-| `activity` | `detect(csi, method='activity', threshold=0.5)` | Activity detection using variance-based thresholding on CSI amplitude. |
-| `change_point` | `detect(csi, method='change_point')` | Detects abrupt changes in CSI statistics for segmenting activity boundaries. |
+| `activity` | `detect_activity(csi, window=32, threshold=0.1)` | Activity detection using variance-based thresholding on CSI amplitude. |
+| `change_point` | `change_point_detection(csi, method='mean_shift_ratio')` | Detects abrupt changes in CSI statistics for segmenting activity boundaries. |
 
 ### Outlier Removal
 
 | Algorithm | Function | Description |
 |-----------|----------|-------------|
 | `iqr` | `remove_outliers(csi, method='iqr', factor=1.5)` | Interquartile range method. Flags samples outside Q1 - 1.5*IQR to Q3 + 1.5*IQR. |
-| `z-score` | `remove_outliers(csi, method='z-score', threshold=3.0)` | Flags samples more than N standard deviations from the mean. |
+| `z-score` | `remove_outliers(csi, method='z-score', factor=3.0)` | Flags samples more than N standard deviations from the mean. |
 
 ## Pluggable Architecture
 

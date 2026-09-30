@@ -7,14 +7,14 @@ Create any of the 19 built-in models using the unified factory function.
 ```python
 from wsdp.models import create_model
 
-model = create_model(model_name, num_classes, input_shape, **kwargs)
+model = create_model(name, num_classes, input_shape, **kwargs)
 ```
 
 **Parameters:**
 
 | Parameter | Type | Description |
 |-----------|------|-------------|
-| `model_name` | `str` | Name of the model (see table below) |
+| `name` | `str` | Name of the model (see table below) |
 | `num_classes` | `int` | Number of output classes |
 | `input_shape` | `tuple` | `(T, F, A)` - time steps, frequency bins, antenna count |
 | `**kwargs` | | Model-specific hyperparameters |
@@ -79,7 +79,7 @@ model = create_model("MLPModel", num_classes=6, input_shape=(200, 30, 3))
 
 ```python
 model = create_model("ResNet1D", num_classes=6, input_shape=(200, 30, 3),
-                      base_channels=64, num_blocks=4)
+                      base_channels=64)
 ```
 
 ### SOTA Model
@@ -126,15 +126,19 @@ model = create_model("FewSense", num_classes=6, input_shape=(200, 30, 3),
 ```python
 from wsdp.models import list_models, get_model, register_model
 
-# List all available model names
+# List all available model names (returns a {name: category} dict)
 all_models = list_models()                    # all 19 models
 baselines = list_models("baseline")           # 4 models
 mainstream = list_models("mainstream")        # 4 models
-sota = list_models("sota")                    # 7 models
-lightweight = list_models("lightweight")      # 2 models
-cross_domain = list_models("cross_domain")    # 2 models
+sota = list_models("sota")                    # 11 models
+```
 
-# get_model is an alias for create_model
+The registry has three categories: `baseline`, `mainstream`, and `sota`. The
+lightweight and cross-domain models in the tables above are registered under
+`sota`.
+
+```python
+# get_model takes the constructor arguments as keywords; create_model wraps it
 model = get_model("MambaCSI", num_classes=6, input_shape=(200, 30, 3))
 
 # Register a custom model
