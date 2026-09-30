@@ -1,6 +1,6 @@
 # WSDP API Reference
 
-Complete API documentation for WSDP (Wi-Fi Sensing Data Processing).
+Complete API documentation for WSDP (Wi-Fi Sensing Data Protocol).
 
 ## Table of Contents
 
@@ -41,10 +41,24 @@ pipeline(
     output_folder: str,
     dataset: str,
     model_path: Optional[str] = None,
-    learning_rate: Optional[float] = None,
-    num_epochs: Optional[int] = None,
+    model_name: str = "CSIModel",
+    model_kwargs: Optional[Dict[str, Any]] = None,
+    pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
+    algorithm_config_file: Optional[str] = None,
+    algorithm_preset: Optional[str] = None,
+    reader: Optional[str] = None,
     batch_size: Optional[int] = None,
+    learning_rate: Optional[float] = None,
+    weight_decay: Optional[float] = None,
+    num_epochs: Optional[int] = None,
+    padding_length: Optional[int] = None,
+    test_split: float = 0.3,
+    val_split: float = 0.5,
+    num_seeds: int = 5,
     config_file: Optional[str] = None,
+    num_workers: Optional[int] = None,
+    progress_callback: Optional[Callable] = None,
+    use_cache: bool = True,
 )
 ```
 
@@ -56,10 +70,24 @@ pipeline(
 | `output_folder` | str | required | Path to output directory |
 | `dataset` | str | required | Dataset name (widar, gait, xrf55, elderAL, zte) |
 | `model_path` | str | None | Path to custom model file |
-| `learning_rate` | float | None | Learning rate (overrides config) |
-| `num_epochs` | int | None | Number of epochs (overrides config) |
+| `model_name` | str | "CSIModel" | Registered model name |
+| `model_kwargs` | dict | None | Extra model constructor arguments |
+| `pipeline_steps` | dict | None | Algorithm pipeline steps (category → params) |
+| `algorithm_config_file` | str | None | Path to YAML/JSON algorithm config |
+| `algorithm_preset` | str | None | Algorithm preset name (e.g. `high_quality`) |
+| `reader` | str | None | Registered reader name override |
 | `batch_size` | int | None | Batch size (overrides config) |
+| `learning_rate` | float | None | Learning rate (overrides config) |
+| `weight_decay` | float | None | Weight decay (overrides config) |
+| `num_epochs` | int | None | Number of epochs (overrides config) |
+| `padding_length` | int | None | Target time length for padding/truncation |
+| `test_split` | float | 0.3 | Hold-out test fraction |
+| `val_split` | float | 0.5 | Validation fraction of the hold-out |
+| `num_seeds` | int | 5 | Number of random seeds |
 | `config_file` | str | None | Path to YAML config file |
+| `num_workers` | int | None | DataLoader workers (default: min(cpu_count, 8)) |
+| `progress_callback` | Callable | None | Callback receiving per-epoch progress dicts |
+| `use_cache` | bool | True | Cache preprocessed data under `.wsdp_cache/` |
 
 ---
 
@@ -67,26 +95,27 @@ pipeline(
 
 ### `CSIData`
 
-Container for raw CSI data from a file.
+Container for raw CSI data from a file. Readers append frames to `data.frames`;
+`to_numpy()` stacks them into a single array.
 
 ```python
 from wsdp.structure import CSIData
 
-data = CSIData(file_path="/path/to/file.dat")
+data = CSIData(file_name="/path/to/file.dat")
+# ... frames added by a reader ...
+array = data.to_numpy()  # Shape: (T, F, A)
 ```
 
-### `CSIFrame`
+### `BaseFrame` / `BfeeFrame`
 
-Standardized frame structure for processed CSI.
+Standardized frame structures for CSI. `BaseFrame` is a dataclass holding one
+timestep: `timestamp` (str) and `csi_array` (np.ndarray). `BfeeFrame` extends
+it with Intel 5300 metadata (`rssi_a/b/c`, `noise`, `agc`, ...).
 
 ```python
-from wsdp.structure import CSIFrame
+from wsdp.structure import BaseFrame, BfeeFrame
 
-frame = CSIFrame(
-    csi_matrix: np.ndarray,  # Shape: (T, F, A)
-    timestamp: float,
-    metadata: dict,
-)
+frame = BaseFrame(timestamp="1718000000.123", csi_array=csi_matrix)
 ```
 
 ---
@@ -96,8 +125,8 @@ frame = CSIFrame(
 | Reader | Dataset | Format |
 |--------|---------|--------|
 | `BfeeReader` | Widar / Gait | .dat (bfee) |
-| `XRF55Reader` | XRF55 | .npy |
-| `ElderALReader` | ElderAL | .csv |
+| `XrfReader` | XRF55 | .npy |
+| `ElderReader` | ElderAL | .csv |
 | `ZTEReader` | ZTE | .csv |
 
 ---
@@ -120,6 +149,9 @@ denoised = wavelet_denoise_csi(csi_tensor)
 | Parameter | Type | Default | Description |
 |-----------|------|---------|-------------|
 | `csi_tensor` | np.ndarray | required | CSI array of shape (T, F, A), complex |
+| `wavelet` | str | 'db4' | Wavelet name (any PyWavelets wavelet) |
+| `level` | int | None | Decomposition level (default: min(2, max level)) |
+| `threshold_method` | str | 'visu' | 'visu' (VisuShrink) or 'bayes' (BayesShrink) |
 
 **Returns:** `np.ndarray` — Denoised CSI with same shape and dtype.
 
@@ -517,9 +549,11 @@ denoised = denoise(csi, method='wavelet', **kwargs)
 
 | Method | Source Function | Key Parameters |
 |--------|----------------|----------------|
-| `'wavelet'` | `wavelet_denoise_csi()` | — |
+| `'wavelet'` | `wavelet_denoise_csi()` | `wavelet`, `level`, `threshold_method` |
 | `'butterworth'` | `butterworth_denoise()` | `order`, `cutoff` |
 | `'savgol'` | `savgol_denoise()` | `window_length`, `polyorder` |
+| `'bandpass'` | `butterworth_bandpass()` | `order`, `low_freq`, `high_freq`, `fs` |
+| `'hampel'` | `hampel_filter()` | `window_size`, `n_sigma` |
 
 ### `calibrate()`
 
@@ -548,6 +582,7 @@ normalized = normalize(csi, method='z-score')
 |--------|----------------|----------------|
 | `'z-score'` | `normalize_amplitude()` | — |
 | `'min-max'` | `normalize_amplitude()` | — |
+| `'agc'` | `agc_compensate()` | `agc_values` |
 
 ### `interpolate()`
 
@@ -562,6 +597,7 @@ result = interpolate(csi, target_K=30, method='cubic')
 | `'linear'` | `interpolate_grid()` | `target_K` |
 | `'cubic'` | `interpolate_grid()` | `target_K` |
 | `'nearest'` | `interpolate_grid()` | `target_K` |
+| `'decimate'` | `decimate_antialias()` | `target_K` |
 
 ### `extract_features()`
 
@@ -577,8 +613,17 @@ features = extract_features(csi, features=['doppler', 'entropy'])
 | `'entropy'` | `entropy_features()` | `bins` |
 | `'ratio'` | `csi_ratio()` | `antenna_pairs` |
 | `'decomposition'` | `tensor_decomposition()` | `rank`, `method` |
-| `'conjugate_multiply'` | `conjugate_multiply()` | `antenna_pairs` |
-| `'pca_fusion'` | `pca_fusion()` | `n_components` |
+
+> The `extract_features` registry category additionally registers
+> `'conjugate_multiply'` (`conjugate_multiply()`, key parameter `ref_antenna`)
+> and `'pca_fusion'` (`pca_subcarrier_fusion()`, key parameter `n_components`).
+> The unified `extract_features()` helper does **not** accept them (it raises
+> `ValueError`); call them via `get_algorithm('extract_features', ...)` or use
+> them as pipeline steps instead.
+
+The registry also provides two categories without a unified helper function:
+`detect` (`'activity'`, `'change_point'`) and `outliers` (`'iqr'`, `'z-score'`).
+Both are usable via `get_algorithm()` and pipeline steps.
 
 ---
 
@@ -628,7 +673,7 @@ from wsdp.algorithms import list_algorithms
 
 # All categories
 >>> list_algorithms()
-{'denoise': ['wavelet', 'butterworth', 'savgol'], 'calibrate': [...]}
+{'calibrate': ['linear', 'polynomial', 'stc', 'robust'], 'denoise': ['wavelet', 'butterworth', 'savgol', 'bandpass', 'hampel'], ...}
 
 # Specific category
 >>> list_algorithms('denoise')
@@ -734,14 +779,18 @@ save_config(steps, 'my_config.yaml', format='yaml')
 
 #### Built-in Presets
 
-| Preset | Denoise | Calibrate | Normalize | Use Case |
-|--------|---------|-----------|-----------|----------|
-| `high_quality` | butterworth (order=5) | stc | z-score | Maximum accuracy |
-| `fast` | savgol (w=7) | linear | min-max | Speed-optimized |
-| `robust` | wavelet | robust | z-score | Noisy environments |
-| `gesture_recognition` | butterworth (order=4) | stc | z-score | Gesture tasks |
-| `activity_detection` | savgol (w=11) | polynomial (deg=2) | z-score | HAR tasks |
-| `localization` | wavelet | robust | z-score | Localization tasks |
+| Preset | Denoise | Calibrate | Normalize | Interpolate | Use Case |
+|--------|---------|-----------|-----------|-------------|----------|
+| `high_quality` | butterworth (order=5, cutoff=0.3) | stc | z-score | — | Maximum accuracy |
+| `fast` | savgol (w=7) | linear | min-max | — | Speed-optimized |
+| `robust` | wavelet | robust | z-score | — | Noisy environments |
+| `gesture_recognition` | butterworth (order=4, cutoff=0.25) | stc | z-score | cubic (target_K=30) | Gesture tasks |
+| `activity_detection` | savgol (w=11) | polynomial (deg=2) | z-score | — | HAR tasks |
+| `localization` | wavelet | robust | z-score | cubic (target_K=64) | Localization tasks |
+
+Per-dataset presets `widar`, `gait`, `xrf55`, `elderAL`, `zte` also exist;
+they currently map to the legacy default chain (linear calibrate + wavelet
+denoise).
 
 #### `apply_preset()`
 
@@ -857,7 +906,10 @@ All models are stored in `MODEL_REGISTRY` and can be accessed by category:
 |----------|--------|
 | `baseline` | MLPModel, CNN1DModel, CNN2DModel, LSTMModel |
 | `mainstream` | ResNet1D, ResNet2D, BiLSTMAttention, EfficientNetCSI |
-| `sota` | VisionTransformerCSI, MambaCSI, GraphNeuralCSI, CSIModel |
+| `sota` | VisionTransformerCSI, MambaCSI, GraphNeuralCSI, THAT, CSITime, PA_CSI, WiFlexFormer, AttentionGRU, EI, FewSense, CSIModel |
+
+`list_models()` returns a dict mapping model names to their category, e.g.
+`{'mlpmodel': 'baseline', ...}` (registry keys are lowercase).
 
 ### Baseline Models
 
@@ -962,6 +1014,21 @@ model = create_model("CSIModel", num_classes=10, input_shape=(20, 30, 3),
                       base_channels=32, latent_dim=128)
 ```
 
+### Additional Registered Models
+
+These models are also registered (all under the `sota` category) and can be
+created the same way via `create_model()`:
+
+| Model | Description |
+|-------|-------------|
+| `THAT` | Two-stream Convolution Augmented Transformer for HAR |
+| `CSITime` | Inception-Time variant for WiFi CSI activity recognition |
+| `PA_CSI` | Phase-Amplitude dual-channel attention network |
+| `WiFlexFormer` | Efficient WiFi sensing Transformer (lightweight) |
+| `AttentionGRU` | Lightweight attention-based GRU |
+| `EI` | Environment-independent cross-domain model |
+| `FewSense` | Few-shot cross-domain WiFi sensing model |
+
 ### Custom Model Registration
 
 ```python
@@ -1037,10 +1104,10 @@ wsdp list -V
 | | Entropy | `entropy_features()` | Shannon, 1948 |
 | | CSI Ratio | `csi_ratio()` | Halperin et al., 2011 |
 | | Tensor Decomposition | `tensor_decomposition()` | Kolda & Bader, SIAM 2009 |
-| | Conjugate Multiply | `conjugate_multiply()` | Xie et al., IEEE TWC 2019 |
-| | PCA Fusion | `pca_fusion()` | Ma et al., IEEE GLOBECOM 2015 |
+| | Conjugate Multiply | `conjugate_multiply()` | Li et al., ACM MobiCom 2017 |
+| | PCA Fusion | `pca_subcarrier_fusion()` | Wang et al., ACM MobiCom 2015 |
 | **Detection** | Activity | `detect_activity()` | Zhou et al., 2013 |
-| | Change Point | `change_point_detection()` | Adams & MacKay, 2007 |
+| | Change Point | `change_point_detection()` | Page, Biometrika 1954 (CUSUM) |
 
 ---
 
