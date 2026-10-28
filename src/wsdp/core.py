@@ -22,7 +22,7 @@ from .algorithms import apply_preset, load_config as load_algorithm_config
 from .record import SeedRecord, persist_pipeline_record
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
 from torch.utils.data import DataLoader
-from sklearn.model_selection import GroupShuffleSplit, train_test_split
+from sklearn.model_selection import GroupShuffleSplit, ShuffleSplit
 from torch.optim.lr_scheduler import ReduceLROnPlateau
 from typing import Any, Dict, Optional, Tuple, Callable
 
@@ -136,36 +136,29 @@ def _create_data_split(
                 "for configured normalization are skipped in this mode."
             )
 
-    if use_simple_split:
-        train_data, temp_data, train_labels, temp_labels = train_test_split(
-            processed_data, labels,
-            test_size=test_split, random_state=seed
-        )
-        test_data, val_data, test_labels, val_labels = train_test_split(
-            temp_data, temp_labels,
-            test_size=val_split, random_state=seed
-        )
-    else:
-        splitter_1 = GroupShuffleSplit(n_splits=1, test_size=test_split, random_state=seed)
-        train_idx, temp_idx = next(
-            splitter_1.split(processed_data, labels, groups=groups)
-        )
+    splitter_class = ShuffleSplit if use_simple_split else GroupShuffleSplit
+    split_groups = None if use_simple_split else groups
 
-        train_data = processed_data[train_idx]
-        train_labels = labels[train_idx]
+    splitter_1 = splitter_class(n_splits=1, test_size=test_split, random_state=seed)
+    train_idx, temp_idx = next(
+        splitter_1.split(processed_data, labels, groups=split_groups)
+    )
 
-        temp_data = processed_data[temp_idx]
-        temp_labels = labels[temp_idx]
-        temp_groups = groups[temp_idx]
+    train_data = processed_data[train_idx]
+    train_labels = labels[train_idx]
 
-        splitter_2 = GroupShuffleSplit(n_splits=1, test_size=val_split, random_state=seed)
-        test_idx, val_idx = next(splitter_2.split(temp_data, temp_labels, groups=temp_groups))
+    temp_data = processed_data[temp_idx]
+    temp_labels = labels[temp_idx]
+    temp_groups = None if split_groups is None else split_groups[temp_idx]
 
-        test_data = temp_data[test_idx]
-        test_labels = temp_labels[test_idx]
+    splitter_2 = splitter_class(n_splits=1, test_size=val_split, random_state=seed)
+    test_idx, val_idx = next(splitter_2.split(temp_data, temp_labels, groups=temp_groups))
 
-        val_data = temp_data[val_idx]
-        val_labels = temp_labels[val_idx]
+    test_data = temp_data[test_idx]
+    test_labels = temp_labels[test_idx]
+
+    val_data = temp_data[val_idx]
+    val_labels = temp_labels[val_idx]
 
     train_data = np.stack(train_data, axis=0)
     val_data = np.stack(val_data, axis=0)

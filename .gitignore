@@ -15,3 +15,4 @@ data/
 AGENTS.md
 CLAUDE.md
 scripts/plot_exp_results.py
+/docs/specs/
