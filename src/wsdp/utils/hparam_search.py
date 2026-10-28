@@ -109,7 +109,7 @@ def run_hparam_search(
     # Pre-load data once (expensive I/O) and reuse across trials.
     logger.info("Loading and preprocessing data for hparam search ...")
     processed_data, labels, groups, unique_labels = _load_and_preprocess(
-        input_path, dataset, padding_length
+        input_path, dataset, padding_length, reader_name=dataset
     )
     num_classes = len(unique_labels)
 

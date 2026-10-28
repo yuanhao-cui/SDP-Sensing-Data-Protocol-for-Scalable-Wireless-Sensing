@@ -137,7 +137,7 @@ def main():
     print(f"Loading and preprocessing {args.dataset} data (pad_len={pad_len})...")
 
     processed_data, labels, groups, unique_labels = _load_and_preprocess(
-        args.input_path, args.dataset, pad_len
+        args.input_path, args.dataset, pad_len, reader_name=args.dataset
     )
     num_classes = len(unique_labels)
     print(f"Loaded: {len(processed_data)} samples, {num_classes} classes, "

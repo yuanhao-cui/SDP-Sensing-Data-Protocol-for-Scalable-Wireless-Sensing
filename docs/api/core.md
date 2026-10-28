@@ -122,8 +122,8 @@ processed_data, labels, groups, unique_labels = _load_and_preprocess(
     input_path,
     dataset,
     pad_len=1500,          # required positional argument
+    reader_name=dataset,   # registered reader name; defaults to dataset in pipeline()
     pipeline_steps=None,   # optional flat algorithm config
-    reader=None,           # optional registered reader name
 )
 ```
 

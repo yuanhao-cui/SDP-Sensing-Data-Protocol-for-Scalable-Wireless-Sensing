@@ -3,6 +3,7 @@
 from unittest.mock import patch
 
 import numpy as np
+import pytest
 import torch
 import torch.nn as nn
 
@@ -85,7 +86,13 @@ def test_cache_key_includes_preprocess_config(tmp_path):
     assert wavelet_key != butterworth_key
 
 
-def test_pipeline_uses_registry_model_and_pipeline_steps(tmp_path):
+@pytest.mark.parametrize(
+    ("reader", "expected_reader_name"),
+    [(None, "xrf55"), ("custom_reader", "custom_reader")],
+)
+def test_pipeline_uses_registry_model_and_pipeline_steps(
+    tmp_path, reader, expected_reader_name
+):
     steps = {"denoise": {"method": "wavelet"}}
     dummy_model = DummyModel()
     checkpoint = tmp_path / "best_checkpoint_123.pth"
@@ -106,6 +113,7 @@ def test_pipeline_uses_registry_model_and_pipeline_steps(tmp_path):
             patch("wsdp.core.random.randint", return_value=123), \
             patch("wsdp.core.torch.load", return_value={"model_state_dict": dummy_model.state_dict()}), \
             patch("wsdp.core._evaluate_model", return_value=([0, 1], [0, 1], 1.0)), \
+            patch("wsdp.core.readers.get_reader_class", return_value=type("DummyReader", (), {})), \
             patch("wsdp.core.plt.figure"), \
             patch("wsdp.core.sns.heatmap"), \
             patch("wsdp.core.plt.savefig"), \
@@ -114,12 +122,14 @@ def test_pipeline_uses_registry_model_and_pipeline_steps(tmp_path):
             input_path="input",
             output_folder=str(tmp_path),
             dataset="xrf55",
+            reader=reader,
             model_name="cnn1dmodel",
             pipeline_steps=steps,
             num_seeds=1,
             use_cache=False,
         )
 
+    assert load_preprocess.call_args.kwargs["reader_name"] == expected_reader_name
     assert load_preprocess.call_args.kwargs["pipeline_steps"] == steps
     assert create_model.call_args.args[0] == "cnn1dmodel"
     assert create_model.call_args.kwargs["num_classes"] == 2

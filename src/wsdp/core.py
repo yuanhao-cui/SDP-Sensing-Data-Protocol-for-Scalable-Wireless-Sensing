@@ -35,8 +35,8 @@ def _load_and_preprocess(
     input_path: str,
     dataset: str,
     pad_len: int,
+    reader_name: str,
     pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
-    reader: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """Load CSI data, run processing pipeline, and return arrays ready for splitting.
 
@@ -45,7 +45,6 @@ def _load_and_preprocess(
         For ``xrf55`` the groups are the raw filename trial ids (1-20), kept
         unmodified because ``_create_xrf55_repetition_split`` keys on them.
     """
-    reader_name = reader or dataset
     csi_data_list = readers.load_data(input_path, reader_name)
 
     if pipeline_steps is None:
@@ -340,6 +339,7 @@ def pipeline(
     os.makedirs(output_folder, exist_ok=True)
     opath = Path(output_folder)
     dataset_name = dataset
+    reader_name = reader or dataset_name
 
     # Resolve num_workers
     effective_num_workers = num_workers if num_workers is not None else min(os.cpu_count() or 1, 8)
@@ -434,8 +434,8 @@ def pipeline(
                 ipath,
                 dataset_name,
                 pad_len,
+                reader_name=reader_name,
                 pipeline_steps=resolved_pipeline_steps,
-                reader=reader,
             )
         if use_cache and cache_key is not None:
             save_cache(cache_dir, cache_key, processed_data, zero_indexed_labels,
@@ -588,8 +588,7 @@ def pipeline(
     logger.info(f"Variance of Top-1 acc: {variance_accuracy:.6f}")
 
     # ---- persist pipeline record ----
-    reader_key = reader or dataset_name
-    reader_name = readers.get_reader_class(reader_key).__name__
+    reader_class_name = readers.get_reader_class(reader_name).__name__
     if resolved_pipeline_steps is None:
         proc_type = "BaseProcessor"
         proc_steps = {"phase_calibration": "default", "wavelet_denoise_csi": "default"}
@@ -602,7 +601,7 @@ def pipeline(
         output_folder=output_folder,
         dataset=dataset_name,
         total_samples=len(processed_data),
-        reader_name=reader_name,
+        reader_name=reader_class_name,
         processor_type=proc_type,
         processor_steps=proc_steps,
         model=model_str,
