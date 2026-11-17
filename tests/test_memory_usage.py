@@ -207,3 +207,25 @@ def test_cache_round_trip_uses_memmap(tmp_path):
     np.testing.assert_array_equal(loaded["processed_data"], source)
     np.testing.assert_array_equal(loaded["labels"], labels)
     np.testing.assert_array_equal(loaded["groups"], groups)
+
+
+def test_static_file_partitions_are_disjoint_and_size_balanced(tmp_path):
+    from wsdp.processors.streaming import _partition_files
+
+    files = []
+    for index, size in enumerate((8, 7, 6, 5)):
+        path = tmp_path / f"{index}.dat"
+        path.write_bytes(bytes(size))
+        files.append(path)
+
+    partitions = _partition_files(files, 2)
+    flattened = [path for partition in partitions for path in partition]
+    weights = [
+        sum(path.stat().st_size for path in partition)
+        for partition in partitions
+    ]
+
+    assert len(flattened) == len(files)
+    assert set(flattened) == set(files)
+    assert len(set(flattened)) == len(files)
+    assert max(weights) - min(weights) <= 1
