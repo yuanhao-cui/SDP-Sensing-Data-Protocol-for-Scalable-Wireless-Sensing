@@ -137,38 +137,31 @@ def test_internal_processing_can_release_source_frames():
 
 
 def test_streaming_preprocessing_returns_memmap(tmp_path):
-    from unittest.mock import patch
-
     from wsdp.processors.streaming import preprocess_to_memmap
 
-    samples = []
-    for index in range(5):
-        csi_data = CSIData(f"user1_2_{index + 1:02d}.dat")
-        for timestamp in range(2):
-            csi_data.add_frame(BaseFrame(
-                timestamp=timestamp,
-                csi_array=np.full((2, 1), index + 1, dtype=np.complex64),
-            ))
-        samples.append(csi_data)
+    input_dir = tmp_path / "input"
+    input_dir.mkdir()
+    values = np.ones(40 + 199 * 270 * 2, dtype=np.int16)
+    for index in range(2):
+        values.tofile(input_dir / f"01_02_{index + 1:02d}.dat")
 
-    storage_path = tmp_path / "processed.npy"
-    with patch("wsdp.readers.iter_data", return_value=iter(samples)):
-        processed, labels, groups = preprocess_to_memmap(
-            "unused",
-            "xrf55",
-            4,
-            ModularProcessor([], n_workers=1),
-            "xrf55",
-            storage_path,
-            batch_size=2,
-        )
+    storage_path = tmp_path / "output" / "processed.npy"
+    processed, labels, groups = preprocess_to_memmap(
+        str(input_dir),
+        "xrf55",
+        4,
+        ModularProcessor([], n_workers=1),
+        "xrf55",
+        storage_path,
+        read_workers=2,
+    )
 
     assert isinstance(processed, np.memmap)
-    assert processed.shape == (5, 4, 2, 1)
-    assert len(labels) == len(groups) == 5
-    np.testing.assert_array_equal(processed[0, :2], 1)
-    np.testing.assert_array_equal(processed[0, 2:], 0)
-    assert list(tmp_path.glob(".*-shards-*")) == []
+    assert processed.shape == (2, 4, 30, 9)
+    assert labels == [2, 2]
+    assert sorted(groups) == [1, 2]
+    np.testing.assert_array_equal(processed[0], 1 + 1j)
+    assert list(storage_path.parent.glob(".*-shards-*")) == []
 
 
 def test_memmap_dataset_pickle_reopens_file_instead_of_copying_data(tmp_path):
