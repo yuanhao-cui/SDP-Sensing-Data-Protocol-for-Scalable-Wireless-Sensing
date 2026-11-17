@@ -474,8 +474,8 @@ def preprocess_to_memmap(
 ):
     """Preprocess disjoint static file partitions without duplicate arrays.
 
-    The default ``memory`` mode stores compact, real, unpadded float16 samples
-    in shared memory and creates no preprocessing data files. ``auto`` is a
+    The default ``memory`` mode stores real, unpadded float16 model inputs in
+    shared memory and creates no preprocessing data files. ``auto`` is a
     backward-compatible alias for ``memory``; it no longer estimates sizes or
     falls back to disk. ``disk`` remains available only when explicitly chosen.
     """

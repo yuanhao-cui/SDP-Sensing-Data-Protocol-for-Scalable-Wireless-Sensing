@@ -371,8 +371,9 @@ def test_preconverted_phase_input_preserves_signed_channels():
         data.close()
 
 
-def test_intel5300_shared_result_stays_below_twice_raw_size(tmp_path):
+def test_intel5300_reader_is_exact_and_shared_storage_uses_float16(tmp_path):
     from wsdp.processors.streaming import preprocess_to_memmap
+    from wsdp.readers import BfeeReader
 
     input_dir = tmp_path / 'input'
     input_dir.mkdir()
@@ -380,9 +381,25 @@ def test_intel5300_shared_result_stays_below_twice_raw_size(tmp_path):
     payload = bytearray(20 + csi_len)
     payload[8:10] = bytes([3, 3])
     payload[16:18] = csi_len.to_bytes(2, 'little')
+
+    # First subcarrier/antenna: I=-2 (254 as uint8), Q=3, little-endian bits.
+    for bit in range(8):
+        if (254 >> bit) & 1:
+            payload[20 + (3 + bit) // 8] |= 1 << ((3 + bit) % 8)
+        if (3 >> bit) & 1:
+            payload[20 + (11 + bit) // 8] |= 1 << ((11 + bit) % 8)
     record = (len(payload) + 1).to_bytes(2, 'big') + b'\xbb' + payload
     source = input_dir / 'user1-2-1-1-1-r1.dat'
     source.write_bytes(record * 2)
+
+    raw = BfeeReader().read_file(str(source))
+    assert all(frame.csi_array.dtype == np.int8 for frame in raw.frames)
+    compact_bytes = sum(frame.csi_array.nbytes for frame in raw.frames)
+    assert compact_bytes == 2 * 30 * 9 * 2
+    assert compact_bytes < source.stat().st_size
+    decoded = raw.to_numpy()
+    assert decoded.dtype == np.complex64
+    assert decoded[0, 0, 0] == np.complex64(-2 + 3j)
 
     processed, labels, _ = preprocess_to_memmap(
         str(input_dir),
@@ -398,6 +415,16 @@ def test_intel5300_shared_result_stays_below_twice_raw_size(tmp_path):
         assert processed.nbytes == 2 * 30 * 18 * 2
         assert processed.nbytes < 2 * source.stat().st_size
         assert labels == [2]
-        np.testing.assert_array_equal(processed[0], 0)
+        expected = np.zeros((5, 30, 18), dtype=np.float32)
+        expected[:2, 0, 0] = np.sqrt(13)
+        expected[:2, 0, 9] = np.angle(np.complex64(-2 + 3j))
+        dataset = CSIDataset(
+            processed, np.asarray(labels), dataset_name='widar'
+        )
+        model_input, _ = dataset[0]
+        assert model_input.numpy().dtype == np.float32
+        np.testing.assert_allclose(
+            model_input.numpy(), expected, rtol=1e-3, atol=2e-3
+        )
     finally:
         processed.close()

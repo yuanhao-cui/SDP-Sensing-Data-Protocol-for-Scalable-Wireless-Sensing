@@ -55,16 +55,17 @@ def convert_to_model_input(csi, dataset: str, pipeline_steps=None, output_dtype=
         result = data
     elif phase_dataset and np.iscomplexobj(data):
         antenna_count = data.shape[-1]
-        result = np.empty(
-            (*data.shape[:-1], antenna_count * 2),
-            dtype=output_dtype or np.float32,
-        )
-        np.abs(data, out=result[..., :antenna_count])
-        np.arctan2(
-            data.imag,
-            data.real,
-            out=result[..., antenna_count:],
-        )
+        if output_dtype is None:
+            # Preserve the historical amplitude/phase computation order.
+            result = np.concatenate([np.abs(data), np.angle(data)], axis=-1)
+        else:
+            result = np.empty(
+                (*data.shape[:-1], antenna_count * 2), dtype=output_dtype
+            )
+            np.abs(data, out=result[..., :antenna_count])
+            np.arctan2(
+                data.imag, data.real, out=result[..., antenna_count:]
+            )
     elif is_amplitude_primary_dataset(dataset) and not np.iscomplexobj(data):
         # XRF55 train-split normalization can contain signed real values.
         result = data

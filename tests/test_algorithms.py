@@ -86,10 +86,10 @@ class TestPhaseCalibration:
         result = phase_calibration(csi_complex)
         assert result.shape == csi_complex.shape
 
-    def test_linear_does_not_promote_complex64_to_complex128(self):
+    def test_linear_preserves_legacy_computation_precision(self):
         csi = np.ones((3, 30, 2), dtype=np.complex64) * (1 + 1j)
         result = phase_calibration(csi)
-        assert result.dtype == np.complex64
+        assert result.dtype == np.complex128
 
     def test_linear_preserves_amplitude(self, csi_complex):
         result = phase_calibration(csi_complex)

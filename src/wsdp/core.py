@@ -420,9 +420,10 @@ def pipeline(
         storage_mode: Default ``memory`` stores compact real samples in shared
             memory. ``auto`` is a compatibility alias for ``memory``; ``disk``
             is an explicit opt-in for the legacy disk-shard representation.
-        storage_dtype: Shared-result precision, default ``float16``. Batches
-            are converted to float32 for training. Use ``float32`` when storage
-            precision is more important than the roughly 2x Intel raw-size goal.
+        storage_dtype: Shared-result precision, default ``float16``. Algorithms
+            run at their original precision; only stored model inputs are
+            quantized. Batches return to float32. Use ``float32`` to disable
+            lossy storage while retaining shared memory and deferred padding.
     """
     ipath = input_path
     os.makedirs(output_folder, exist_ok=True)

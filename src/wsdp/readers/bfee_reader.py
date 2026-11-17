@@ -108,40 +108,22 @@ class BfeeReader(BaseReader):
             return None
 
         csi_bytes = payload[20: 20 + csi_len]
-        csi_array = np.zeros((30, n_rx, n_tx), dtype=np.complex64)
-
-        bit_index = 0
-
-        def get_bit(pos):
-            byte_i = pos // 8
-            if byte_i >= len(csi_bytes):
-                return 0
-            shift = pos % 8
-            return (csi_bytes[byte_i] >> shift) & 0x1
-
-        def get_bits_u8(pos):
-            val = 0
-            for b in range(8):
-                val |= (get_bit(pos + b) << b)
-            return val
-
+        antenna_count = n_rx * n_tx
+        # Keep the two signed octets exactly as supplied by Intel 5300. The
+        # final axis is I/Q; conversion to complex64 happens only when one
+        # sample enters preprocessing, never for the whole retained dataset.
+        csi_array = np.empty((30, antenna_count, 2), dtype=np.int8)
+        bits = np.unpackbits(
+            np.frombuffer(csi_bytes, dtype=np.uint8), bitorder='little'
+        )
+        bit_weights = (1 << np.arange(8, dtype=np.uint16))
+        bits_per_subcarrier = 3 + antenna_count * 16
         for sc_idx in range(30):
-            bit_index += 3  # skip pilot
-            for j in range(n_rx * n_tx):
-                real8 = get_bits_u8(bit_index)
-                imag8 = get_bits_u8(bit_index + 8)
-                bit_index += 16
-                if real8 & 0x80:
-                    real8 -= 256
-                if imag8 & 0x80:
-                    imag8 -= 256
-                # Linux 802.11n CSI Tool (read_bfee.m): tx varies fastest
-                # i.e. tx_i = j % n_tx, rx_i = j // n_tx
-                tx_i = j % n_tx
-                rx_i = j // n_tx
-                csi_array[sc_idx, rx_i, tx_i] = np.complex64(real8 + 1j * imag8)
-        # Flatten antenna dims: (F=30, n_rx, n_tx) -> (F=30, n_rx*n_tx)
-        # Unifies BfeeReader output to (F, A) compatible with all algorithms
-        csi_array = csi_array.reshape(30, n_rx * n_tx)
+            start = sc_idx * bits_per_subcarrier + 3
+            pairs = bits[start:start + antenna_count * 16].reshape(
+                antenna_count, 2, 8
+            )
+            unsigned = np.sum(pairs * bit_weights, axis=2, dtype=np.uint16)
+            csi_array[sc_idx] = unsigned.astype(np.uint8).view(np.int8)
         return BfeeFrame(timestamp, csi_array, bfee_count, n_rx, n_tx, rssi_a, rssi_b, rssi_c,
                          noise, agc, antenna_sel, fake_rate)

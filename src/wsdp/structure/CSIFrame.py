@@ -17,8 +17,6 @@ class BaseFrame:
                 f"dtype={self.csi_array.dtype})")
 
 
-
-
 class BfeeFrame(BaseFrame):
     """
     Represents a Widar Bfee frame.
@@ -36,3 +34,20 @@ class BfeeFrame(BaseFrame):
         self.agc = agc
         self.antenna_sel = antenna_sel
         self.fake_rate = fake_rate
+
+    @property
+    def compact_iq(self):
+        return (
+            self.csi_array.dtype == np.int8
+            and self.csi_array.ndim >= 1
+            and self.csi_array.shape[-1] == 2
+        )
+
+    def to_numpy(self):
+        """Decode this frame only; the stored representation remains int8."""
+        if not self.compact_iq:
+            return self.csi_array
+        result = np.empty(self.csi_array.shape[:-1], dtype=np.complex64)
+        result.real = self.csi_array[..., 0]
+        result.imag = self.csi_array[..., 1]
+        return result
