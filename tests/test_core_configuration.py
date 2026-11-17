@@ -28,25 +28,29 @@ class DummyDataset(torch.utils.data.Dataset):
         labels,
         dataset_name="",
         pipeline_steps=None,
+        indices=None,
+        normalization=None,
     ):
-        self.data_list = torch.from_numpy(data).float()
-        self.labels = list(labels)
+        self.indices = np.arange(len(labels)) if indices is None else indices
+        self.data_list = torch.from_numpy(data[self.indices]).float()
+        self.labels = torch.from_numpy(labels).long()
+        self.input_shape = data.shape[1:]
 
     def __len__(self):
-        return len(self.labels)
+        return len(self.indices)
 
     def __getitem__(self, idx):
-        return self.data_list[idx], torch.tensor(self.labels[idx])
+        source_idx = self.indices[idx]
+        return self.data_list[idx], self.labels[source_idx]
 
 
-def _split_data():
-    train_data = np.ones((4, 4, 3, 1), dtype=np.float32)
-    val_data = np.ones((2, 4, 3, 1), dtype=np.float32)
-    test_data = np.ones((2, 4, 3, 1), dtype=np.float32)
-    train_labels = np.array([0, 1, 0, 1])
-    val_labels = np.array([0, 1])
-    test_labels = np.array([0, 1])
-    return train_data, val_data, test_data, train_labels, val_labels, test_labels
+def _split_indices():
+    return (
+        np.array([0, 1, 2, 3]),
+        np.array([4, 5]),
+        np.array([6, 7]),
+        False,
+    )
 
 
 def test_resolve_pipeline_steps_priority():
@@ -99,7 +103,7 @@ def test_pipeline_uses_registry_model_and_pipeline_steps(tmp_path):
 
     with patch("wsdp.core.load_params", return_value={"batch": 2, "lr": 0.001, "wd": 0.0, "num_epochs": 1, "padding_length": 4}), \
             patch("wsdp.core._load_and_preprocess", return_value=processed) as load_preprocess, \
-            patch("wsdp.core._create_data_split", return_value=_split_data()), \
+            patch("wsdp.core._create_data_split_indices", return_value=_split_indices()), \
             patch("wsdp.core.CSIDataset", side_effect=DummyDataset), \
             patch("wsdp.core.create_model", return_value=dummy_model) as create_model, \
             patch("wsdp.core.train_model", return_value=[{"loss": 1.0}]), \

@@ -14,7 +14,12 @@ import numpy as np
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
 
 from wsdp.models.registry import MODEL_REGISTRY
-from wsdp.core import _load_and_preprocess, _create_data_split, _evaluate_model
+from wsdp.core import (
+    _create_data_split_indices,
+    _evaluate_model,
+    _fit_xrf55_normalization,
+    _load_and_preprocess,
+)
 from wsdp.utils import load_params
 from wsdp.datasets import CSIDataset
 from wsdp.utils.train_func import train_model
@@ -39,41 +44,32 @@ def benchmark_model(model_name, model_class, processed_data, labels, groups,
 
     for seed in seeds:
         try:
-            train_data, val_data, test_data, train_labels, val_labels, test_labels = \
-                _create_data_split(
-                    processed_data, labels, groups, 0.3, 0.5, seed, use_simple,
-                    dataset=dataset,
-                )
-
-            train_data = np.stack(train_data, axis=0)
-            val_data = np.stack(val_data, axis=0)
-            test_data = np.stack(test_data, axis=0)
+            train_idx, val_idx, test_idx, xrf55_protocol = _create_data_split_indices(
+                labels, groups, 0.3, 0.5, seed, use_simple, dataset=dataset,
+            )
+            normalization = None
+            if xrf55_protocol:
+                normalization = _fit_xrf55_normalization(processed_data, train_idx, None)
 
             train_dataset = CSIDataset(
-                train_data, train_labels, dataset_name=dataset
+                processed_data, labels, dataset_name=dataset,
+                indices=train_idx, normalization=normalization,
             )
             val_dataset = CSIDataset(
-                val_data, val_labels, dataset_name=dataset
+                processed_data, labels, dataset_name=dataset,
+                indices=val_idx, normalization=normalization,
             )
             test_dataset = CSIDataset(
-                test_data, test_labels, dataset_name=dataset
+                processed_data, labels, dataset_name=dataset,
+                indices=test_idx, normalization=normalization,
             )
 
-            nw = min(os.cpu_count() or 1, 8)
+            nw = 0
             train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=nw, shuffle=True)
             val_loader = DataLoader(val_dataset, batch_size=batch_size, num_workers=nw, shuffle=False)
             test_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=nw, shuffle=False)
 
-            # Get input shape from data
-            sample_shape = tuple(train_dataset.data_list.shape[1:])
-            T = sample_shape[0]
-            if len(sample_shape) == 2:
-                F_dim = sample_shape[1]
-                A_dim = 1
-            else:
-                F_dim = sample_shape[1]
-                A_dim = sample_shape[2]
-            input_shape = (T, F_dim, A_dim)
+            input_shape = train_dataset.input_shape
 
             # Skip models that need special handling
             if model_name in ('ei', 'fewsense'):

@@ -39,14 +39,18 @@ class ConfigurableProcessor(Processor):
 
         processor = ModularProcessor(steps, n_workers=self.n_workers)
         all_data, all_labels, all_groups = processor.process(
-            data_list, dataset=dataset
+            data_list,
+            dataset=dataset,
+            release_inputs=kwargs.get("release_inputs", False),
         )
 
         if phase_zscore:
-            all_data = [
-                normalize_amplitude(arr, method="z-score", return_phase_channels=True)
-                for arr in all_data
-            ]
+            for index, arr in enumerate(all_data):
+                all_data[index] = normalize_amplitude(
+                    arr,
+                    method="z-score",
+                    return_phase_channels=True,
+                )
 
         return all_data, all_labels, all_groups
 

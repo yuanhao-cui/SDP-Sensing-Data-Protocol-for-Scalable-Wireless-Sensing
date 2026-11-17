@@ -33,12 +33,14 @@ class BaseProcessor(Processor):
     ):
         dataset = kwargs.get("dataset", "")
         all_data, all_labels, all_groups = self._modular.process(
-            data_list, dataset=dataset
+            data_list,
+            dataset=dataset,
+            release_inputs=kwargs.get("release_inputs", False),
         )
-        # Preserve historical amplitude-primary cleanup.
-        all_data = [
-            real_if_negligible_imaginary(arr, dataset) for arr in all_data
-        ]
+        # Preserve historical amplitude-primary cleanup without keeping a
+        # second list containing every processed sample alive.
+        for index, arr in enumerate(all_data):
+            all_data[index] = real_if_negligible_imaginary(arr, dataset)
         return all_data, all_labels, all_groups
 
 

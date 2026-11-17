@@ -1,3 +1,4 @@
+import multiprocessing as mp
 import os
 import random
 import torch
@@ -13,7 +14,7 @@ from tqdm import tqdm
 from . import readers
 from .dataset_policy import uses_phase_amplitude
 from .datasets import CSIDataset
-from .utils import load_params, train_model, resize_csi_to_fixed_length, load_custom_model
+from .utils import load_params, train_model, resize_csi_to_fixed_array, load_custom_model
 from .utils.cache import get_cache_key, load_cache, save_cache
 from .processors.base_processor import BaseProcessor
 from .processors import ConfigurableProcessor
@@ -52,11 +53,11 @@ def _load_and_preprocess(
         processor = BaseProcessor()
     else:
         processor = ConfigurableProcessor(pipeline_steps)
-    res = processor.process(csi_data_list, dataset=dataset)
+    res = processor.process(csi_data_list, dataset=dataset, release_inputs=True)
 
     unadjusted_data = res[0]
-    processed_data = resize_csi_to_fixed_length(unadjusted_data, target_length=pad_len)
-    logger.info(f"processed_data's shape: {processed_data[0].shape}")
+    processed_data = resize_csi_to_fixed_array(unadjusted_data, target_length=pad_len)
+    logger.info(f"processed_data's shape: {processed_data.shape}")
 
     labels = res[1]
     groups = res[2]
@@ -79,7 +80,6 @@ def _load_and_preprocess(
     logger.info(f"total sample: {len(processed_data)}, "
                 f"total labels: {len(zero_indexed_labels)}, total groups: {len(zero_indexed_groups)}")
 
-    processed_data = np.array(processed_data)
     zero_indexed_labels = np.array(zero_indexed_labels)
     zero_indexed_groups = np.array(zero_indexed_groups)
 
@@ -105,8 +105,7 @@ def _resolve_pipeline_steps(
     return None
 
 
-def _create_data_split(
-    processed_data: np.ndarray,
+def _create_data_split_indices(
     labels: np.ndarray,
     groups: np.ndarray,
     test_split: float,
@@ -114,18 +113,16 @@ def _create_data_split(
     seed: int,
     use_simple_split: bool,
     dataset: Optional[str] = None,
-    pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Split data into train/val/test sets.
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, bool]:
+    """Create split indices without copying any CSI sample data.
 
-    Returns:
-        (train_data, val_data, test_data, train_labels, val_labels, test_labels)
+    The fourth return value reports whether the XRF55 repetition protocol was
+    used and therefore whether its train-only normalization should be applied.
     """
     if dataset == "xrf55":
         try:
-            return _create_xrf55_repetition_split(
-                processed_data, labels, groups, pipeline_steps=pipeline_steps
-            )
+            train_idx, val_idx, test_idx = _create_xrf55_repetition_indices(groups)
+            return train_idx, val_idx, test_idx, True
         except RuntimeError:
             # Trial subsets may lack the fixed protocol ranges (13-16 val,
             # 17-20 test). Fall back to a repetition-disjoint group split,
@@ -137,59 +134,66 @@ def _create_data_split(
             )
 
     if use_simple_split:
-        train_data, temp_data, train_labels, temp_labels = train_test_split(
-            processed_data, labels,
-            test_size=test_split, random_state=seed
+        indices = np.arange(len(labels))
+        train_idx, temp_idx = train_test_split(
+            indices, test_size=test_split, random_state=seed
         )
-        test_data, val_data, test_labels, val_labels = train_test_split(
-            temp_data, temp_labels,
-            test_size=val_split, random_state=seed
+        test_idx, val_idx = train_test_split(
+            temp_idx, test_size=val_split, random_state=seed
         )
     else:
+        indices = np.arange(len(labels))
         splitter_1 = GroupShuffleSplit(n_splits=1, test_size=test_split, random_state=seed)
         train_idx, temp_idx = next(
-            splitter_1.split(processed_data, labels, groups=groups)
+            splitter_1.split(indices, labels, groups=groups)
         )
 
-        train_data = processed_data[train_idx]
-        train_labels = labels[train_idx]
-
-        temp_data = processed_data[temp_idx]
         temp_labels = labels[temp_idx]
         temp_groups = groups[temp_idx]
-
         splitter_2 = GroupShuffleSplit(n_splits=1, test_size=val_split, random_state=seed)
-        test_idx, val_idx = next(splitter_2.split(temp_data, temp_labels, groups=temp_groups))
+        test_local_idx, val_local_idx = next(
+            splitter_2.split(temp_idx, temp_labels, groups=temp_groups)
+        )
+        test_idx = temp_idx[test_local_idx]
+        val_idx = temp_idx[val_local_idx]
 
-        test_data = temp_data[test_idx]
-        test_labels = temp_labels[test_idx]
-
-        val_data = temp_data[val_idx]
-        val_labels = temp_labels[val_idx]
-
-    train_data = np.stack(train_data, axis=0)
-    val_data = np.stack(val_data, axis=0)
-    test_data = np.stack(test_data, axis=0)
-
-    return train_data, val_data, test_data, train_labels, val_labels, test_labels
+    return train_idx, val_idx, test_idx, False
 
 
-def _create_xrf55_repetition_split(
+def _create_data_split(
     processed_data: np.ndarray,
     labels: np.ndarray,
-    repetitions: np.ndarray,
+    groups: np.ndarray,
+    test_split: float,
+    val_split: float,
+    seed: int,
+    use_simple_split: bool,
+    dataset: Optional[str] = None,
     pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
-    """Split XRF55 by repetition/trial id.
+    """Materialize a data split for backward-compatible external callers."""
+    train_idx, val_idx, test_idx, xrf55_protocol = _create_data_split_indices(
+        labels, groups, test_split, val_split, seed, use_simple_split, dataset=dataset
+    )
+    normalization = None
+    if xrf55_protocol:
+        normalization = _fit_xrf55_normalization(
+            processed_data, train_idx, pipeline_steps
+        )
+    return _materialize_data_split(
+        processed_data,
+        labels,
+        train_idx,
+        val_idx,
+        test_idx,
+        normalization,
+    )
 
-    XRF55 filenames are user_action_trial, e.g. 03_20_08.
-    The action id remains the label. The trial/repetition id controls the split:
-    01-12 -> train, 13-16 -> validation, 17-20 -> test.
 
-    If z-score or min-max normalization is configured, normalization is applied
-    after the repetition masks are built and uses only training repetitions for
-    statistics. This keeps validation/test repetitions out of the fitted scale.
-    """
+def _create_xrf55_repetition_indices(
+    repetitions: np.ndarray,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+    """Return train/validation/test indices for XRF55 trial ids 1-20."""
     repetitions = np.asarray(repetitions).astype(int)
 
     # In older preprocessing flows groups may have been zero-indexed to 0-19.
@@ -213,43 +217,103 @@ def _create_xrf55_repetition_split(
             "Expected trial ids 1-20 from user_action_trial filenames."
         )
 
-    train_data = processed_data[train_mask]
-    val_data = processed_data[val_mask]
-    test_data = processed_data[test_mask]
-    train_labels = labels[train_mask]
-    val_labels = labels[val_mask]
-    test_labels = labels[test_mask]
+    return (
+        np.flatnonzero(train_mask),
+        np.flatnonzero(val_mask),
+        np.flatnonzero(test_mask),
+    )
 
+
+def _iter_training_chunks(processed_data, train_indices, max_chunk_bytes=64 * 1024 * 1024):
+    """Yield small advanced-indexing chunks for train-only statistics."""
+    sample_nbytes = int(processed_data[0].nbytes) if processed_data.size else 0
+    chunk_size = max(1, max_chunk_bytes // max(1, sample_nbytes))
+    for start in range(0, len(train_indices), chunk_size):
+        yield np.abs(processed_data[train_indices[start:start + chunk_size]])
+
+
+def _fit_xrf55_normalization(processed_data, train_indices, pipeline_steps):
+    """Fit XRF55 normalization from bounded-memory training-set chunks."""
     normalize_step = None
     if isinstance(pipeline_steps, dict):
         normalize_step = pipeline_steps.get("normalize")
+    if not (
+        isinstance(normalize_step, dict)
+        and normalize_step.get("method") in {"z-score", "min-max"}
+    ):
+        return None
 
-    if isinstance(normalize_step, dict) and normalize_step.get("method") in {"z-score", "min-max"}:
-        method = normalize_step["method"]
-        train_amp = np.abs(train_data)
-        val_amp = np.abs(val_data)
-        test_amp = np.abs(test_data)
+    method = normalize_step["method"]
+    feature_shape = processed_data.shape[2:]
+    count = len(train_indices) * processed_data.shape[1]
 
-        # XRF55-specific: compute one normalization scale from train split only.
-        # This avoids per-sample normalization washing out real amplitude
-        # differences, while keeping validation/test out of the statistics.
-        stat_axes = (0, 1) if train_amp.ndim >= 2 else (0,)
-        if method == "z-score":
-            mean = np.mean(train_amp, axis=stat_axes, keepdims=True)
-            std = np.std(train_amp, axis=stat_axes, keepdims=True)
-            std = np.where(std < 1e-10, 1.0, std)
-            train_data = (train_amp - mean) / std
-            val_data = (val_amp - mean) / std
-            test_data = (test_amp - mean) / std
-        else:
-            amin = np.min(train_amp, axis=stat_axes, keepdims=True)
-            amax = np.max(train_amp, axis=stat_axes, keepdims=True)
-            range_val = np.where((amax - amin) < 1e-10, 1.0, amax - amin)
-            train_data = (train_amp - amin) / range_val
-            val_data = (val_amp - amin) / range_val
-            test_data = (test_amp - amin) / range_val
+    if method == "min-max":
+        amin = np.full(feature_shape, np.inf, dtype=np.float64)
+        amax = np.full(feature_shape, -np.inf, dtype=np.float64)
+        for chunk in _iter_training_chunks(processed_data, train_indices):
+            amin = np.minimum(amin, np.min(chunk, axis=(0, 1)))
+            amax = np.maximum(amax, np.max(chunk, axis=(0, 1)))
+        scale = amax - amin
+        scale = np.where(scale < 1e-10, 1.0, scale)
+        return {"center": amin, "scale": scale}
 
-    return train_data, val_data, test_data, train_labels, val_labels, test_labels
+    total = np.zeros(feature_shape, dtype=np.float64)
+    for chunk in _iter_training_chunks(processed_data, train_indices):
+        total += np.sum(chunk, axis=(0, 1), dtype=np.float64)
+    mean = total / count
+
+    squared_total = np.zeros(feature_shape, dtype=np.float64)
+    for chunk in _iter_training_chunks(processed_data, train_indices):
+        squared_total += np.sum((chunk - mean) ** 2, axis=(0, 1), dtype=np.float64)
+    std = np.sqrt(squared_total / count)
+    std = np.where(std < 1e-10, 1.0, std)
+    return {"center": mean, "scale": std}
+
+
+def _materialize_data_split(
+    processed_data,
+    labels,
+    train_idx,
+    val_idx,
+    test_idx,
+    normalization=None,
+):
+    """Build array splits, applying optional train-fitted normalization."""
+    split_data = [
+        processed_data[train_idx],
+        processed_data[val_idx],
+        processed_data[test_idx],
+    ]
+    if normalization is not None:
+        split_data = [
+            (np.abs(data) - normalization["center"]) / normalization["scale"]
+            for data in split_data
+        ]
+    return (
+        *split_data,
+        labels[train_idx],
+        labels[val_idx],
+        labels[test_idx],
+    )
+
+
+def _create_xrf55_repetition_split(
+    processed_data: np.ndarray,
+    labels: np.ndarray,
+    repetitions: np.ndarray,
+    pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
+    """Split XRF55 by repetition/trial id for backward compatibility."""
+    train_idx, val_idx, test_idx = _create_xrf55_repetition_indices(repetitions)
+    normalization = _fit_xrf55_normalization(processed_data, train_idx, pipeline_steps)
+    return _materialize_data_split(
+        processed_data,
+        labels,
+        train_idx,
+        val_idx,
+        test_idx,
+        normalization,
+    )
 
 
 def _evaluate_model(
@@ -332,7 +396,9 @@ def pipeline(
         val_split: Fraction of held-out data used for validation (default 0.5)
         num_seeds: Number of random seeds to run (default 5)
         config_file: Optional YAML config file to load parameters from
-        num_workers: Number of DataLoader workers. When None, auto-detects: min(cpu_count, 8)
+        num_workers: Number of DataLoader workers. When None, uses 0 with spawn
+            multiprocessing (Windows/macOS) to avoid full dataset copies, and
+            up to 8 workers with fork-based multiprocessing.
         progress_callback: Optional callable invoked after each training epoch with a dict of metrics
         use_cache: If True, cache preprocessed data to avoid re-processing on repeated runs (default True)
     """
@@ -341,8 +407,19 @@ def pipeline(
     opath = Path(output_folder)
     dataset_name = dataset
 
-    # Resolve num_workers
-    effective_num_workers = num_workers if num_workers is not None else min(os.cpu_count() or 1, 8)
+    # Spawned DataLoader workers pickle the complete dataset on Windows/macOS.
+    # Default to in-process loading there to avoid one full copy per worker.
+    start_method = mp.get_start_method()
+    effective_num_workers = (
+        num_workers
+        if num_workers is not None
+        else (0 if start_method == "spawn" else min(os.cpu_count() or 1, 8))
+    )
+    if start_method == "spawn" and effective_num_workers > 0:
+        logger.warning(
+            "Spawned DataLoader workers duplicate the source array in each "
+            "process; use num_workers=0 for memory-bounded training."
+        )
 
     model_kwargs = model_kwargs or {}
     resolved_pipeline_steps = _resolve_pipeline_steps(
@@ -457,43 +534,54 @@ def pipeline(
         print(f"\n{'=' * 25} epoch {i + 1}/{len(random_seeds)} "
               f"begin (Random State: {current_seed}) {'=' * 25}\n")
 
-        train_data, val_data, test_data, train_labels, val_labels, test_labels = \
-            _create_data_split(
-                processed_data, zero_indexed_labels, zero_indexed_groups,
-                test_split, val_split, current_seed, use_simple_split,
-                dataset=dataset_name,
-                pipeline_steps=resolved_pipeline_steps,
+        train_idx, val_idx, test_idx, xrf55_protocol = _create_data_split_indices(
+            zero_indexed_labels,
+            zero_indexed_groups,
+            test_split,
+            val_split,
+            current_seed,
+            use_simple_split,
+            dataset=dataset_name,
+        )
+        normalization = None
+        if xrf55_protocol:
+            normalization = _fit_xrf55_normalization(
+                processed_data, train_idx, resolved_pipeline_steps
             )
 
-        logger.info(f"num of samples in train_data: {len(train_data)}, "
-                     f"num of samples in test_data: {len(test_data)}, num of samples in val_data: {len(val_data)}")
-        logger.info(f"shape of first sample of train_data: {train_data[0].shape}, "
-                     f"shape of last sample of train_data: {train_data[-1].shape}")
+        logger.info(f"num of samples in train_data: {len(train_idx)}, "
+                     f"num of samples in test_data: {len(test_idx)}, num of samples in val_data: {len(val_idx)}")
 
         train_dataset = CSIDataset(
-            train_data,
-            train_labels,
+            processed_data,
+            zero_indexed_labels,
             dataset_name=dataset_name,
             pipeline_steps=resolved_pipeline_steps,
+            indices=train_idx,
+            normalization=normalization,
         )
         test_dataset = CSIDataset(
-            test_data,
-            test_labels,
+            processed_data,
+            zero_indexed_labels,
             dataset_name=dataset_name,
             pipeline_steps=resolved_pipeline_steps,
+            indices=test_idx,
+            normalization=normalization,
         )
         val_dataset = CSIDataset(
-            val_data,
-            val_labels,
+            processed_data,
+            zero_indexed_labels,
             dataset_name=dataset_name,
             pipeline_steps=resolved_pipeline_steps,
+            indices=val_idx,
+            normalization=normalization,
         )
         train_loader = DataLoader(train_dataset, batch_size=batch, num_workers=effective_num_workers, shuffle=True)
         test_loader = DataLoader(test_dataset, batch_size=batch, num_workers=effective_num_workers, shuffle=False)
         val_loader = DataLoader(val_dataset, batch_size=batch, num_workers=effective_num_workers, shuffle=False)
 
         num_classes = len(unique_labels)
-        input_shape = tuple(train_dataset.data_list.shape[1:])
+        input_shape = train_dataset.input_shape
         if model_path is None:
             model = create_model(
                 model_name,

@@ -98,7 +98,12 @@ def run_hparam_search(
     import torch.nn as nn
     from torch.utils.data import DataLoader
 
-    from wsdp.core import _load_and_preprocess, _create_data_split, _evaluate_model
+    from wsdp.core import (
+        _create_data_split_indices,
+        _evaluate_model,
+        _fit_xrf55_normalization,
+        _load_and_preprocess,
+    )
     from wsdp.datasets import CSIDataset
     from wsdp.models import CSIModel
     from wsdp.utils import train_model
@@ -127,26 +132,35 @@ def run_hparam_search(
         batch_size = hparams.get("batch_size", 32)
         num_epochs = hparams.get("num_epochs", 20)
 
-        # Split data
-        train_data, val_data, test_data, train_labels, val_labels, test_labels = (
-            _create_data_split(
-                processed_data, labels, groups,
-                test_split, val_split, seed, use_simple_split,
-                dataset=dataset,
-            )
+        # Share the source array across splits instead of copying CSI samples.
+        train_idx, val_idx, test_idx, xrf55_protocol = _create_data_split_indices(
+            labels, groups, test_split, val_split, seed, use_simple_split,
+            dataset=dataset,
         )
+        normalization = None
+        if xrf55_protocol:
+            normalization = _fit_xrf55_normalization(processed_data, train_idx, None)
 
         # DataLoaders
         train_loader = DataLoader(
-            CSIDataset(train_data, train_labels, dataset_name=dataset),
+            CSIDataset(
+                processed_data, labels, dataset_name=dataset,
+                indices=train_idx, normalization=normalization,
+            ),
             batch_size=batch_size, shuffle=True,
         )
         val_loader = DataLoader(
-            CSIDataset(val_data, val_labels, dataset_name=dataset),
+            CSIDataset(
+                processed_data, labels, dataset_name=dataset,
+                indices=val_idx, normalization=normalization,
+            ),
             batch_size=batch_size, shuffle=False,
         )
         test_loader = DataLoader(
-            CSIDataset(test_data, test_labels, dataset_name=dataset),
+            CSIDataset(
+                processed_data, labels, dataset_name=dataset,
+                indices=test_idx, normalization=normalization,
+            ),
             batch_size=batch_size, shuffle=False,
         )
 
