@@ -40,6 +40,7 @@ def _load_and_preprocess(
     pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
     reader: Optional[str] = None,
     storage_path: Optional[str] = None,
+    storage_mode: str = "auto",
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """Load CSI data, run processing pipeline, and return arrays ready for splitting.
 
@@ -64,6 +65,7 @@ def _load_and_preprocess(
             processor,
             reader_name,
             storage_path,
+            storage_mode=storage_mode,
         )
     else:
         # Compatibility path for direct callers that do not provide storage.
@@ -387,6 +389,7 @@ def pipeline(
     num_workers: Optional[int] = None,
     progress_callback: Optional[Callable] = None,
     use_cache: bool = True,
+    storage_mode: str = "auto",
 ) -> None:
     """
     Run the full CSI classification pipeline.
@@ -416,7 +419,9 @@ def pipeline(
             workers. Memmap-backed data is shared by file path; non-memmap data
             falls back to 0 with spawn multiprocessing to avoid full copies.
         progress_callback: Optional callable invoked after each training epoch with a dict of metrics
-        use_cache: If True, cache preprocessed data to avoid re-processing on repeated runs (default True)
+        use_cache: If True, cache disk-backed preprocessed data for repeated runs
+        storage_mode: ``auto`` estimates processed size and uses memory when it
+            fits within 70% of available RAM; ``memory`` and ``disk`` force a mode.
     """
     ipath = input_path
     os.makedirs(output_folder, exist_ok=True)
@@ -525,12 +530,15 @@ def pipeline(
                 pipeline_steps=resolved_pipeline_steps,
                 reader=reader,
                 storage_path=storage_path,
+                storage_mode=storage_mode,
             )
         if use_cache and cache_key is not None:
             save_cache(cache_dir, cache_key, processed_data, zero_indexed_labels,
                        zero_indexed_groups, unique_labels)
 
-    disk_backed = isinstance(processed_data, (np.memmap, ChunkedCSIArray))
+    disk_backed = isinstance(processed_data, np.memmap) or (
+        isinstance(processed_data, ChunkedCSIArray) and processed_data.disk_backed
+    )
     if start_method == "spawn" and not disk_backed:
         if num_workers is None:
             effective_num_workers = 0

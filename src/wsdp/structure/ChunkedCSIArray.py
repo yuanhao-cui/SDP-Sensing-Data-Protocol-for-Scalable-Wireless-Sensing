@@ -9,15 +9,11 @@ import numpy as np
 
 
 class ChunkedCSIArray:
-    """Present multiple ``.npy`` shards as one indexable sample array.
+    """Present in-memory chunks or ``.npy`` shards as one sample array."""
 
-    Only shard metadata is held in memory. Files are memory-mapped on first use,
-    and multiprocessing workers reopen the same paths instead of serializing
-    the underlying samples.
-    """
-
-    def __init__(self, paths, counts, shape, dtype):
+    def __init__(self, paths, counts, shape, dtype, arrays=None):
         self.paths = [Path(path).resolve() for path in paths]
+        self.arrays = arrays
         self.counts = [int(count) for count in counts]
         self.shape = tuple(int(dim) for dim in shape)
         self.dtype = np.dtype(dtype)
@@ -26,9 +22,16 @@ class ChunkedCSIArray:
         self._offsets = [0]
         for count in self.counts:
             self._offsets.append(self._offsets[-1] + count)
-        if self.paths and self._offsets[-1] != self.shape[0]:
-            raise ValueError("Shard counts do not match the chunked array shape")
+        sources = self.arrays if self.arrays is not None else self.paths
+        if sources and (
+            len(sources) != len(self.counts) or self._offsets[-1] != self.shape[0]
+        ):
+            raise ValueError("Chunk counts do not match the chunked array shape")
         self._maps = {}
+
+    @property
+    def disk_backed(self):
+        return self.arrays is None
 
     def __len__(self):
         return self.shape[0]
@@ -39,6 +42,8 @@ class ChunkedCSIArray:
         return state
 
     def _get_map(self, shard_index):
+        if self.arrays is not None:
+            return self.arrays[shard_index]
         if shard_index not in self._maps:
             self._maps[shard_index] = np.load(
                 self.paths[shard_index], mmap_mode='r'
@@ -75,6 +80,8 @@ class ChunkedCSIArray:
         return result
 
     def save_manifest(self, manifest_path):
+        if not self.disk_backed:
+            raise ValueError("In-memory chunks do not have a disk manifest")
         manifest_path = Path(manifest_path).resolve()
         manifest_path.parent.mkdir(parents=True, exist_ok=True)
         payload = {

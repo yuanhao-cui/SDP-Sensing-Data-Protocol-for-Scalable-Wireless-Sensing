@@ -158,6 +158,7 @@ def test_streaming_preprocessing_reads_shards_without_final_merge(tmp_path):
         "xrf55",
         storage_path,
         read_workers=2,
+        storage_mode='disk',
     )
 
     assert isinstance(processed, ChunkedCSIArray)
@@ -287,3 +288,37 @@ def test_chunked_xrf55_normalization_matches_contiguous_array(tmp_path):
     assert protocol
     np.testing.assert_allclose(actual['center'], expected['center'])
     np.testing.assert_allclose(actual['scale'], expected['scale'])
+
+
+def test_auto_storage_uses_memory_when_processed_data_fits(tmp_path):
+    from unittest.mock import patch
+
+    from wsdp.processors.streaming import preprocess_to_memmap
+
+    input_dir = tmp_path / 'input'
+    input_dir.mkdir()
+    values = np.ones(40 + 199 * 270 * 2, dtype=np.int16)
+    for index in range(2):
+        values.tofile(input_dir / f"01_02_{index + 1:02d}.dat")
+    storage_path = tmp_path / 'output' / 'processed.npy'
+
+    with patch('wsdp.processors.streaming._available_memory', return_value=10**12):
+        processed, labels, groups = preprocess_to_memmap(
+            str(input_dir),
+            'xrf55',
+            4,
+            ModularProcessor([], n_workers=1),
+            'xrf55',
+            storage_path,
+            read_workers=2,
+            storage_mode='auto',
+        )
+
+    assert not processed.disk_backed
+    assert processed.arrays is not None
+    assert processed.shape == (2, 4, 30, 9)
+    assert labels == [2, 2]
+    assert sorted(groups) == [1, 2]
+    assert not storage_path.exists()
+    assert not (tmp_path / 'output' / 'processed_chunks').exists()
+    np.testing.assert_array_equal(processed[:], np.ones((2, 4, 30, 9)) * (1 + 1j))

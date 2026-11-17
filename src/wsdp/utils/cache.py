@@ -83,6 +83,9 @@ def load_cache(cache_dir, cache_key):
 
 def save_cache(cache_dir, cache_key, processed_data, labels, groups, unique_labels):
     """Save large-array metadata and small label/group arrays."""
+    if isinstance(processed_data, ChunkedCSIArray) and not processed_data.disk_backed:
+        logger.debug("In-memory preprocessing result is not persisted to cache")
+        return
     try:
         os.makedirs(cache_dir, exist_ok=True)
         npy_path = os.path.join(cache_dir, f"{cache_key}.npy")
