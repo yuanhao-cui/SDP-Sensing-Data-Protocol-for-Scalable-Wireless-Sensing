@@ -3,11 +3,11 @@
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from pathlib import Path
 import shutil
-import tempfile
 
 import numpy as np
 
 from wsdp import readers
+from wsdp.structure import ChunkedCSIArray
 from wsdp.utils.resize import resize_csi_to_fixed_array
 
 
@@ -157,17 +157,23 @@ def preprocess_to_memmap(
     read_workers=8,
     max_shard_bytes=64 * 1024 * 1024,
 ):
-    """Process static, balanced file partitions into a disk-backed array.
+    """Process static file partitions into a directly readable shard set.
 
-    Every worker owns a disjoint file list and writes its own bounded shards.
-    Large processed arrays never travel back through process IPC; the parent
-    only receives metadata and merges the shards into one final ``.npy`` file.
+    Every worker owns a disjoint file list and writes bounded shards. The
+    parent creates only a small manifest, never a second full merged array.
     """
     storage_path = Path(storage_path)
     storage_path.parent.mkdir(parents=True, exist_ok=True)
-    shard_dir = Path(tempfile.mkdtemp(
-        prefix=f".{storage_path.stem}-shards-", dir=str(storage_path.parent)
-    ))
+    manifest_path = storage_path.with_suffix('.chunks.json')
+    shard_dir = storage_path.parent / f"{storage_path.stem}_chunks"
+
+    # Remove only artifacts owned by this output path, freeing stale data before
+    # requesting any new storage.
+    if shard_dir.exists():
+        shutil.rmtree(shard_dir)
+    shard_dir.mkdir()
+    storage_path.unlink(missing_ok=True)
+    manifest_path.unlink(missing_ok=True)
 
     files = readers._list_input_files(input_path)
     reader = readers.create_reader(reader_name)
@@ -181,6 +187,7 @@ def preprocess_to_memmap(
     sample_shape = None
     total_samples = 0
     skipped = 0
+    succeeded = False
 
     try:
         with ProcessPoolExecutor(max_workers=worker_count) as executor:
@@ -223,28 +230,26 @@ def preprocess_to_memmap(
             raise IOError(f"no valid CSI samples found in: {input_path}")
 
         dtype = np.result_type(*shard_dtypes)
-        output = np.lib.format.open_memmap(
-            storage_path,
-            mode="w+",
-            dtype=dtype,
-            shape=(total_samples, *sample_shape),
+        counts = [
+            len(np.load(shard_path, mmap_mode='r'))
+            for shard_path in shard_paths
+        ]
+        chunked = ChunkedCSIArray(
+            shard_paths,
+            counts,
+            (total_samples, *sample_shape),
+            dtype,
         )
-        offset = 0
-        for shard_path in shard_paths:
-            shard = np.load(shard_path, mmap_mode="r")
-            count = len(shard)
-            output[offset:offset + count] = shard
-            offset += count
-            del shard
-            shard_path.unlink()
-        output.flush()
-        del output
+        chunked.save_manifest(manifest_path)
 
         if skipped > 0:
             print(
                 f"[Info] skipped {skipped} file(s) "
                 f"(format mismatch for {reader_name} reader)"
             )
-        return np.load(storage_path, mmap_mode="r"), labels, groups
+        succeeded = True
+        return chunked, labels, groups
     finally:
-        shutil.rmtree(shard_dir, ignore_errors=True)
+        if not succeeded:
+            shutil.rmtree(shard_dir, ignore_errors=True)
+            manifest_path.unlink(missing_ok=True)

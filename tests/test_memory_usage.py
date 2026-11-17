@@ -136,8 +136,12 @@ def test_internal_processing_can_release_source_frames():
     assert csi_data.frames == []
 
 
-def test_streaming_preprocessing_returns_memmap(tmp_path):
+def test_streaming_preprocessing_reads_shards_without_final_merge(tmp_path):
+    from torch.utils.data import DataLoader
+
     from wsdp.processors.streaming import preprocess_to_memmap
+    from wsdp.structure import ChunkedCSIArray
+    from wsdp.utils.cache import load_cache, save_cache
 
     input_dir = tmp_path / "input"
     input_dir.mkdir()
@@ -156,12 +160,34 @@ def test_streaming_preprocessing_returns_memmap(tmp_path):
         read_workers=2,
     )
 
-    assert isinstance(processed, np.memmap)
+    assert isinstance(processed, ChunkedCSIArray)
     assert processed.shape == (2, 4, 30, 9)
     assert labels == [2, 2]
     assert sorted(groups) == [1, 2]
     np.testing.assert_array_equal(processed[0], 1 + 1j)
-    assert list(storage_path.parent.glob(".*-shards-*")) == []
+    assert not storage_path.exists()
+    assert storage_path.with_suffix('.chunks.json').is_file()
+    assert list((tmp_path / 'output' / 'processed_chunks').glob('*.npy'))
+
+    dataset = CSIDataset(
+        processed,
+        np.asarray(labels),
+        dataset_name='xrf55',
+        indices=np.array([1, 0]),
+    )
+    batches = list(DataLoader(dataset, batch_size=1, num_workers=2))
+    actual = np.concatenate([batch[0].numpy() for batch in batches])
+    np.testing.assert_array_equal(
+        actual, np.full((2, 4, 30, 9), np.sqrt(2), dtype=np.float32)
+    )
+
+    save_cache(
+        str(storage_path.parent), 'cached', processed,
+        np.asarray(labels), np.asarray(groups), [2],
+    )
+    cached = load_cache(str(storage_path.parent), 'cached')
+    assert isinstance(cached['processed_data'], ChunkedCSIArray)
+    np.testing.assert_array_equal(cached['processed_data'][:], processed[:])
 
 
 def test_memmap_dataset_pickle_reopens_file_instead_of_copying_data(tmp_path):
@@ -229,3 +255,35 @@ def test_static_file_partitions_are_disjoint_and_size_balanced(tmp_path):
     assert set(flattened) == set(files)
     assert len(set(flattened)) == len(files)
     assert max(weights) - min(weights) <= 1
+
+
+def test_chunked_xrf55_normalization_matches_contiguous_array(tmp_path):
+    from wsdp.structure import ChunkedCSIArray
+
+    source = np.arange(20 * 3 * 2, dtype=np.float64).reshape(20, 3, 2, 1) + 1
+    source = source * np.exp(1j * 0.2)
+    for shard_index, shard in enumerate((source[:12], source[12:])):
+        np.save(tmp_path / f"shard-{shard_index}.npy", shard)
+    chunked = ChunkedCSIArray(
+        [tmp_path / "shard-0.npy", tmp_path / "shard-1.npy"],
+        [12, 8],
+        source.shape,
+        source.dtype,
+    )
+    train_idx, _, _, protocol = _create_data_split_indices(
+        np.arange(20) % 5,
+        np.arange(1, 21),
+        0.3,
+        0.5,
+        7,
+        False,
+        dataset='xrf55',
+    )
+    steps = {'normalize': {'method': 'z-score'}}
+
+    expected = _fit_xrf55_normalization(source, train_idx, steps)
+    actual = _fit_xrf55_normalization(chunked, train_idx, steps)
+
+    assert protocol
+    np.testing.assert_allclose(actual['center'], expected['center'])
+    np.testing.assert_allclose(actual['scale'], expected['scale'])

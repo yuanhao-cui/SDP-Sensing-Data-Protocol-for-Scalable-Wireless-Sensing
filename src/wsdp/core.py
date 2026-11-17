@@ -14,6 +14,7 @@ from tqdm import tqdm
 from . import readers
 from .dataset_policy import uses_phase_amplitude
 from .datasets import CSIDataset
+from .structure import ChunkedCSIArray
 from .utils import load_params, train_model, resize_csi_to_fixed_array, load_custom_model
 from .utils.cache import get_cache_key, load_cache, save_cache
 from .processors.base_processor import BaseProcessor
@@ -529,7 +530,8 @@ def pipeline(
             save_cache(cache_dir, cache_key, processed_data, zero_indexed_labels,
                        zero_indexed_groups, unique_labels)
 
-    if start_method == "spawn" and not isinstance(processed_data, np.memmap):
+    disk_backed = isinstance(processed_data, (np.memmap, ChunkedCSIArray))
+    if start_method == "spawn" and not disk_backed:
         if num_workers is None:
             effective_num_workers = 0
         elif effective_num_workers > 0:

@@ -7,6 +7,8 @@ import logging
 
 import numpy as np
 
+from wsdp.structure import ChunkedCSIArray
+
 logger = logging.getLogger(__name__)
 
 
@@ -41,11 +43,12 @@ def get_cache_key(input_path, dataset, pad_len, preprocess_config=None):
 
 
 def load_cache(cache_dir, cache_key):
-    """Load cached data, mapping the large processed array from disk."""
+    """Load cached data without reading the large processed array into RAM."""
     if cache_dir is None or cache_key is None:
         return None
 
     npy_path = os.path.join(cache_dir, f"{cache_key}.npy")
+    manifest_path = os.path.join(cache_dir, f"{cache_key}.chunks.json")
     npz_path = os.path.join(cache_dir, f"{cache_key}.npz")
     json_path = os.path.join(cache_dir, f"{cache_key}.json")
     if not os.path.isfile(npz_path) or not os.path.isfile(json_path):
@@ -57,7 +60,9 @@ def load_cache(cache_dir, cache_key):
         with np.load(npz_path) as data:
             labels = data['labels']
             groups = data['groups']
-            if os.path.isfile(npy_path):
+            if os.path.isfile(manifest_path):
+                processed_data = ChunkedCSIArray.from_manifest(manifest_path)
+            elif os.path.isfile(npy_path):
                 processed_data = np.load(npy_path, mmap_mode='r')
             elif 'processed_data' in data:
                 # Backward compatibility with caches created before memmaps.
@@ -77,24 +82,30 @@ def load_cache(cache_dir, cache_key):
 
 
 def save_cache(cache_dir, cache_key, processed_data, labels, groups, unique_labels):
-    """Save a disk-mappable ``.npy`` array and small metadata files."""
+    """Save large-array metadata and small label/group arrays."""
     try:
         os.makedirs(cache_dir, exist_ok=True)
         npy_path = os.path.join(cache_dir, f"{cache_key}.npy")
+        manifest_path = os.path.join(cache_dir, f"{cache_key}.chunks.json")
         npz_path = os.path.join(cache_dir, f"{cache_key}.npz")
         json_path = os.path.join(cache_dir, f"{cache_key}.json")
 
-        source_path = getattr(processed_data, 'filename', None)
-        same_file = (
-            source_path is not None
-            and os.path.abspath(source_path) == os.path.abspath(npy_path)
-        )
-        if not same_file:
-            np.save(npy_path, processed_data)
+        if isinstance(processed_data, ChunkedCSIArray):
+            processed_data.save_manifest(manifest_path)
+        else:
+            source_path = getattr(processed_data, 'filename', None)
+            same_file = (
+                source_path is not None
+                and os.path.abspath(source_path) == os.path.abspath(npy_path)
+            )
+            if not same_file:
+                np.save(npy_path, processed_data)
+            if os.path.isfile(manifest_path):
+                os.remove(manifest_path)
         np.savez(npz_path, labels=labels, groups=groups)
         with open(json_path, 'w') as f:
             json.dump({'unique_labels': list(unique_labels)}, f)
 
-        logger.debug(f"Cache saved to {npy_path}")
+        logger.debug(f"Cache metadata saved in {cache_dir}")
     except Exception as e:
         logger.warning(f"Failed to save cache ({e}), continuing without caching")

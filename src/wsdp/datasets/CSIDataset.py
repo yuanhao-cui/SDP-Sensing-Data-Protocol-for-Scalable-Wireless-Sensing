@@ -7,6 +7,7 @@ from wsdp.dataset_policy import (
     pipeline_uses_zscore,
     uses_phase_amplitude,
 )
+from wsdp.structure import ChunkedCSIArray
 
 
 class CSIDataset(Dataset):
@@ -36,7 +37,11 @@ class CSIDataset(Dataset):
         indices=None,
         normalization=None,
     ):
-        self._data = np.asanyarray(data_list)
+        self._data = (
+            data_list
+            if isinstance(data_list, ChunkedCSIArray)
+            else np.asanyarray(data_list)
+        )
         self.labels = torch.from_numpy(np.asarray(labels)).long()
         self.indices = None if indices is None else np.asarray(indices, dtype=np.int64)
         self.dataset_name = dataset_name
