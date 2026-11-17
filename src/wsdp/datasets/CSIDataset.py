@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset
 
 from wsdp.dataset_policy import (
-    is_amplitude_primary_dataset,
+    convert_to_model_input,
     pipeline_uses_zscore,
     uses_phase_amplitude,
 )
@@ -89,25 +89,15 @@ class CSIDataset(Dataset):
         return self._to_tensor(self._convert_array(data))
 
     def _convert_array(self, data_array):
-        phase_dataset = uses_phase_amplitude(self.dataset_name)
-        phase_zscore = phase_dataset and pipeline_uses_zscore(self.pipeline_steps)
-
-        if phase_zscore:
-            result = data_array
-        elif phase_dataset and np.iscomplexobj(data_array):
-            # First A channels are amplitude; the next A channels are phase.
-            amplitude = np.abs(data_array)
-            phase = np.angle(data_array)
-            result = np.concatenate([amplitude, phase], axis=-1)
-        elif (
-            is_amplitude_primary_dataset(self.dataset_name)
-            and not np.iscomplexobj(data_array)
-        ):
-            # XRF55 train-split normalization produces signed real values.
+        if getattr(self._data, 'model_input', False):
+            # Shared preprocessing has already stored exactly what the model
+            # consumes. In particular, never take abs() of signed z-score
+            # amplitudes or phase channels a second time.
             result = data_array
         else:
-            # Amplitude-only datasets keep the historical magnitude path.
-            result = np.abs(data_array)
+            result = convert_to_model_input(
+                data_array, self.dataset_name, self.pipeline_steps
+            )
 
         if self.normalization is not None:
             result = (result - self.normalization["center"]) / self.normalization["scale"]

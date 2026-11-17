@@ -58,7 +58,11 @@ def phase_calibration(csi_data, subcarrier_indices: Optional[np.ndarray] = None,
             f"subcarriers F ({F})"
         )
 
-    csi_phase_corrected = np.zeros_like(csi_data, dtype=complex)
+    # Intel 5300 readers emit complex64. Preserve that precision instead of
+    # silently doubling the full sample to complex128; Python complex was the
+    # source of a substantial and unnecessary preprocessing memory increase.
+    output_dtype = np.result_type(csi_data.dtype, np.float32)
+    csi_phase_corrected = np.zeros_like(csi_data, dtype=output_dtype)
 
     for t in range(T):
         for a in range(A):

@@ -290,8 +290,8 @@ def test_chunked_xrf55_normalization_matches_contiguous_array(tmp_path):
     np.testing.assert_allclose(actual['scale'], expected['scale'])
 
 
-def test_auto_storage_uses_memory_when_processed_data_fits(tmp_path):
-    from unittest.mock import patch
+def test_shared_preprocessing_defers_padding_and_supports_spawned_loaders(tmp_path):
+    from torch.utils.data import DataLoader
 
     from wsdp.processors.streaming import preprocess_to_memmap
 
@@ -302,23 +302,102 @@ def test_auto_storage_uses_memory_when_processed_data_fits(tmp_path):
         values.tofile(input_dir / f"01_02_{index + 1:02d}.dat")
     storage_path = tmp_path / 'output' / 'processed.npy'
 
-    with patch('wsdp.processors.streaming._available_memory', return_value=10**12):
-        processed, labels, groups = preprocess_to_memmap(
-            str(input_dir),
-            'xrf55',
-            4,
-            ModularProcessor([], n_workers=1),
-            'xrf55',
-            storage_path,
-            read_workers=2,
-            storage_mode='auto',
-        )
+    processed, labels, groups = preprocess_to_memmap(
+        str(input_dir),
+        'xrf55',
+        300,
+        ModularProcessor([], n_workers=1),
+        'xrf55',
+        storage_path,
+        read_workers=2,
+        storage_mode='auto',
+    )
+    try:
+        assert processed.shared_backed
+        assert not processed.disk_backed
+        assert processed.dtype == np.float16
+        assert processed.shape == (2, 300, 30, 9)
+        assert processed.nbytes == 2 * 199 * 30 * 9 * 2
+        np.testing.assert_array_equal(processed.sample_lengths, [199, 199])
+        assert labels == [2, 2]
+        assert sorted(groups) == [1, 2]
+        assert list((tmp_path / 'output').rglob('*')) == []
 
-    assert not processed.disk_backed
-    assert processed.arrays is not None
-    assert processed.shape == (2, 4, 30, 9)
-    assert labels == [2, 2]
-    assert sorted(groups) == [1, 2]
-    assert not storage_path.exists()
-    assert not (tmp_path / 'output' / 'processed_chunks').exists()
-    np.testing.assert_array_equal(processed[:], np.ones((2, 4, 30, 9)) * (1 + 1j))
+        expected = np.zeros((300, 30, 9), dtype=np.float16)
+        expected[:199] = np.sqrt(2)
+        np.testing.assert_array_equal(processed[0], expected)
+
+        dataset = CSIDataset(
+            processed, np.asarray(labels), dataset_name='xrf55'
+        )
+        batches = list(DataLoader(dataset, batch_size=1, num_workers=2))
+        actual = np.concatenate([batch[0].numpy() for batch in batches])
+        np.testing.assert_array_equal(actual, np.stack([expected, expected]))
+    finally:
+        processed.close()
+
+
+def test_preconverted_phase_input_preserves_signed_channels():
+    from multiprocessing import shared_memory
+
+    from wsdp.structure import ChunkedCSIArray
+
+    values = np.array(
+        [[[1.0, -0.5]], [[-2.0, 0.25]]], dtype=np.float16
+    ).reshape(2, 1, 2)
+    handle = shared_memory.SharedMemory(create=True, size=values.nbytes)
+    packed = np.ndarray(values.shape, dtype=values.dtype, buffer=handle.buf)
+    packed[:] = values
+    del packed
+    data = ChunkedCSIArray(
+        shape=(1, 2, 1, 2),
+        dtype=values.dtype,
+        shared_blocks=[{
+            'name': handle.name,
+            'shape': values.shape,
+            'sample_lengths': [2],
+        }],
+        shared_handles=[handle],
+        model_input=True,
+    )
+    try:
+        dataset = CSIDataset(
+            data, np.array([1]), dataset_name='widar'
+        )
+        sample, _ = dataset[0]
+        assert sample.dtype == __import__('torch').float32
+        np.testing.assert_array_equal(sample.numpy(), values.astype(np.float32))
+    finally:
+        data.close()
+
+
+def test_intel5300_shared_result_stays_below_twice_raw_size(tmp_path):
+    from wsdp.processors.streaming import preprocess_to_memmap
+
+    input_dir = tmp_path / 'input'
+    input_dir.mkdir()
+    csi_len = (30 * (3 * 3 * 8 * 2 + 3) + 7) // 8
+    payload = bytearray(20 + csi_len)
+    payload[8:10] = bytes([3, 3])
+    payload[16:18] = csi_len.to_bytes(2, 'little')
+    record = (len(payload) + 1).to_bytes(2, 'big') + b'\xbb' + payload
+    source = input_dir / 'user1-2-1-1-1-r1.dat'
+    source.write_bytes(record * 2)
+
+    processed, labels, _ = preprocess_to_memmap(
+        str(input_dir),
+        'widar',
+        5,
+        ModularProcessor([], n_workers=1),
+        'widar',
+        None,
+    )
+    try:
+        assert processed.shape == (1, 5, 30, 18)
+        assert processed.dtype == np.float16
+        assert processed.nbytes == 2 * 30 * 18 * 2
+        assert processed.nbytes < 2 * source.stat().st_size
+        assert labels == [2]
+        np.testing.assert_array_equal(processed[0], 0)
+    finally:
+        processed.close()

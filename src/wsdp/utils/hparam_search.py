@@ -209,4 +209,6 @@ def run_hparam_search(
     logger.info("Best trial: %s", study.best_trial.params)
     logger.info("Best accuracy: %.4f", study.best_value)
 
+    if hasattr(processed_data, 'close'):
+        processed_data.close()
     return study

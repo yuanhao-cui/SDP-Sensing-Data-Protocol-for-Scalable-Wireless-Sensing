@@ -15,7 +15,7 @@ from . import readers
 from .dataset_policy import uses_phase_amplitude
 from .datasets import CSIDataset
 from .structure import ChunkedCSIArray
-from .utils import load_params, train_model, resize_csi_to_fixed_array, load_custom_model
+from .utils import load_params, train_model, load_custom_model
 from .utils.cache import get_cache_key, load_cache, save_cache
 from .processors.base_processor import BaseProcessor
 from .processors import ConfigurableProcessor
@@ -40,7 +40,8 @@ def _load_and_preprocess(
     pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
     reader: Optional[str] = None,
     storage_path: Optional[str] = None,
-    storage_mode: str = "auto",
+    storage_mode: str = "memory",
+    storage_dtype: str = "float16",
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """Load CSI data, run processing pipeline, and return arrays ready for splitting.
 
@@ -55,28 +56,20 @@ def _load_and_preprocess(
     else:
         processor = ConfigurableProcessor(pipeline_steps)
 
-    if storage_path is not None:
-        from .processors.streaming import preprocess_to_memmap
+    # Direct callers get the same bounded implementation; no storage path is
+    # needed because the default result lives in shared memory, not a file.
+    from .processors.streaming import preprocess_to_memmap
 
-        processed_data, labels, groups = preprocess_to_memmap(
-            input_path,
-            dataset,
-            pad_len,
-            processor,
-            reader_name,
-            storage_path,
-            storage_mode=storage_mode,
-        )
-    else:
-        # Compatibility path for direct callers that do not provide storage.
-        csi_data_list = readers.load_data(input_path, reader_name)
-        res = processor.process(csi_data_list, dataset=dataset, release_inputs=True)
-        unadjusted_data = res[0]
-        processed_data = resize_csi_to_fixed_array(
-            unadjusted_data, target_length=pad_len
-        )
-        labels = res[1]
-        groups = res[2]
+    processed_data, labels, groups = preprocess_to_memmap(
+        input_path,
+        dataset,
+        pad_len,
+        processor,
+        reader_name,
+        storage_path,
+        storage_mode=storage_mode,
+        storage_dtype=storage_dtype,
+    )
 
     logger.info(f"processed_data's shape: {processed_data.shape}")
 
@@ -244,7 +237,9 @@ def _create_xrf55_repetition_indices(
 
 def _iter_training_chunks(processed_data, train_indices, max_chunk_bytes=64 * 1024 * 1024):
     """Yield small advanced-indexing chunks for train-only statistics."""
-    sample_nbytes = int(processed_data[0].nbytes) if processed_data.size else 0
+    sample_nbytes = getattr(processed_data, 'sample_nbytes', None)
+    if sample_nbytes is None:
+        sample_nbytes = int(processed_data[0].nbytes) if processed_data.size else 0
     chunk_size = max(1, max_chunk_bytes // max(1, sample_nbytes))
     for start in range(0, len(train_indices), chunk_size):
         yield np.abs(processed_data[train_indices[start:start + chunk_size]])
@@ -389,7 +384,8 @@ def pipeline(
     num_workers: Optional[int] = None,
     progress_callback: Optional[Callable] = None,
     use_cache: bool = True,
-    storage_mode: str = "auto",
+    storage_mode: str = "memory",
+    storage_dtype: str = "float16",
 ) -> None:
     """
     Run the full CSI classification pipeline.
@@ -415,13 +411,18 @@ def pipeline(
         val_split: Fraction of held-out data used for validation (default 0.5)
         num_seeds: Number of random seeds to run (default 5)
         config_file: Optional YAML config file to load parameters from
-        num_workers: Number of DataLoader workers. When None, uses up to 8
-            workers. Memmap-backed data is shared by file path; non-memmap data
-            falls back to 0 with spawn multiprocessing to avoid full copies.
+        num_workers: Number of DataLoader workers. When None, uses up to 8.
+            Shared-memory and memmap-backed data support spawned workers without
+            copying the source arrays.
         progress_callback: Optional callable invoked after each training epoch with a dict of metrics
-        use_cache: If True, cache disk-backed preprocessed data for repeated runs
-        storage_mode: ``auto`` estimates processed size and uses memory when it
-            fits within 70% of available RAM; ``memory`` and ``disk`` force a mode.
+        use_cache: Cache only when ``storage_mode='disk'`` is explicitly chosen.
+            Default shared-memory preprocessing never creates cache files.
+        storage_mode: Default ``memory`` stores compact real samples in shared
+            memory. ``auto`` is a compatibility alias for ``memory``; ``disk``
+            is an explicit opt-in for the legacy disk-shard representation.
+        storage_dtype: Shared-result precision, default ``float16``. Batches
+            are converted to float32 for training. Use ``float32`` when storage
+            precision is more important than the roughly 2x Intel raw-size goal.
     """
     ipath = input_path
     os.makedirs(output_folder, exist_ok=True)
@@ -477,11 +478,15 @@ def pipeline(
 
     logger.info(f"Hyperparameters: batch={batch}, lr={lr}, wd={wd}, epochs={num_epochs_val}, pad={pad_len}")
 
-    # begin to preprocess, training and eval
+    # begin to preprocess, training and eval. Disk caching is strictly opt-in;
+    # the default shared-memory path neither reads nor writes processed caches.
+    cache_enabled = use_cache and storage_mode == 'disk'
+    if use_cache and not cache_enabled:
+        logger.info("Shared-memory preprocessing keeps caching disabled")
     cache_dir = os.path.join(output_folder, '.wsdp_cache')
     cached_result = None
     cache_key = None
-    if use_cache:
+    if cache_enabled:
         # XRF55 now stores repetition_id as the split group. Add a version marker
         # so old caches with user_id groups are not reused by accident.
         cache_preprocess_config = resolved_pipeline_steps
@@ -516,9 +521,8 @@ def pipeline(
         zero_indexed_groups = cached_result['groups']
         unique_labels = cached_result['unique_labels']
     else:
-        if use_cache:
+        if cache_enabled:
             logger.info("Cache miss: processing data from scratch")
-        if use_cache and cache_key is not None:
             storage_path = os.path.join(cache_dir, f"{cache_key}.npy")
         else:
             storage_path = str(opath / ".wsdp_stream" / "processed.npy")
@@ -531,21 +535,25 @@ def pipeline(
                 reader=reader,
                 storage_path=storage_path,
                 storage_mode=storage_mode,
+                storage_dtype=storage_dtype,
             )
-        if use_cache and cache_key is not None:
+        if cache_enabled:
             save_cache(cache_dir, cache_key, processed_data, zero_indexed_labels,
                        zero_indexed_groups, unique_labels)
 
     disk_backed = isinstance(processed_data, np.memmap) or (
         isinstance(processed_data, ChunkedCSIArray) and processed_data.disk_backed
     )
-    if start_method == "spawn" and not disk_backed:
+    shared_backed = (
+        isinstance(processed_data, ChunkedCSIArray) and processed_data.shared_backed
+    )
+    if start_method == "spawn" and not disk_backed and not shared_backed:
         if num_workers is None:
             effective_num_workers = 0
         elif effective_num_workers > 0:
             logger.warning(
-                "Spawned DataLoader workers duplicate non-memmap source arrays; "
-                "use num_workers=0 or enable disk-backed preprocessing."
+                "Spawned DataLoader workers duplicate ordinary in-memory arrays; "
+                "use num_workers=0 for externally supplied dense arrays."
             )
 
     logger.info(f"the following {num_seeds} seeds will be used: {random_seeds}")
@@ -728,3 +736,5 @@ def pipeline(
     )
 
     logger.info("All pipeline complete")
+    if hasattr(processed_data, 'close'):
+        processed_data.close()

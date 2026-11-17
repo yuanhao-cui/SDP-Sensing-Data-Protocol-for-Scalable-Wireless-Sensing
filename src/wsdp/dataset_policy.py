@@ -34,3 +34,43 @@ def real_if_negligible_imaginary(csi, dataset: str, atol: float = 1e-10):
     if imag_part.size == 0 or np.max(np.abs(imag_part)) < atol:
         return np.real(csi)
     return csi
+
+
+def convert_to_model_input(csi, dataset: str, pipeline_steps=None, output_dtype=None):
+    """Convert a sample to the real representation consumed by the model.
+
+    ``output_dtype`` is used by compact shared storage. External callers leave
+    it unset to preserve normalization-before-tensor-conversion numerics.
+    """
+    data = np.asarray(csi)
+    phase_dataset = uses_phase_amplitude(dataset)
+    phase_zscore = phase_dataset and pipeline_uses_zscore(pipeline_steps)
+
+    if phase_zscore:
+        if np.iscomplexobj(data):
+            raise RuntimeError(
+                "Widar/Gait z-score input must be converted to real "
+                "amplitude-phase channels by ConfigurableProcessor"
+            )
+        result = data
+    elif phase_dataset and np.iscomplexobj(data):
+        antenna_count = data.shape[-1]
+        result = np.empty(
+            (*data.shape[:-1], antenna_count * 2),
+            dtype=output_dtype or np.float32,
+        )
+        np.abs(data, out=result[..., :antenna_count])
+        np.arctan2(
+            data.imag,
+            data.real,
+            out=result[..., antenna_count:],
+        )
+    elif is_amplitude_primary_dataset(dataset) and not np.iscomplexobj(data):
+        # XRF55 train-split normalization can contain signed real values.
+        result = data
+    else:
+        result = np.abs(data)
+
+    if output_dtype is not None:
+        return result.astype(output_dtype, copy=False)
+    return result
