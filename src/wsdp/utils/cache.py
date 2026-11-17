@@ -41,29 +41,34 @@ def get_cache_key(input_path, dataset, pad_len, preprocess_config=None):
 
 
 def load_cache(cache_dir, cache_key):
-    """Load cached preprocessed data if available.
-
-    Returns a dict with keys (processed_data, labels, groups, unique_labels)
-    or None on cache miss / stale cache.
-    """
+    """Load cached data, mapping the large processed array from disk."""
     if cache_dir is None or cache_key is None:
         return None
 
+    npy_path = os.path.join(cache_dir, f"{cache_key}.npy")
     npz_path = os.path.join(cache_dir, f"{cache_key}.npz")
     json_path = os.path.join(cache_dir, f"{cache_key}.json")
-
     if not os.path.isfile(npz_path) or not os.path.isfile(json_path):
         return None
 
     try:
-        data = np.load(npz_path)
         with open(json_path, 'r') as f:
             meta = json.load(f)
-        logger.debug(f"Cache loaded from {npz_path}")
+        with np.load(npz_path) as data:
+            labels = data['labels']
+            groups = data['groups']
+            if os.path.isfile(npy_path):
+                processed_data = np.load(npy_path, mmap_mode='r')
+            elif 'processed_data' in data:
+                # Backward compatibility with caches created before memmaps.
+                processed_data = data['processed_data']
+            else:
+                return None
+        logger.debug(f"Cache loaded from {cache_dir}")
         return {
-            'processed_data': data['processed_data'],
-            'labels': data['labels'],
-            'groups': data['groups'],
+            'processed_data': processed_data,
+            'labels': labels,
+            'groups': groups,
             'unique_labels': meta['unique_labels'],
         }
     except Exception as e:
@@ -72,19 +77,24 @@ def load_cache(cache_dir, cache_key):
 
 
 def save_cache(cache_dir, cache_key, processed_data, labels, groups, unique_labels):
-    """Save preprocessed data to cache.
-
-    Stores a .npz file for arrays and a .json sidecar for unique_labels.
-    """
+    """Save a disk-mappable ``.npy`` array and small metadata files."""
     try:
         os.makedirs(cache_dir, exist_ok=True)
+        npy_path = os.path.join(cache_dir, f"{cache_key}.npy")
         npz_path = os.path.join(cache_dir, f"{cache_key}.npz")
         json_path = os.path.join(cache_dir, f"{cache_key}.json")
 
-        np.savez(npz_path, processed_data=processed_data, labels=labels, groups=groups)
+        source_path = getattr(processed_data, 'filename', None)
+        same_file = (
+            source_path is not None
+            and os.path.abspath(source_path) == os.path.abspath(npy_path)
+        )
+        if not same_file:
+            np.save(npy_path, processed_data)
+        np.savez(npz_path, labels=labels, groups=groups)
         with open(json_path, 'w') as f:
             json.dump({'unique_labels': list(unique_labels)}, f)
 
-        logger.debug(f"Cache saved to {npz_path}")
+        logger.debug(f"Cache saved to {npy_path}")
     except Exception as e:
         logger.warning(f"Failed to save cache ({e}), continuing without caching")

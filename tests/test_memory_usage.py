@@ -134,3 +134,83 @@ def test_internal_processing_can_release_source_frames():
     assert len(data) == 1
     assert labels == [2]
     assert csi_data.frames == []
+
+
+def test_streaming_preprocessing_returns_memmap(tmp_path):
+    from unittest.mock import patch
+
+    from wsdp.processors.streaming import preprocess_to_memmap
+
+    samples = []
+    for index in range(5):
+        csi_data = CSIData(f"user1_2_{index + 1:02d}.dat")
+        for timestamp in range(2):
+            csi_data.add_frame(BaseFrame(
+                timestamp=timestamp,
+                csi_array=np.full((2, 1), index + 1, dtype=np.complex64),
+            ))
+        samples.append(csi_data)
+
+    storage_path = tmp_path / "processed.npy"
+    with patch("wsdp.readers.iter_data", return_value=iter(samples)):
+        processed, labels, groups = preprocess_to_memmap(
+            "unused",
+            "xrf55",
+            4,
+            ModularProcessor([], n_workers=1),
+            "xrf55",
+            storage_path,
+            batch_size=2,
+        )
+
+    assert isinstance(processed, np.memmap)
+    assert processed.shape == (5, 4, 2, 1)
+    assert len(labels) == len(groups) == 5
+    np.testing.assert_array_equal(processed[0, :2], 1)
+    np.testing.assert_array_equal(processed[0, 2:], 0)
+    assert list(tmp_path.glob(".*-shards-*")) == []
+
+
+def test_memmap_dataset_pickle_reopens_file_instead_of_copying_data(tmp_path):
+    import pickle
+
+    source = np.arange(48, dtype=np.float32).reshape(4, 3, 2, 2)
+    source_path = tmp_path / "source.npy"
+    np.save(source_path, source)
+    mapped = np.load(source_path, mmap_mode="r")
+    dataset = CSIDataset(
+        mapped,
+        np.arange(4),
+        dataset_name="xrf55",
+        indices=np.array([3, 1]),
+    )
+
+    assert dataset.__getstate__()["_data"] is None
+    payload = pickle.dumps(dataset)
+    restored = pickle.loads(payload)
+
+    assert isinstance(restored._data, np.memmap)
+    assert str(restored._data.filename) == str(source_path)
+    np.testing.assert_array_equal(restored.data_list.numpy(), source[[3, 1]])
+
+    from torch.utils.data import DataLoader
+
+    batches = list(DataLoader(dataset, batch_size=1, num_workers=2))
+    actual = np.concatenate([batch[0].numpy() for batch in batches])
+    np.testing.assert_array_equal(actual, source[[3, 1]])
+
+
+def test_cache_round_trip_uses_memmap(tmp_path):
+    from wsdp.utils.cache import load_cache, save_cache
+
+    source = np.arange(24, dtype=np.float32).reshape(2, 3, 2, 2)
+    labels = np.array([0, 1])
+    groups = np.array([1, 2])
+    save_cache(str(tmp_path), "small", source, labels, groups, [0, 1])
+
+    loaded = load_cache(str(tmp_path), "small")
+
+    assert isinstance(loaded["processed_data"], np.memmap)
+    np.testing.assert_array_equal(loaded["processed_data"], source)
+    np.testing.assert_array_equal(loaded["labels"], labels)
+    np.testing.assert_array_equal(loaded["groups"], groups)

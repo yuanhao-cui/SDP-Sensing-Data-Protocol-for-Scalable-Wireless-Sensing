@@ -36,7 +36,7 @@ class CSIDataset(Dataset):
         indices=None,
         normalization=None,
     ):
-        self._data = np.asarray(data_list)
+        self._data = np.asanyarray(data_list)
         self.labels = torch.from_numpy(np.asarray(labels)).long()
         self.indices = None if indices is None else np.asarray(indices, dtype=np.int64)
         self.dataset_name = dataset_name
@@ -58,6 +58,20 @@ class CSIDataset(Dataset):
         if phase_dataset and not phase_zscore and np.iscomplexobj(self._data):
             sample_shape[-1] *= 2
         self.input_shape = tuple(sample_shape)
+
+    def __getstate__(self):
+        """Pickle a memmap by path so spawned workers do not copy its data."""
+        state = self.__dict__.copy()
+        if isinstance(self._data, np.memmap):
+            state['_data'] = None
+            state['_data_mmap_path'] = self._data.filename
+        return state
+
+    def __setstate__(self, state):
+        mmap_path = state.pop('_data_mmap_path', None)
+        if mmap_path is not None:
+            state['_data'] = np.load(mmap_path, mmap_mode='r')
+        self.__dict__.update(state)
 
     @property
     def data_list(self):

@@ -109,9 +109,14 @@ class XrfReader(BaseReader):
             print(f"reshape failed for {file_path}: {e}")
             return []
 
-        I_data = pkt_array[:, :, 0].astype(np.float32)
-        Q_data = pkt_array[:, :, 1].astype(np.float32)
-        csi_complex = I_data + 1j * Q_data  # (n_packets, 270)
+        # Convert int16 I/Q directly into the final complex64 buffer. Creating
+        # separate float32 I/Q arrays and an arithmetic expression would keep
+        # several additional full-file copies alive at once.
+        csi_complex = np.empty(
+            (n_packets, self.XRF55_DAT_COMPLEX), dtype=np.complex64
+        )
+        csi_complex.real = pkt_array[:, :, 0]
+        csi_complex.imag = pkt_array[:, :, 1]
 
         # Parse labels from path: .../Scene_X/{lb|nb}/YY/YY_AA_BB.dat
         parts = file_path.split(os.sep)
@@ -160,7 +165,7 @@ class XrfReader(BaseReader):
     def _read_npy(self, file_path) -> List[CSIData]:
         """Read legacy .npy format."""
         try:
-            raw_data = np.load(file_path)
+            raw_data = np.load(file_path, mmap_mode='r')
         except FileNotFoundError:
             print(f"cannot find file: {file_path}")
             return []

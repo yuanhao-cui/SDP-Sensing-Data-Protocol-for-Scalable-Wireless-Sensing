@@ -66,3 +66,43 @@ class TestReaderMetadata:
             meta = get_all_reader_metadata(ds)
             assert "reader" in meta
             assert "format" in meta
+
+
+def test_xrf_dat_direct_complex64_conversion_preserves_values(tmp_path):
+    rng = np.random.default_rng(7)
+    values = rng.integers(
+        -100,
+        100,
+        size=XrfReader.XRF55_DAT_HEADER + 199 * 270 * 2,
+        dtype=np.int16,
+    )
+    file_path = tmp_path / "01_02_03.dat"
+    values.tofile(file_path)
+
+    result = XrfReader().read_file(str(file_path))
+
+    assert len(result) == 1
+    assert len(result[0].frames) == 199
+    actual = result[0].frames[0].csi_array
+    payload = values[XrfReader.XRF55_DAT_HEADER:].reshape(199, 270, 2)
+    expected = (
+        payload[0, :, 0].astype(np.float32)
+        + 1j * payload[0, :, 1].astype(np.float32)
+    ).reshape(3, 3, 30).transpose(2, 0, 1).reshape(30, 9)
+    assert actual.dtype == np.complex64
+    np.testing.assert_array_equal(actual, expected)
+
+
+def test_iter_data_uses_bounded_multiprocess_reading(tmp_path):
+    from wsdp.readers import iter_data
+
+    values = np.ones(40 + 199 * 270 * 2, dtype=np.int16)
+    for index in range(2):
+        values.tofile(tmp_path / f"01_02_{index + 1:02d}.dat")
+
+    samples = list(iter_data(
+        str(tmp_path), "xrf55", n_workers=2, max_pending=2
+    ))
+
+    assert len(samples) == 2
+    assert all(len(sample.frames) == 199 for sample in samples)

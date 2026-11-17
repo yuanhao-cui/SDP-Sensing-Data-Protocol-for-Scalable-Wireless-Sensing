@@ -43,43 +43,35 @@ class ZTEReader(BaseReader):
     def read_file(self, file_path: str) -> CSIData:
         ret = CSIData(file_path)
 
-        df = pd.read_csv(file_path)
-
+        i_cols = [f'csi_i_{k}' for k in range(512)]
+        q_cols = [f'csi_q_{k}' for k in range(512)]
+        iq_dtypes = {column: np.float32 for column in i_cols + q_cols}
+        df = pd.read_csv(file_path, dtype=iq_dtypes)
         df = df[df['rx_chain_num'].str.endswith('tx0')].copy()
 
         if df.empty:
             print("warning: cannot found tx0 in file.")
             return ret
 
-        df['rx_idx'] = df['rx_chain_num'].apply(lambda x: int(x.split('-')[0].replace('rx', '')))
+        rx_indices = df['rx_chain_num'].apply(
+            lambda x: int(x.split('-')[0].replace('rx', ''))
+        ).to_numpy()
+        data_i = df[i_cols].to_numpy(dtype=np.float32, copy=True)
+        data_q = df[q_cols].to_numpy(dtype=np.float32, copy=True)
 
-        i_cols = [f'csi_i_{k}' for k in range(512)]
-        q_cols = [f'csi_q_{k}' for k in range(512)]
-
-        data_i = df[i_cols].values  # shape: (N_rows, 512)
-        data_q = df[q_cols].values  # shape: (N_rows, 512)
-
-        complex_data = data_i + 1j * data_q
-
-        df['complex_vector'] = list(complex_data)
-
-        grouped = df.groupby('timestamp')
+        # Build complex64 directly instead of temporarily creating complex128.
+        complex_data = np.empty(data_i.shape, dtype=np.complex64)
+        complex_data.real = data_i
+        complex_data.imag = data_q
 
         frames_list = []
-
-        for ts, group in grouped:
+        for ts, row_indices in df.groupby('timestamp').indices.items():
             frame_matrix = np.zeros((512, 3), dtype=np.complex64)
-
-            for _, row in group.iterrows():
-                rx_id = row['rx_idx']
-                c_vector = row['complex_vector']
-
-                if 0 <= rx_id < 3:
-                    frame_matrix[:, rx_id] = c_vector
-
-            frame = BaseFrame(timestamp=ts, csi_array=frame_matrix)
-            frames_list.append(frame)
+            frame_rx = rx_indices[row_indices]
+            valid = (frame_rx >= 0) & (frame_rx < 3)
+            if np.any(valid):
+                frame_matrix[:, frame_rx[valid]] = complex_data[row_indices[valid]].T
+            frames_list.append(BaseFrame(timestamp=ts, csi_array=frame_matrix))
 
         ret.frames = frames_list
-
         return ret

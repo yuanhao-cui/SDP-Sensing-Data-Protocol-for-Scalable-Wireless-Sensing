@@ -64,7 +64,7 @@ def benchmark_model(model_name, model_class, processed_data, labels, groups,
                 indices=test_idx, normalization=normalization,
             )
 
-            nw = 0
+            nw = min(os.cpu_count() or 1, 8)
             train_loader = DataLoader(train_dataset, batch_size=batch_size, num_workers=nw, shuffle=True)
             val_loader = DataLoader(val_dataset, batch_size=batch_size, num_workers=nw, shuffle=False)
             test_loader = DataLoader(test_dataset, batch_size=batch_size, num_workers=nw, shuffle=False)
@@ -133,7 +133,10 @@ def main():
     print(f"Loading and preprocessing {args.dataset} data (pad_len={pad_len})...")
 
     processed_data, labels, groups, unique_labels = _load_and_preprocess(
-        args.input_path, args.dataset, pad_len
+        args.input_path,
+        args.dataset,
+        pad_len,
+        storage_path=os.path.join(args.output_base, ".wsdp_stream", "processed.npy"),
     )
     num_classes = len(unique_labels)
     print(f"Loaded: {len(processed_data)} samples, {num_classes} classes, "

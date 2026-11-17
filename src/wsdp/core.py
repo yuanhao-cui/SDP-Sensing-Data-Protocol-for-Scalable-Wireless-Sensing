@@ -38,6 +38,7 @@ def _load_and_preprocess(
     pad_len: int,
     pipeline_steps: Optional[Dict[str, Dict[str, Any]]] = None,
     reader: Optional[str] = None,
+    storage_path: Optional[str] = None,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """Load CSI data, run processing pipeline, and return arrays ready for splitting.
 
@@ -47,20 +48,34 @@ def _load_and_preprocess(
         unmodified because ``_create_xrf55_repetition_split`` keys on them.
     """
     reader_name = reader or dataset
-    csi_data_list = readers.load_data(input_path, reader_name)
-
     if pipeline_steps is None:
         processor = BaseProcessor()
     else:
         processor = ConfigurableProcessor(pipeline_steps)
-    res = processor.process(csi_data_list, dataset=dataset, release_inputs=True)
 
-    unadjusted_data = res[0]
-    processed_data = resize_csi_to_fixed_array(unadjusted_data, target_length=pad_len)
+    if storage_path is not None:
+        from .processors.streaming import preprocess_to_memmap
+
+        processed_data, labels, groups = preprocess_to_memmap(
+            input_path,
+            dataset,
+            pad_len,
+            processor,
+            reader_name,
+            storage_path,
+        )
+    else:
+        # Compatibility path for direct callers that do not provide storage.
+        csi_data_list = readers.load_data(input_path, reader_name)
+        res = processor.process(csi_data_list, dataset=dataset, release_inputs=True)
+        unadjusted_data = res[0]
+        processed_data = resize_csi_to_fixed_array(
+            unadjusted_data, target_length=pad_len
+        )
+        labels = res[1]
+        groups = res[2]
+
     logger.info(f"processed_data's shape: {processed_data.shape}")
-
-    labels = res[1]
-    groups = res[2]
 
     unique_labels = sorted(list(set(labels)))
     label_map = {label: i for i, label in enumerate(unique_labels)}
@@ -396,9 +411,9 @@ def pipeline(
         val_split: Fraction of held-out data used for validation (default 0.5)
         num_seeds: Number of random seeds to run (default 5)
         config_file: Optional YAML config file to load parameters from
-        num_workers: Number of DataLoader workers. When None, uses 0 with spawn
-            multiprocessing (Windows/macOS) to avoid full dataset copies, and
-            up to 8 workers with fork-based multiprocessing.
+        num_workers: Number of DataLoader workers. When None, uses up to 8
+            workers. Memmap-backed data is shared by file path; non-memmap data
+            falls back to 0 with spawn multiprocessing to avoid full copies.
         progress_callback: Optional callable invoked after each training epoch with a dict of metrics
         use_cache: If True, cache preprocessed data to avoid re-processing on repeated runs (default True)
     """
@@ -407,19 +422,10 @@ def pipeline(
     opath = Path(output_folder)
     dataset_name = dataset
 
-    # Spawned DataLoader workers pickle the complete dataset on Windows/macOS.
-    # Default to in-process loading there to avoid one full copy per worker.
     start_method = mp.get_start_method()
     effective_num_workers = (
-        num_workers
-        if num_workers is not None
-        else (0 if start_method == "spawn" else min(os.cpu_count() or 1, 8))
+        num_workers if num_workers is not None else min(os.cpu_count() or 1, 8)
     )
-    if start_method == "spawn" and effective_num_workers > 0:
-        logger.warning(
-            "Spawned DataLoader workers duplicate the source array in each "
-            "process; use num_workers=0 for memory-bounded training."
-        )
 
     model_kwargs = model_kwargs or {}
     resolved_pipeline_steps = _resolve_pipeline_steps(
@@ -506,6 +512,10 @@ def pipeline(
     else:
         if use_cache:
             logger.info("Cache miss: processing data from scratch")
+        if use_cache and cache_key is not None:
+            storage_path = os.path.join(cache_dir, f"{cache_key}.npy")
+        else:
+            storage_path = str(opath / ".wsdp_stream" / "processed.npy")
         processed_data, zero_indexed_labels, zero_indexed_groups, unique_labels = \
             _load_and_preprocess(
                 ipath,
@@ -513,10 +523,20 @@ def pipeline(
                 pad_len,
                 pipeline_steps=resolved_pipeline_steps,
                 reader=reader,
+                storage_path=storage_path,
             )
         if use_cache and cache_key is not None:
             save_cache(cache_dir, cache_key, processed_data, zero_indexed_labels,
                        zero_indexed_groups, unique_labels)
+
+    if start_method == "spawn" and not isinstance(processed_data, np.memmap):
+        if num_workers is None:
+            effective_num_workers = 0
+        elif effective_num_workers > 0:
+            logger.warning(
+                "Spawned DataLoader workers duplicate non-memmap source arrays; "
+                "use num_workers=0 or enable disk-backed preprocessing."
+            )
 
     logger.info(f"the following {num_seeds} seeds will be used: {random_seeds}")
 

@@ -4,6 +4,7 @@ Requires `optuna <https://optuna.org>`_ (``pip install optuna``).
 """
 
 import logging
+import os
 from pathlib import Path
 from typing import Callable, Optional
 
@@ -114,7 +115,10 @@ def run_hparam_search(
     # Pre-load data once (expensive I/O) and reuse across trials.
     logger.info("Loading and preprocessing data for hparam search ...")
     processed_data, labels, groups, unique_labels = _load_and_preprocess(
-        input_path, dataset, padding_length
+        input_path,
+        dataset,
+        padding_length,
+        storage_path=str(output_path / ".wsdp_stream" / "processed.npy"),
     )
     num_classes = len(unique_labels)
 
@@ -147,21 +151,21 @@ def run_hparam_search(
                 processed_data, labels, dataset_name=dataset,
                 indices=train_idx, normalization=normalization,
             ),
-            batch_size=batch_size, shuffle=True,
+            batch_size=batch_size, num_workers=min(os.cpu_count() or 1, 8), shuffle=True,
         )
         val_loader = DataLoader(
             CSIDataset(
                 processed_data, labels, dataset_name=dataset,
                 indices=val_idx, normalization=normalization,
             ),
-            batch_size=batch_size, shuffle=False,
+            batch_size=batch_size, num_workers=min(os.cpu_count() or 1, 8), shuffle=False,
         )
         test_loader = DataLoader(
             CSIDataset(
                 processed_data, labels, dataset_name=dataset,
                 indices=test_idx, normalization=normalization,
             ),
-            batch_size=batch_size, shuffle=False,
+            batch_size=batch_size, num_workers=min(os.cpu_count() or 1, 8), shuffle=False,
         )
 
         # Model, optimiser, scheduler

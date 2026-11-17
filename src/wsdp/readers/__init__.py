@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-from concurrent.futures import ProcessPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ProcessPoolExecutor, wait
 from pathlib import Path
-from typing import List, Type
+from typing import Iterator, List, Type
 
 from wsdp.structure import CSIData
 from .base import BaseReader
@@ -69,35 +69,19 @@ def get_reader_class(dataset: str) -> Type[BaseReader]:
 
 
 def list_datasets() -> List[str]:
-    """
-    List all available dataset names.
-
-    Returns:
-        list: sorted list of dataset names
-    """
+    """Return sorted names of all registered datasets."""
     return sorted(_READER_REGISTRY.keys())
 
 
 def get_all_reader_metadata(dataset: str) -> dict:
-    """
-    Get metadata from the reader for a specific dataset.
-
-    Args:
-        dataset: Dataset name
-
-    Returns:
-        dict: Reader metadata
-    """
+    """Get metadata from the reader for a specific dataset."""
     reader = create_reader(dataset)
     return reader.get_metadata()
 
 
 def _process_file(reader: BaseReader, file_path: Path) -> tuple[str, list[CSIData], str | None]:
-    """
-    process function for concurrent reading
-    """
+    """Read one file in a worker process."""
     try:
-        # Sniff: skip files that don't match this reader's format
         if not reader.sniff(str(file_path)):
             return file_path.name, [], "format_mismatch"
         data = reader.read_file(str(file_path))
@@ -106,34 +90,71 @@ def _process_file(reader: BaseReader, file_path: Path) -> tuple[str, list[CSIDat
         return file_path.name, [], str(e)
 
 
-def load_data(file_path: str, dataset: str) -> List[CSIData]:
+def _list_input_files(file_path: str) -> list[Path]:
     input_path = Path(file_path)
     if not input_path.exists() or not input_path.is_dir():
         raise ValueError(f"invalid file path: {input_path}")
     files = [f for f in input_path.rglob("*") if f.is_file() and "truth" not in f.name]
     if not files:
         raise IOError(f"no file in folder: {input_path}")
+    return files
 
+
+def iter_data(
+    file_path: str,
+    dataset: str,
+    *,
+    n_workers: int = 16,
+    max_pending: int | None = None,
+) -> Iterator[CSIData]:
+    """Yield CSI samples using a bounded number of in-flight file reads."""
+    files = _list_input_files(file_path)
     reader = create_reader(dataset)
-    csi_data_list: list[CSIData] = []
+    worker_count = max(1, n_workers)
+    pending_limit = max_pending or worker_count * 2
+    pending_limit = max(1, pending_limit)
     skipped = 0
 
-    with ProcessPoolExecutor(max_workers=16) as executor:
-        futures = {executor.submit(_process_file, reader, file_path): file_path for file_path in files}
-        for future in as_completed(futures):
-            file_name, data, err = future.result()
-            if err is None:
-                csi_data_list.extend(data)
-                print(f"√ processed: {file_name}\n")
-            elif err == "format_mismatch":
-                skipped += 1
-            else:
-                print(f"× unable to process {file_name}: {err}\n")
+    with ProcessPoolExecutor(max_workers=worker_count) as executor:
+        pending = {}
+        next_index = 0
+        while next_index < len(files) and len(pending) < pending_limit:
+            future = executor.submit(_process_file, reader, files[next_index])
+            pending[future] = files[next_index]
+            next_index += 1
+
+        while pending:
+            done, _ = wait(pending, return_when=FIRST_COMPLETED)
+            for future in done:
+                file_path_obj = pending.pop(future)
+                file_name, data, err = future.result()
+                if err is None:
+                    for sample in data:
+                        yield sample
+                    if data:
+                        print(f"√ processed: {file_name}\n")
+                elif err == "format_mismatch":
+                    skipped += 1
+                else:
+                    print(f"× unable to process {file_name}: {err}\n")
+
+                if next_index < len(files):
+                    next_future = executor.submit(
+                        _process_file, reader, files[next_index]
+                    )
+                    pending[next_future] = files[next_index]
+                    next_index += 1
 
     if skipped > 0:
         print(f"[Info] skipped {skipped} file(s) (format mismatch for {dataset} reader)")
 
-    return csi_data_list
+
+def load_data(file_path: str, dataset: str) -> List[CSIData]:
+    """Load all samples for backward compatibility.
+
+    New large-data pipelines should consume :func:`iter_data` incrementally.
+    """
+    return list(iter_data(file_path, dataset))
 
 
 __all__ = [
@@ -146,6 +167,7 @@ __all__ = [
     "get_reader_class",
     "list_datasets",
     "get_all_reader_metadata",
+    "iter_data",
     "load_data",
     "register_reader",
     "unregister_reader",
