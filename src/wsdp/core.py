@@ -41,7 +41,7 @@ def _load_and_preprocess(
     reader: Optional[str] = None,
     storage_path: Optional[str] = None,
     storage_mode: str = "memory",
-    storage_dtype: str = "float16",
+    storage_dtype: str = "float32",
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, list]:
     """Load CSI data, run processing pipeline, and return arrays ready for splitting.
 
@@ -385,7 +385,7 @@ def pipeline(
     progress_callback: Optional[Callable] = None,
     use_cache: bool = True,
     storage_mode: str = "memory",
-    storage_dtype: str = "float16",
+    storage_dtype: str = "float32",
 ) -> None:
     """
     Run the full CSI classification pipeline.
@@ -420,10 +420,10 @@ def pipeline(
         storage_mode: Default ``memory`` stores compact real samples in shared
             memory. ``auto`` is a compatibility alias for ``memory``; ``disk``
             is an explicit opt-in for the legacy disk-shard representation.
-        storage_dtype: Shared-result precision, default ``float16``. Algorithms
-            run at their original precision; only stored model inputs are
-            quantized. Batches return to float32. Use ``float32`` to disable
-            lossy storage while retaining shared memory and deferred padding.
+        storage_dtype: Shared-result precision, default ``float32``. Algorithms
+            and stored model inputs retain their full single-precision values.
+            Use ``float16`` to halve shared storage at the cost of lossy
+            quantization; batches are always returned as float32 tensors.
     """
     ipath = input_path
     os.makedirs(output_folder, exist_ok=True)

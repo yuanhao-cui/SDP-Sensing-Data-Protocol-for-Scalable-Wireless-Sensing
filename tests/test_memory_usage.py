@@ -315,15 +315,15 @@ def test_shared_preprocessing_defers_padding_and_supports_spawned_loaders(tmp_pa
     try:
         assert processed.shared_backed
         assert not processed.disk_backed
-        assert processed.dtype == np.float16
+        assert processed.dtype == np.float32
         assert processed.shape == (2, 300, 30, 9)
-        assert processed.nbytes == 2 * 199 * 30 * 9 * 2
+        assert processed.nbytes == 2 * 199 * 30 * 9 * 4
         np.testing.assert_array_equal(processed.sample_lengths, [199, 199])
         assert labels == [2, 2]
         assert sorted(groups) == [1, 2]
         assert list((tmp_path / 'output').rglob('*')) == []
 
-        expected = np.zeros((300, 30, 9), dtype=np.float16)
+        expected = np.zeros((300, 30, 9), dtype=np.float32)
         expected[:199] = np.sqrt(2)
         np.testing.assert_array_equal(processed[0], expected)
 
@@ -371,7 +371,7 @@ def test_preconverted_phase_input_preserves_signed_channels():
         data.close()
 
 
-def test_intel5300_reader_is_exact_and_shared_storage_uses_float16(tmp_path):
+def test_intel5300_reader_is_exact_and_shared_storage_uses_float32(tmp_path):
     from wsdp.processors.streaming import preprocess_to_memmap
     from wsdp.readers import BfeeReader
 
@@ -411,9 +411,8 @@ def test_intel5300_reader_is_exact_and_shared_storage_uses_float16(tmp_path):
     )
     try:
         assert processed.shape == (1, 5, 30, 18)
-        assert processed.dtype == np.float16
-        assert processed.nbytes == 2 * 30 * 18 * 2
-        assert processed.nbytes < 2 * source.stat().st_size
+        assert processed.dtype == np.float32
+        assert processed.nbytes == 2 * 30 * 18 * 4
         assert labels == [2]
         expected = np.zeros((5, 30, 18), dtype=np.float32)
         expected[:2, 0, 0] = np.sqrt(13)

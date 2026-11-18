@@ -362,8 +362,12 @@ def _preprocess_shared(
 ):
     worker_count = max(1, min(read_workers, len(files)))
     partitions = _partition_files(files, worker_count)
-    allocation_requests = mp.Queue()
-    allocation_responses = [mp.Queue() for _ in partitions]
+
+    # Use one spawn context for both queues and workers so semaphore locks
+    # are never created under the platform-default fork context.
+    worker_context = mp.get_context('spawn')
+    allocation_requests = worker_context.Queue()
+    allocation_responses = [worker_context.Queue() for _ in partitions]
     shared_handles = []
     allocator = threading.Thread(
         target=_shared_memory_allocator,
@@ -379,7 +383,7 @@ def _preprocess_shared(
         # each preprocessing worker from inheriting the parent's full heap.
         with ProcessPoolExecutor(
             max_workers=worker_count,
-            mp_context=mp.get_context('spawn'),
+            mp_context=worker_context,
             initializer=_init_shared_worker,
             initargs=(allocation_requests, allocation_responses),
         ) as executor:
@@ -467,14 +471,14 @@ def preprocess_to_memmap(
     reader_name,
     storage_path,
     *,
-    read_workers=8,
+    read_workers=16,
     max_shard_bytes=16 * 1024 * 1024,
     storage_mode='memory',
-    storage_dtype='float16',
+    storage_dtype='float32',
 ):
     """Preprocess disjoint static file partitions without duplicate arrays.
 
-    The default ``memory`` mode stores real, unpadded float16 model inputs in
+    The default ``memory`` mode stores real, unpadded float32 model inputs in
     shared memory and creates no preprocessing data files. ``auto`` is a
     backward-compatible alias for ``memory``; it no longer estimates sizes or
     falls back to disk. ``disk`` remains available only when explicitly chosen.
